@@ -19,7 +19,42 @@
             <artifactId>postgresql</artifactId>
             <version>9.4-1205-jdbc42</version>
         </dependency>
-
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>development.local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <database.connection.username>opendata_dev</database.connection.username>
+                <database.connection.password>overdose</database.connection.password>
+
+                <test.database.connection.username>opendata_test</test.database.connection.username>
+                <test.database.connection.password>overdose</test.database.connection.password>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+    </build>
 
 </project>

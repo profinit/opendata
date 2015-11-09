@@ -5,14 +5,15 @@
 
 <hibernate-configuration>
 
+    <!-- a SessionFactory instance listed as /jndi/name -->
     <session-factory>
 
+        <!-- properties -->
         <property name="dialect">org.hibernate.dialect.PostgreSQL94Dialect</property>
         <property name="connection.url">jdbc:postgresql://localhost:5432/opendata</property>
-        <property name="connection.username">${database.connection.username}</property>
-        <property name="connection.password">${database.connection.password}</property>
+        <property name="connection.username">${test.database.connection.username}</property>
+        <property name="connection.password">${test.database.connection.password}</property>
         <property name="connection.driver_class">org.postgresql.Driver</property>
-
         <mapping resource="mapping.xml"/>
         <mapping class="eu.profinit.opendata.model.DataInstance"/>
         <mapping class="eu.profinit.opendata.model.DataSource"/>
