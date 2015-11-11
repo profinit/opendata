@@ -7,6 +7,7 @@ import java.sql.Date;
  * Created by DM on 8. 11. 2015.
  */
 @javax.persistence.Entity
+@Table(name = "record", schema = "public", catalog = "opendata")
 public class Record {
     private Double amountCzkWithVat;
 
@@ -200,17 +201,18 @@ public class Record {
         this.recordType = recordType;
     }
 
-    private String authorityRole;
+    private AuthorityRole authorityRole;
 
-    @Basic
+    @Enumerated(EnumType.STRING)
     @Column(name = "authority_role")
-    public String getAuthorityRole() {
+    public AuthorityRole getAuthorityRole() {
         return authorityRole;
     }
 
-    public void setAuthorityRole(String authorityRole) {
+    public void setAuthorityRole(AuthorityRole authorityRole) {
         this.authorityRole = authorityRole;
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -269,4 +271,5 @@ public class Record {
         result = 31 * result + (authorityRole != null ? authorityRole.hashCode() : 0);
         return result;
     }
+
 }

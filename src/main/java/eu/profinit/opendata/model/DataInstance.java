@@ -90,7 +90,7 @@ public class DataInstance {
         this.dataSource = dataSource;
     }
 
-    @OneToMany(mappedBy = "retrievals")
+    @OneToMany(mappedBy = "dataInstance")
     public Collection<Retrieval> getRetrievals() {
         return retrievals;
     }

@@ -1,15 +1,14 @@
 package eu.profinit.opendata.model;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Collection;
+import eu.profinit.opendata.model.util.EntityTypeConverter;
 
 /**
  * Created by DM on 8. 11. 2015.
  */
 @javax.persistence.Entity
+@Table(name = "entity", schema = "public", catalog = "opendata")
 public class Entity {
     private String dic;
     private String ico;
@@ -17,7 +16,7 @@ public class Entity {
 
     private String name;
     private int entityId;
-    private String entityType;
+    private EntityType entityType;
     private Collection<DataSource> dataSources;
 
     @Basic
@@ -70,13 +69,13 @@ public class Entity {
         this.entityId = entityId;
     }
 
-    @Basic
     @Column(name = "entity_type")
-    public String getEntityType() {
+    @Convert(converter = EntityTypeConverter.class)
+    public EntityType getEntityType() {
         return entityType;
     }
 
-    public void setEntityType(String entityType) {
+    public void setEntityType(EntityType entityType) {
         this.entityType = entityType;
     }
 

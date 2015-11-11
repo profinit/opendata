@@ -41,7 +41,7 @@
         <property name="ico" column="ico"/>
         <property name="public" column="is_public"/>
         <property name="name" column="name"/>
-        <property name="entityType" column="entity_type"/>
+        <property name="entityType" column="entity_type" />
         <set name="dataSources" inverse="true">
             <key>
                 <column name="entity_id" not-null="true"/>
@@ -75,7 +75,7 @@
         <property name="numBadRecords" column="num_bad_records"/>
         <property name="numRecordsInserted" column="num_records_inserted"/>
         <property name="success" column="success"/>
-        <many-to-one name="retrievals" class="eu.profinit.opendata.model.DataInstance">
+        <many-to-one name="dataInstance" class="eu.profinit.opendata.model.DataInstance">
             <column name="data_instance_id"/>
         </many-to-one>
     </class>

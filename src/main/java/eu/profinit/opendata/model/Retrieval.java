@@ -8,6 +8,7 @@ import java.sql.Timestamp;
  * Created by DM on 8. 11. 2015.
  */
 @Entity
+@Table(name = "retrieval", schema = "public", catalog = "opendata")
 public class Retrieval {
     private Timestamp date;
     private String failureReason;
@@ -15,7 +16,7 @@ public class Retrieval {
     private int numRecordsInserted;
     private boolean success;
     private int retrievalId;
-    private DataInstance retrievals;
+    private DataInstance dataInstance;
 
     @Basic
     @Column(name = "date")
@@ -108,11 +109,11 @@ public class Retrieval {
 
     @ManyToOne
     @JoinColumn(name = "data_instance_id", referencedColumnName = "data_instance_id")
-    public DataInstance getRetrievals() {
-        return retrievals;
+    public DataInstance getDataInstance() {
+        return dataInstance;
     }
 
-    public void setRetrievals(DataInstance retrievals) {
-        this.retrievals = retrievals;
+    public void setDataInstance(DataInstance retrievals) {
+        this.dataInstance = dataInstance;
     }
 }

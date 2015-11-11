@@ -13,12 +13,12 @@
         <property name="connection.password">${database.connection.password}</property>
         <property name="connection.driver_class">org.postgresql.Driver</property>
 
-        <mapping resource="mapping.xml"/>
-        <mapping class="eu.profinit.opendata.model.DataInstance"/>
-        <mapping class="eu.profinit.opendata.model.DataSource"/>
-        <mapping class="eu.profinit.opendata.model.Entity"/>
-        <mapping class="eu.profinit.opendata.model.Record"/>
-        <mapping class="eu.profinit.opendata.model.Retrieval"/>
+        <!--<mapping resource="mapping.xml"/>-->
+        <!--<mapping class="eu.profinit.opendata.model.DataInstance"/>-->
+        <!--<mapping class="eu.profinit.opendata.model.DataSource"/>-->
+        <!--<mapping class="eu.profinit.opendata.model.Entity"/>-->
+        <!--<mapping class="eu.profinit.opendata.model.Record"/>-->
+        <!--<mapping class="eu.profinit.opendata.model.Retrieval"/>-->
 
 
     </session-factory>
