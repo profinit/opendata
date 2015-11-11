@@ -8,6 +8,7 @@ import eu.profinit.opendata.model.util.EntityTypeConverter;
  * Created by DM on 8. 11. 2015.
  */
 @javax.persistence.Entity
+@SequenceGenerator(name = "seq_pk", sequenceName = "entity_entity_id_seq")
 @Table(name = "entity", schema = "public", catalog = "opendata")
 public class Entity {
     private String dic;
@@ -60,6 +61,7 @@ public class Entity {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_pk")
     @Column(name = "entity_id")
     public int getEntityId() {
         return entityId;

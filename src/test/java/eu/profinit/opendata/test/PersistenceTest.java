@@ -44,11 +44,7 @@ public class PersistenceTest extends TestCase {
         assertTrue(session.isOpen());
     }
 
-    public void testDatabaseConnection() throws Exception {
-        session.byId(Entity.class);
-    }
-
-    public void testEnumerations() throws Exception {
+    public void testSaveEntity() throws Exception {
         Entity entity = new Entity();
         entity.setName("Ministerstvo zpraseného kódu");
         entity.setEntityType(EntityType.MINISTRY);
@@ -56,6 +52,12 @@ public class PersistenceTest extends TestCase {
         session.persist(entity);
         session.flush();
         assertNotNull(entity.getEntityId());
+        Integer id = entity.getEntityId();
+
+        session.delete(entity);
+        assertNull(session.get(Entity.class, id));
+        session.flush();
+
     }
 
     @Override
