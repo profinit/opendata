@@ -2,6 +2,9 @@ package eu.profinit.opendata.model;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import eu.profinit.opendata.model.util.EntityTypeConverter;
 
 /**
@@ -16,9 +19,11 @@ public class Entity {
     private boolean isPublic;
 
     private String name;
-    private int entityId;
+    private Long entityId;
     private EntityType entityType;
     private Collection<DataSource> dataSources;
+    private Collection<Record> recordsAsAuthority;
+    private Collection<Record> recordsAsPartner;
 
     @Basic
     @Column(name = "dic")
@@ -63,11 +68,11 @@ public class Entity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_pk")
     @Column(name = "entity_id")
-    public int getEntityId() {
+    public Long getEntityId() {
         return entityId;
     }
 
-    public void setEntityId(int entityId) {
+    public void setEntityId(Long entityId) {
         this.entityId = entityId;
     }
 
@@ -104,17 +109,35 @@ public class Entity {
         result = 31 * result + (ico != null ? ico.hashCode() : 0);
         result = 31 * result + (isPublic ? 1 : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + entityId;
+        result = 31 * result + entityId.intValue();
         result = 31 * result + (entityType != null ? entityType.hashCode() : 0);
         return result;
     }
 
-    @OneToMany(mappedBy = "entity")
+    @OneToMany(mappedBy = "entity", fetch = FetchType.EAGER)
     public Collection<DataSource> getDataSources() {
         return dataSources;
     }
 
     public void setDataSources(Collection<DataSource> dataSources) {
         this.dataSources = dataSources;
+    }
+
+    @OneToMany(mappedBy = "authority")
+    public Collection<Record> getRecordsAsAuthority() {
+        return recordsAsAuthority;
+    }
+
+    public void setRecordsAsAuthority(Collection<Record> recordsAsAuthority) {
+        this.recordsAsAuthority = recordsAsAuthority;
+    }
+
+    @OneToMany(mappedBy = "partner")
+    public Collection<Record> getRecordsAsPartner() {
+        return recordsAsPartner;
+    }
+
+    public void setRecordsAsPartner(Collection<Record> recordsAsPartner) {
+        this.recordsAsPartner = recordsAsPartner;
     }
 }

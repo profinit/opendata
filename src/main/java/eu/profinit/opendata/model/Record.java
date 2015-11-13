@@ -1,13 +1,18 @@
 package eu.profinit.opendata.model;
 
+import eu.profinit.opendata.model.util.AuthorityRoleConverter;
+import eu.profinit.opendata.model.util.RecordTypeConverter;
+
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.Collection;
 
 /**
  * Created by DM on 8. 11. 2015.
  */
 @javax.persistence.Entity
 @Table(name = "record", schema = "public", catalog = "opendata")
+@SequenceGenerator(name = "seq_pk", sequenceName = "record_record_id_seq")
 public class Record {
     private Double amountCzkWithVat;
 
@@ -177,33 +182,34 @@ public class Record {
         this.variableSymbol = variableSymbol;
     }
 
-    private int recordId;
+    private Long recordId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_pk")
     @Column(name = "record_id")
-    public int getRecordId() {
+    public Long getRecordId() {
         return recordId;
     }
 
-    public void setRecordId(int recordId) {
+    public void setRecordId(Long recordId) {
         this.recordId = recordId;
     }
 
-    private String recordType;
+    private RecordType recordType;
 
-    @Basic
+    @Convert(converter = RecordTypeConverter.class)
     @Column(name = "record_type")
-    public String getRecordType() {
+    public RecordType getRecordType() {
         return recordType;
     }
 
-    public void setRecordType(String recordType) {
+    public void setRecordType(RecordType recordType) {
         this.recordType = recordType;
     }
 
     private AuthorityRole authorityRole;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = AuthorityRoleConverter.class)
     @Column(name = "authority_role")
     public AuthorityRole getAuthorityRole() {
         return authorityRole;
@@ -213,6 +219,64 @@ public class Record {
         this.authorityRole = authorityRole;
     }
 
+    private Retrieval retrieval;
+
+    @ManyToOne
+    @JoinColumn(name = "retrieval_id", referencedColumnName = "retrieval_id")
+    public Retrieval getRetrieval() {
+        return retrieval;
+    }
+
+    public void setRetrieval(Retrieval retrieval) {
+        this.retrieval = retrieval;
+    }
+
+    private Entity authority;
+
+    @ManyToOne
+    @JoinColumn(name = "authority", referencedColumnName = "entity_id")
+    public Entity getAuthority() {
+        return authority;
+    }
+
+    public void setAuthority(Entity authority) {
+        this.authority = authority;
+    }
+
+    private Entity partner;
+
+    @ManyToOne
+    @JoinColumn(name = "partner", referencedColumnName = "entity_id")
+    public Entity getPartner() {
+        return partner;
+    }
+
+    public void setPartner(Entity partner) {
+        this.partner = partner;
+    }
+
+    private Record parentRecord;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id", referencedColumnName = "record_id")
+    public Record getParentRecord() {
+        return parentRecord;
+    }
+
+    public void setParentRecord(Record parentRecord) {
+        this.parentRecord = parentRecord;
+    }
+
+    private Collection<Record> childRecords;
+
+    @OneToMany(mappedBy = "parentRecord")
+    public Collection<Record> getChildRecords() {
+        return childRecords;
+    }
+
+    public void setChildRecords(Collection<Record> childRecords) {
+        this.childRecords = childRecords;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -246,6 +310,10 @@ public class Record {
         if (subject != null ? !subject.equals(record.subject) : record.subject != null) return false;
         if (variableSymbol != null ? !variableSymbol.equals(record.variableSymbol) : record.variableSymbol != null)
             return false;
+        if (retrieval != null ? !retrieval.equals(record.retrieval) : record.retrieval != null) return false;
+        if (authority != null ? !authority.equals(record.authority) : record.authority != null) return false;
+        if (partner != null ? !partner.equals(record.partner) : record.partner != null) return false;
+        if (parentRecord != null ? !parentRecord.equals(record.parentRecord) : record.parentRecord != null) return false;
 
         return true;
     }
@@ -266,9 +334,13 @@ public class Record {
         result = 31 * result + (partnerCode != null ? partnerCode.hashCode() : 0);
         result = 31 * result + (subject != null ? subject.hashCode() : 0);
         result = 31 * result + (variableSymbol != null ? variableSymbol.hashCode() : 0);
-        result = 31 * result + recordId;
+        result = 31 * result + recordId.intValue();
         result = 31 * result + (recordType != null ? recordType.hashCode() : 0);
         result = 31 * result + (authorityRole != null ? authorityRole.hashCode() : 0);
+        result = 31 * result + (retrieval != null ? retrieval.hashCode() : 0);
+        result = 31 * result + (authority != null ? authority.hashCode() : 0);
+        result = 31 * result + (partner != null ? partner.hashCode() : 0);
+        result = 31 * result + (parentRecord != null ? parentRecord.hashCode() : 0);
         return result;
     }
 

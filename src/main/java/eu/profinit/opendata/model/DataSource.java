@@ -1,5 +1,8 @@
 package eu.profinit.opendata.model;
 
+import eu.profinit.opendata.model.util.PeriodicityConverter;
+import eu.profinit.opendata.model.util.RecordTypeConverter;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Collection;
@@ -8,13 +11,14 @@ import java.util.Collection;
  * Created by DM on 8. 11. 2015.
  */
 @javax.persistence.Entity
+@SequenceGenerator(name = "seq_pk", sequenceName = "data_source_data_source_id_seq")
 @Table(name = "data_source", schema = "public", catalog = "opendata")
 public class DataSource {
     private boolean isIncremental;
     private Timestamp lastProcessedDate;
-    private int dataSourceId;
-    private String recordType;
-    private String periodicity;
+    private Long dataSourceId;
+    private RecordType recordType;
+    private Periodicity periodicity;
     private Collection<DataInstance> dataInstances;
     private Entity entity;
 
@@ -39,32 +43,33 @@ public class DataSource {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_pk")
     @Column(name = "data_source_id")
-    public int getDataSourceId() {
+    public Long getDataSourceId() {
         return dataSourceId;
     }
 
-    public void setDataSourceId(int dataSourceId) {
+    public void setDataSourceId(Long dataSourceId) {
         this.dataSourceId = dataSourceId;
     }
 
-    @Basic
+    @Convert(converter = RecordTypeConverter.class)
     @Column(name = "record_type")
-    public String getRecordType() {
+    public RecordType getRecordType() {
         return recordType;
     }
 
-    public void setRecordType(String recordType) {
+    public void setRecordType(RecordType recordType) {
         this.recordType = recordType;
     }
 
-    @Basic
+    @Convert(converter = PeriodicityConverter.class)
     @Column(name = "periodicity")
-    public String getPeriodicity() {
+    public Periodicity getPeriodicity() {
         return periodicity;
     }
 
-    public void setPeriodicity(String periodicity) {
+    public void setPeriodicity(Periodicity periodicity) {
         this.periodicity = periodicity;
     }
 
@@ -89,7 +94,7 @@ public class DataSource {
     public int hashCode() {
         int result = (isIncremental ? 1 : 0);
         result = 31 * result + (lastProcessedDate != null ? lastProcessedDate.hashCode() : 0);
-        result = 31 * result + dataSourceId;
+        result = 31 * result + dataSourceId.intValue();
         result = 31 * result + (recordType != null ? recordType.hashCode() : 0);
         result = 31 * result + (periodicity != null ? periodicity.hashCode() : 0);
         return result;

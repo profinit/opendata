@@ -5,8 +5,6 @@ import javax.persistence.AttributeConverter;
 
 public class EntityTypeConverter implements AttributeConverter<EntityType, String> {
 
-    public EntityTypeConverter(){}
-
     @Override
     public String convertToDatabaseColumn(EntityType entityType) {
         return entityType.name().toLowerCase();

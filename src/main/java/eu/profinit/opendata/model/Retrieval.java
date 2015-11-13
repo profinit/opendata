@@ -3,20 +3,23 @@ package eu.profinit.opendata.model;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 /**
  * Created by DM on 8. 11. 2015.
  */
 @Entity
 @Table(name = "retrieval", schema = "public", catalog = "opendata")
+@SequenceGenerator(name = "seq_pk", sequenceName = "retrieval_retrieval_id_seq")
 public class Retrieval {
     private Timestamp date;
     private String failureReason;
     private int numBadRecords;
     private int numRecordsInserted;
     private boolean success;
-    private int retrievalId;
+    private Long retrievalId;
     private DataInstance dataInstance;
+    private Collection<Record> records;
 
     @Basic
     @Column(name = "date")
@@ -69,13 +72,33 @@ public class Retrieval {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_pk")
     @Column(name = "retrieval_id")
-    public int getRetrievalId() {
+    public Long getRetrievalId() {
         return retrievalId;
     }
 
-    public void setRetrievalId(int retrievalId) {
+    public void setRetrievalId(Long retrievalId) {
         this.retrievalId = retrievalId;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "data_instance_id", referencedColumnName = "data_instance_id")
+    public DataInstance getDataInstance() {
+        return dataInstance;
+    }
+
+    public void setDataInstance(DataInstance dataInstance) {
+        this.dataInstance = dataInstance;
+    }
+
+    @OneToMany(mappedBy = "retrieval")
+    public Collection<Record> getRecords() {
+        return records;
+    }
+
+    public void setRecords(Collection<Record> records) {
+        this.records = records;
     }
 
     @Override
@@ -103,17 +126,9 @@ public class Retrieval {
         result = 31 * result + numBadRecords;
         result = 31 * result + numRecordsInserted;
         result = 31 * result + (success ? 1 : 0);
-        result = 31 * result + retrievalId;
+        result = 31 * result + retrievalId.intValue();
         return result;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "data_instance_id", referencedColumnName = "data_instance_id")
-    public DataInstance getDataInstance() {
-        return dataInstance;
-    }
 
-    public void setDataInstance(DataInstance retrievals) {
-        this.dataInstance = dataInstance;
-    }
 }

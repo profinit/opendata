@@ -8,11 +8,12 @@ import java.util.Collection;
  */
 @javax.persistence.Entity
 @Table(name = "data_instance", schema = "public", catalog = "opendata")
+@SequenceGenerator(name = "seq_pk", sequenceName = "data_instance_data_instance_id_seq")
 public class DataInstance {
     private String format;
     private boolean processed;
     private String url;
-    private int dataInstanceId;
+    private Long dataInstanceId;
     private DataSource dataSource;
     private Collection<Retrieval> retrievals;
 
@@ -47,12 +48,13 @@ public class DataInstance {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_pk")
     @Column(name = "data_instance_id")
-    public int getDataInstanceId() {
+    public Long getDataInstanceId() {
         return dataInstanceId;
     }
 
-    public void setDataInstanceId(int dataInstanceId) {
+    public void setDataInstanceId(Long dataInstanceId) {
         this.dataInstanceId = dataInstanceId;
     }
 
@@ -76,7 +78,7 @@ public class DataInstance {
         int result = format != null ? format.hashCode() : 0;
         result = 31 * result + (processed ? 1 : 0);
         result = 31 * result + (url != null ? url.hashCode() : 0);
-        result = 31 * result + dataInstanceId;
+        result = 31 * result + dataInstanceId.intValue();
         return result;
     }
 
