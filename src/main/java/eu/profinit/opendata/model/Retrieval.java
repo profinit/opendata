@@ -92,7 +92,7 @@ public class Retrieval {
         this.dataInstance = dataInstance;
     }
 
-    @OneToMany(mappedBy = "retrieval")
+    @OneToMany(mappedBy = "retrieval", cascade = CascadeType.REMOVE)
     public Collection<Record> getRecords() {
         return records;
     }

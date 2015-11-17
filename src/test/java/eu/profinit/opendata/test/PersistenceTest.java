@@ -87,11 +87,14 @@ public class PersistenceTest extends TestCase {
         assertNotNull(contract.getRecordId());
         assertNotNull(di.getDataInstanceId());
 
+        em.clear();
+
         //Entity to Data Source
         ministry = em.find(Entity.class, ministry.getEntityId());
         ds = em.find(DataSource.class, ds.getDataSourceId());
         assertEquals(ds.getEntity().getEntityId(), ministry.getEntityId());
         assertNotNull(ministry);
+        assertNotNull(ministry.getDataSources());
         assertTrue(ministry.getDataSources().contains(ds));
 
         //Data Source to Data Instance
@@ -104,6 +107,8 @@ public class PersistenceTest extends TestCase {
 
         //Retrieval to Record
         ret = em.find(Retrieval.class, ret.getRetrievalId());
+        contract = em.find(Record.class, contract.getRecordId());
+        inv = em.find(Record.class, inv.getRecordId());
         assertTrue(ret.getRecords().contains(contract));
         assertTrue(ret.getRecords().contains(inv));
 
@@ -122,14 +127,13 @@ public class PersistenceTest extends TestCase {
         contract = em.find(Record.class, contract.getRecordId());
         assertTrue(contract.getChildRecords().contains(inv));
 
+        em.getTransaction().begin();
         em.remove(ministry);
         em.remove(company);
-        em.remove(ds);
-        em.remove(di);
-        em.remove(ret);
-        em.remove(contract);
-        em.remove(inv);
-        em.flush();
+        em.getTransaction().commit();
+
+        inv = em.find(Record.class, inv.getRecordId());
+        assertNull(inv);
     }
 
     @Override

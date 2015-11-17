@@ -91,7 +91,7 @@ CREATE TABLE "record"
 	"variable_symbol" varchar(50)	 NULL,
 	"record_id" integer NOT NULL DEFAULT nextval(('"record_record_id_seq"'::text)::regclass),
 	"partner" integer NULL,
-	"authority" integer NOT NULL,
+	"authority" integer NULL,
 	"parent_id" integer NULL,
 	"retrieval_id" integer NULL,
 	"record_type" varchar(50)	 NOT NULL,
@@ -222,19 +222,19 @@ ALTER TABLE "record" ADD CONSTRAINT "FK_record_record_type"
 ;
 
 ALTER TABLE "record" ADD CONSTRAINT "FK_partner"
-	FOREIGN KEY ("partner") REFERENCES "entity" ("entity_id") ON DELETE Set Null ON UPDATE Set Null
+	FOREIGN KEY ("partner") REFERENCES "entity" ("entity_id") ON DELETE Set Null ON UPDATE Cascade
 ;
 
 ALTER TABLE "record" ADD CONSTRAINT "FK_authority"
-	FOREIGN KEY ("authority") REFERENCES "entity" ("entity_id") ON DELETE Cascade ON UPDATE Cascade
+	FOREIGN KEY ("authority") REFERENCES "entity" ("entity_id") ON DELETE Set Null ON UPDATE Cascade
 ;
 
 ALTER TABLE "record" ADD CONSTRAINT "FK_record_parent"
-	FOREIGN KEY ("parent_id") REFERENCES "record" ("record_id") ON DELETE Set Null ON UPDATE No Action
+	FOREIGN KEY ("parent_id") REFERENCES "record" ("record_id") ON DELETE Set Null ON UPDATE Cascade
 ;
 
 ALTER TABLE "record" ADD CONSTRAINT "FK_record_retrieval"
-	FOREIGN KEY ("retrieval_id") REFERENCES "retrieval" ("retrieval_id") ON DELETE Set Null ON UPDATE Set Null
+	FOREIGN KEY ("retrieval_id") REFERENCES "retrieval" ("retrieval_id") ON DELETE Cascade ON UPDATE Cascade
 ;
 
 ALTER TABLE "entity" ADD CONSTRAINT "FK_entity_entity_type"

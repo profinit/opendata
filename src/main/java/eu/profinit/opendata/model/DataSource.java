@@ -100,7 +100,7 @@ public class DataSource {
         return result;
     }
 
-    @OneToMany(mappedBy = "dataSource")
+    @OneToMany(mappedBy = "dataSource", cascade = CascadeType.REMOVE)
     public Collection<DataInstance> getDataInstances() {
         return dataInstances;
     }

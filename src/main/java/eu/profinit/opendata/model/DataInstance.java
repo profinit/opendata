@@ -92,7 +92,7 @@ public class DataInstance {
         this.dataSource = dataSource;
     }
 
-    @OneToMany(mappedBy = "dataInstance")
+    @OneToMany(mappedBy = "dataInstance", cascade = CascadeType.REMOVE)
     public Collection<Retrieval> getRetrievals() {
         return retrievals;
     }

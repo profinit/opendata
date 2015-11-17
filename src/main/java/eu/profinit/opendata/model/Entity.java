@@ -114,7 +114,7 @@ public class Entity {
         return result;
     }
 
-    @OneToMany(mappedBy = "entity", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "entity", cascade = CascadeType.REMOVE)
     public Collection<DataSource> getDataSources() {
         return dataSources;
     }
