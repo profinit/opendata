@@ -2,10 +2,6 @@ package eu.profinit.opendata.test;
 
 import eu.profinit.opendata.model.*;
 import junit.framework.TestCase;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.junit.BeforeClass;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
