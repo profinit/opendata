@@ -1,6 +1,10 @@
 package eu.profinit.opendata.model;
 
+import eu.profinit.opendata.model.util.PeriodicityConverter;
+
 import javax.persistence.*;
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Collection;
 
 /**
@@ -11,11 +15,13 @@ import java.util.Collection;
 @SequenceGenerator(name = "seq_pk", sequenceName = "data_instance_data_instance_id_seq")
 public class DataInstance {
     private String format;
-    private boolean processed;
+    private Timestamp lastProcessedDate;
     private String url;
     private Long dataInstanceId;
     private DataSource dataSource;
     private Collection<Retrieval> retrievals;
+    private Periodicity periodicity;
+    private Date expires;
 
     @Basic
     @Column(name = "format")
@@ -27,14 +33,35 @@ public class DataInstance {
         this.format = format;
     }
 
+
     @Basic
-    @Column(name = "processed")
-    public boolean isProcessed() {
-        return processed;
+    @Column(name = "last_processed_date")
+    public Timestamp getLastProcessedDate() {
+        return lastProcessedDate;
     }
 
-    public void setProcessed(boolean processed) {
-        this.processed = processed;
+    public void setLastProcessedDate(Timestamp last_processed_date) {
+        this.lastProcessedDate = last_processed_date;
+    }
+
+    @Basic
+    @Column(name = "expires")
+    public Date getExpires() {
+        return expires;
+    }
+
+    public void setExpires(Date expires) {
+        this.expires = expires;
+    }
+
+    @Convert(converter = PeriodicityConverter.class)
+    @Column(name = "periodicity")
+    public Periodicity getPeriodicity() {
+        return periodicity;
+    }
+
+    public void setPeriodicity(Periodicity periodicity) {
+        this.periodicity = periodicity;
     }
 
     @Basic
@@ -66,7 +93,9 @@ public class DataInstance {
         DataInstance that = (DataInstance) o;
 
         if (dataInstanceId != that.dataInstanceId) return false;
-        if (processed != that.processed) return false;
+        if (periodicity != null ? !periodicity.equals(that.periodicity) : that.periodicity != null) return false;
+        if (lastProcessedDate != null ?
+                !lastProcessedDate.equals(that.lastProcessedDate) : that.lastProcessedDate != null) return false;
         if (format != null ? !format.equals(that.format) : that.format != null) return false;
         if (url != null ? !url.equals(that.url) : that.url != null) return false;
 
@@ -76,9 +105,10 @@ public class DataInstance {
     @Override
     public int hashCode() {
         int result = format != null ? format.hashCode() : 0;
-        result = 31 * result + (processed ? 1 : 0);
         result = 31 * result + (url != null ? url.hashCode() : 0);
         result = 31 * result + dataInstanceId.intValue();
+        result = 31 * result + periodicity.hashCode();
+        result = 31 * result + lastProcessedDate.hashCode();
         return result;
     }
 

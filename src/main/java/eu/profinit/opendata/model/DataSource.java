@@ -1,5 +1,6 @@
 package eu.profinit.opendata.model;
 
+import eu.profinit.opendata.model.util.ClassNameConverter;
 import eu.profinit.opendata.model.util.PeriodicityConverter;
 import eu.profinit.opendata.model.util.RecordTypeConverter;
 
@@ -14,22 +15,44 @@ import java.util.Collection;
 @SequenceGenerator(name = "seq_pk", sequenceName = "data_source_data_source_id_seq")
 @Table(name = "data_source", schema = "public", catalog = "opendata")
 public class DataSource {
-    private boolean isIncremental;
     private Timestamp lastProcessedDate;
     private Long dataSourceId;
     private RecordType recordType;
     private Periodicity periodicity;
     private Collection<DataInstance> dataInstances;
     private Entity entity;
+    private String description;
+    private boolean active;
+    private Class<DataSourceHandler> handlingClass;
 
     @Basic
-    @Column(name = "is_incremental")
-    public boolean isIncremental() {
-        return isIncremental;
+    @Column(name = "active")
+    public boolean isActive() {
+        return active;
     }
 
-    public void setIncremental(boolean isIncremental) {
-        this.isIncremental = isIncremental;
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    @Basic
+    @Column(name = "description")
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Convert(converter = ClassNameConverter.class)
+    @Column(name = "handling_class")
+    public Class<DataSourceHandler> getHandlingClass() {
+        return handlingClass;
+    }
+
+    public void setHandlingClass(Class<DataSourceHandler> handlingClass) {
+        this.handlingClass = handlingClass;
     }
 
     @Basic
@@ -81,22 +104,27 @@ public class DataSource {
         DataSource that = (DataSource) o;
 
         if (dataSourceId != that.dataSourceId) return false;
-        if (isIncremental != that.isIncremental) return false;
+        if (active != that.active) return false;
         if (lastProcessedDate != null ? !lastProcessedDate.equals(that.lastProcessedDate) : that.lastProcessedDate != null)
             return false;
         if (periodicity != null ? !periodicity.equals(that.periodicity) : that.periodicity != null) return false;
         if (recordType != null ? !recordType.equals(that.recordType) : that.recordType != null) return false;
+        if (description != null ? !description.equals(that.description) : that.description != null) return false;
+        if (handlingClass != null ? !handlingClass.equals(that.handlingClass) : that.handlingClass != null)
+            return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = (isIncremental ? 1 : 0);
+        int result = (active ? 1 : 0);
         result = 31 * result + (lastProcessedDate != null ? lastProcessedDate.hashCode() : 0);
         result = 31 * result + dataSourceId.intValue();
         result = 31 * result + (recordType != null ? recordType.hashCode() : 0);
         result = 31 * result + (periodicity != null ? periodicity.hashCode() : 0);
+        result = 31 * result + (handlingClass != null ? handlingClass.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         return result;
     }
 

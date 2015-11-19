@@ -161,6 +161,7 @@ public class PersistenceTest extends TestCase {
         ds.setEntity(forEntity);
         ds.setRecordType(RecordType.INVOICE);
         ds.setPeriodicity(Periodicity.QUARTERLY);
+        ds.setActive(true);
         return ds;
     }
 
@@ -168,7 +169,7 @@ public class PersistenceTest extends TestCase {
         DataInstance di = new DataInstance();
         di.setDataSource(forDataSource);
         di.setFormat("xls");
-        di.setProcessed(false);
+        di.setPeriodicity(Periodicity.APERIODIC);
         di.setUrl("http://mzk.cz/data");
         return di;
     }

@@ -6,5 +6,7 @@ package eu.profinit.opendata.model;
 public enum Periodicity {
     MONTHLY,
     YEARLY,
+    WEEKLY,
+    APERIODIC,
     QUARTERLY;
 }
