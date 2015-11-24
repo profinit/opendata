@@ -15,11 +15,10 @@ import java.nio.channels.WritableByteChannel;
  */
 public class Downloader {
 
-    public InputStream downloadIntoOutputStream(DataInstance dataInstance) throws MalformedURLException, IOException {
+    public InputStream downloadDataFile(DataInstance dataInstance) throws IOException {
         URL url  = new URL(dataInstance.getUrl());
         ReadableByteChannel rbc = Channels.newChannel(url.openStream());
         return Channels.newInputStream(rbc);
     }
-
-
 }
+

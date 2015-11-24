@@ -6,8 +6,7 @@ import junit.framework.TestCase;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
-import java.sql.Date;
-import java.sql.Timestamp;
+import static eu.profinit.opendata.test.DataGenerator.*;
 
 /**
  * Created by DM on 9. 11. 2015.
@@ -137,79 +136,6 @@ public class PersistenceTest extends TestCase {
 
         em.close();
         em = null;
-    }
-
-    private Entity getTestMinistry() {
-        Entity entity = new Entity();
-        entity.setName("Ministerstvo zpraseného kódu");
-        entity.setEntityType(EntityType.MINISTRY);
-        entity.setPublic(true);
-        return entity;
-    }
-
-    private Entity getTestCompany() {
-        Entity entity = new Entity();
-        entity.setName("Git a. s.");
-        entity.setEntityType(EntityType.COMPANY);
-        entity.setPublic(false);
-        entity.setIco("01234");
-        return entity;
-    }
-
-    private DataSource getDataSource(Entity forEntity) {
-        DataSource ds = new DataSource();
-        ds.setEntity(forEntity);
-        ds.setRecordType(RecordType.INVOICE);
-        ds.setPeriodicity(Periodicity.QUARTERLY);
-        ds.setActive(true);
-        return ds;
-    }
-
-    private DataInstance getDataInstance(DataSource forDataSource) {
-        DataInstance di = new DataInstance();
-        di.setDataSource(forDataSource);
-        di.setFormat("xls");
-        di.setPeriodicity(Periodicity.APERIODIC);
-        di.setUrl("http://mzk.cz/data");
-        return di;
-    }
-
-    private Retrieval getRetrieval(DataInstance forDataInstance) {
-        Retrieval ret = new Retrieval();
-        ret.setDate(new Timestamp(System.currentTimeMillis()));
-        ret.setNumRecordsInserted(100);
-        ret.setNumBadRecords(2);
-        ret.setDataInstance(forDataInstance);
-        ret.setSuccess(true);
-        return ret;
-    }
-
-    private Record getInvoice(Retrieval fromRetrieval, Entity authority, Entity partner) {
-        Record record = new Record();
-        record.setAuthorityRole(AuthorityRole.CUSTOMER);
-        record.setCurrency("CZK");
-        record.setDateCreated(new Date(System.currentTimeMillis()));
-        record.setMasterId("abcdef");
-        record.setAmountCzkWithVat(1_350_000.0);
-        record.setRecordType(RecordType.INVOICE);
-        record.setRetrieval(fromRetrieval);
-        record.setAuthority(authority);
-        record.setPartner(partner);
-        return record;
-    }
-
-    private Record getContract(Retrieval fromRetrieval, Entity authority, Entity partner) {
-        Record record = new Record();
-        record.setAuthorityRole(AuthorityRole.CUSTOMER);
-        record.setCurrency("CZK");
-        record.setDateCreated(new Date(System.currentTimeMillis()));
-        record.setMasterId("ghijklm");
-        record.setAmountCzkWithVat(1_000_000.0);
-        record.setRecordType(RecordType.CONTRACT);
-        record.setRetrieval(fromRetrieval);
-        record.setAuthority(authority);
-        record.setPartner(partner);
-        return record;
     }
 
     private int deleteAll(String table){

@@ -14,6 +14,10 @@ import java.util.Collection;
 @javax.persistence.Entity
 @SequenceGenerator(name = "seq_pk", sequenceName = "data_source_data_source_id_seq")
 @Table(name = "data_source", schema = "public", catalog = "opendata")
+@NamedQuery(
+        name="findActiveDataSources",
+        query="SELECT OBJECT(ds) FROM DataSource ds WHERE ds.active = true"
+)
 public class DataSource {
     private Timestamp lastProcessedDate;
     private Long dataSourceId;
@@ -23,7 +27,7 @@ public class DataSource {
     private Entity entity;
     private String description;
     private boolean active;
-    private Class<DataSourceHandler> handlingClass;
+    private Class<? extends DataSourceHandler> handlingClass;
 
     @Basic
     @Column(name = "active")
@@ -47,11 +51,11 @@ public class DataSource {
 
     @Convert(converter = ClassNameConverter.class)
     @Column(name = "handling_class")
-    public Class<DataSourceHandler> getHandlingClass() {
+    public Class<? extends DataSourceHandler> getHandlingClass() {
         return handlingClass;
     }
 
-    public void setHandlingClass(Class<DataSourceHandler> handlingClass) {
+    public void setHandlingClass(Class<? extends DataSourceHandler> handlingClass) {
         this.handlingClass = handlingClass;
     }
 
