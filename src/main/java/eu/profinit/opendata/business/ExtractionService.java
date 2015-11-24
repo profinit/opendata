@@ -1,10 +1,16 @@
 package eu.profinit.opendata.business;
 
+import eu.profinit.opendata.model.DataInstance;
 import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.DataSourceHandler;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 
 /**
@@ -45,7 +51,5 @@ public class ExtractionService {
                 Logger.getLogger(ExtractionService.class).error("Could not process data source " + ds.getDataSourceId(), e);
             }
         }
-
-
     }
 }
