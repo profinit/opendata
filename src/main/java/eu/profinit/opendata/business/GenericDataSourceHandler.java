@@ -39,7 +39,9 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
             return;
         }
 
-        if(hasEnoughTimeElapsed(ds.getLastProcessedDate(), ds.getPeriodicity().getDuration())) {
+        if(ds.getLastProcessedDate() == null ||
+                hasEnoughTimeElapsed(ds.getLastProcessedDate(), ds.getPeriodicity().getDuration())) {
+
             this.checkForNewDataInstance(ds);
         }
 
