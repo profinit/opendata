@@ -1,6 +1,7 @@
 package eu.profinit.opendata.business;
 
 import eu.profinit.opendata.model.DataInstance;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +12,7 @@ import java.nio.channels.ReadableByteChannel;
 /**
  * Created by dm on 11/24/15.
  */
+@Component
 public class DownloadService {
     public InputStream downloadDataFile(DataInstance dataInstance) throws IOException {
         URL url  = new URL(dataInstance.getUrl());

@@ -4,6 +4,7 @@ import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.DataSourceHandler;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 /**
  * Created by dm on 11/23/15.
  */
+@Component
 public class ExtractionService {
 
     private EntityManager em;

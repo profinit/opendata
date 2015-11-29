@@ -4,10 +4,15 @@ import eu.profinit.opendata.model.DataInstance;
 import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.DataSourceHandler;
 import eu.profinit.opendata.model.Periodicity;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,6 +20,10 @@ import java.util.List;
  * Created by dm on 11/24/15.
  */
 public abstract class GenericDataSourceHandler implements DataSourceHandler {
+
+    @Autowired
+    private DownloadService downloadService;
+
     @Override
     public void processDataSource(DataSource ds) {
         if(!ds.isActive()) {
@@ -58,10 +67,9 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
 
             boolean isProcessed = lpd != null;
             boolean isPeriodic = !p.equals(Periodicity.APERIODIC);
-            boolean hasExpired = dataInstance.getExpires() != null
-                    && dataInstance.getExpires().getTime() > System.currentTimeMillis();
+            boolean hasExpired = dataInstance.hasExpired();
 
-            if(!isProcessed || (isPeriodic && !hasExpired && hasEnoughTimeElapsed(lpd, p.getDuration()))) {
+            if(!hasExpired && (!isProcessed || (isPeriodic && hasEnoughTimeElapsed(lpd, p.getDuration())))) {
                 result.add(dataInstance);
             }
         }
@@ -70,6 +78,13 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
     }
 
     protected void runExtractionOnDataInstance(DataInstance dataInstance) {
+        try {
+            InputStream inputStream = downloadService.downloadDataFile(dataInstance);
+            processXLSFile(inputStream, dataInstance);
+        } catch (IOException e) {
+            Logger.getLogger(this.getClass()).error("Could not download data file", e);
+        }
+
 
     }
 
@@ -81,6 +96,6 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
     }
 
     protected abstract void checkForNewDataInstance(DataSource ds);
-    protected abstract void processXLSFile();
+    protected abstract void processXLSFile(InputStream inputStream, DataInstance dataInstance);
 
 }

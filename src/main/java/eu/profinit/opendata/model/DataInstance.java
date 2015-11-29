@@ -5,6 +5,8 @@ import eu.profinit.opendata.model.util.PeriodicityConverter;
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 
 /**
@@ -129,5 +131,16 @@ public class DataInstance {
 
     public void setRetrievals(Collection<Retrieval> retrievals) {
         this.retrievals = retrievals;
+    }
+
+    public void expire() {
+        if(!hasExpired()) {
+            setExpires(new Date(System.currentTimeMillis()));
+        }
+    }
+
+    public boolean hasExpired() {
+        return getExpires() != null
+                && getExpires().after(new java.util.Date(System.currentTimeMillis() - Duration.ofDays(1).toMillis()));
     }
 }

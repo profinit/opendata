@@ -1,14 +1,22 @@
 package eu.profinit.opendata.test.mfcr;
 
-import eu.profinit.opendata.handler.mfcr.JSONClient;
-import eu.profinit.opendata.handler.mfcr.JSONPackageList;
-import eu.profinit.opendata.handler.mfcr.JSONPackageListResource;
-import eu.profinit.opendata.handler.mfcr.JSONPackageListResult;
+import eu.profinit.opendata.handler.mfcr.*;
+import eu.profinit.opendata.model.DataInstance;
+import eu.profinit.opendata.model.DataSource;
+import eu.profinit.opendata.model.Periodicity;
+import eu.profinit.opendata.model.RecordType;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by dm on 11/28/15.
@@ -37,5 +45,33 @@ public class TestMFCR {
         JSONPackageListResource resource = result.getResources().get(0);
         assertNotNull(resource.getUrl());
         assertTrue(resource.getFormat().equals("xls") || resource.getFormat().equals("csv"));
+    }
+
+    @Test
+    public void testCreateDataInstances() throws Exception {
+        MFCRHandler handler = (MFCRHandler) applicationContext.getBean(MFCRHandler.class);
+        EntityManager mockEm = mock(EntityManager.class);
+        handler.setEm(mockEm);
+        EntityTransaction mockTransaction = mock(EntityTransaction.class);
+        when(mockEm.getTransaction()).thenReturn(mockTransaction);
+
+        DataSource ds = new DataSource();
+        ds.setDataInstances(new ArrayList<>());
+        ds.setActive(true);
+        ds.setPeriodicity(Periodicity.MONTHLY);
+
+        DataInstance oldDataInstance = new DataInstance();
+        oldDataInstance.setDataSource(ds);
+        oldDataInstance.setPeriodicity(Periodicity.MONTHLY);
+        oldDataInstance.setUrl("Not really a URL");
+
+        ds.getDataInstances().add(oldDataInstance);
+        ds.setRecordType(RecordType.ORDER);
+
+        handler.processDataSource(ds);
+
+        assertNotNull(oldDataInstance.getExpires());
+        assertEquals(2, ds.getDataInstances().size());
+
     }
 }
