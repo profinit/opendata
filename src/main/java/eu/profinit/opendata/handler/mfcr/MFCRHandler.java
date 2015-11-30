@@ -4,6 +4,8 @@ import eu.profinit.opendata.business.GenericDataSourceHandler;
 import eu.profinit.opendata.model.DataInstance;
 import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.Periodicity;
+import eu.profinit.opendata.model.Retrieval;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Component;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.InputStream;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,9 +46,26 @@ public class MFCRHandler extends GenericDataSourceHandler {
     }
 
     @Override
-    protected void processXLSFile(InputStream inputStream, DataInstance dataInstance) {
+    protected Retrieval processWorkbook(Workbook workbook, DataInstance dataInstance) {
+
+        Retrieval retrieval = new Retrieval();
+        retrieval.setDataInstance(dataInstance);
+        retrieval.setDate(Timestamp.from(Instant.now()));
+
+        switch(dataInstance.getDataSource().getRecordType()) {
+            case ORDER: processOrders(workbook, retrieval); break;
+            case CONTRACT: break;
+            case INVOICE: break;
+            default: break;
+        }
+
+        return retrieval;
+    }
+
+    private void processOrders(Workbook workbook, Retrieval retrieval) {
 
     }
+
 
     /**
      * Updates the data intances associated with the specified ORDERS data source.

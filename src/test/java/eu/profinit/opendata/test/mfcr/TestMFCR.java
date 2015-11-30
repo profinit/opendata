@@ -50,6 +50,7 @@ public class TestMFCR {
     @Test
     public void testCreateDataInstances() throws Exception {
         MFCRHandler handler = (MFCRHandler) applicationContext.getBean(MFCRHandler.class);
+        handler.setProceedWithExtraction(false);
         EntityManager mockEm = mock(EntityManager.class);
         handler.setEm(mockEm);
         EntityTransaction mockTransaction = mock(EntityTransaction.class);
