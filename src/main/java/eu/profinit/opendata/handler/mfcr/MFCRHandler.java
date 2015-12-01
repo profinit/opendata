@@ -5,6 +5,8 @@ import eu.profinit.opendata.model.DataInstance;
 import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.Periodicity;
 import eu.profinit.opendata.model.Retrieval;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.io.InputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class MFCRHandler extends GenericDataSourceHandler {
     @Value("${mfcr.json.orders.identifier}")
     private String orders_identifier;
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "postgres")
     private EntityManager em;
 
     @Override
@@ -63,7 +64,14 @@ public class MFCRHandler extends GenericDataSourceHandler {
     }
 
     private void processOrders(Workbook workbook, Retrieval retrieval) {
+        em.getTransaction().begin();
+        Sheet sheet = workbook.getSheetAt(0);  // Only one sheet in the orders workbook
+        int start_row_num = 2;  // First row contains the heading, second row holds column names
 
+        for(int i = start_row_num; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+        }
+        em.getTransaction().commit();
     }
 
 
@@ -98,6 +106,7 @@ public class MFCRHandler extends GenericDataSourceHandler {
                     //All current data instances must be marked as expired
                     for(DataInstance i : currentInstances) {
                         i.expire();
+                        em.merge(i);
                     }
 
                     //Recreate a new active data instance

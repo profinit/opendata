@@ -26,7 +26,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
     @Autowired
     private DownloadService downloadService;
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "postgres")
     private EntityManager em;
 
     private boolean proceedWithExtraction = true;
@@ -50,6 +50,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
 
         em.getTransaction().begin();
         ds.setLastProcessedDate(Timestamp.from(Instant.now()));
+        em.merge(ds);
         em.getTransaction().commit();
 
     }
@@ -99,6 +100,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
                 em.persist(retrieval);
                 if(retrieval.isSuccess()) {
                     dataInstance.setLastProcessedDate(Timestamp.from(Instant.now()));
+                    em.merge(dataInstance);
                 }
                 em.getTransaction().commit();
             }
