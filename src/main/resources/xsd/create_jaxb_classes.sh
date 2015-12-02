@@ -1,0 +1,1 @@
+"$JAVA_HOME"/bin/xjc datasource_mapping.xsd -d ../../java -p eu.profinit.opendata.transform.jaxb

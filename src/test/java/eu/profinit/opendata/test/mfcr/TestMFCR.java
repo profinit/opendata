@@ -50,7 +50,6 @@ public class TestMFCR {
     @Test
     public void testCreateDataInstances() throws Exception {
         MFCRHandler handler = (MFCRHandler) applicationContext.getBean(MFCRHandler.class);
-        handler.setProceedWithExtraction(false);
         EntityManager mockEm = mock(EntityManager.class);
         handler.setEm(mockEm);
         EntityTransaction mockTransaction = mock(EntityTransaction.class);
@@ -75,4 +74,5 @@ public class TestMFCR {
         assertEquals(2, ds.getDataInstances().size());
 
     }
+    //TODO: Replace with a generic extraction test
 }

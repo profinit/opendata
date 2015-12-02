@@ -1,10 +1,8 @@
-package eu.profinit.opendata.business;
+package eu.profinit.opendata.control;
 
+import eu.profinit.opendata.transform.TransformDriver;
 import eu.profinit.opendata.model.*;
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
@@ -26,10 +24,11 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
     @Autowired
     private DownloadService downloadService;
 
+    @Autowired
+    private TransformDriver transformDriver;
+
     @PersistenceContext(unitName = "postgres")
     private EntityManager em;
-
-    private boolean proceedWithExtraction = true;
 
     @Override
     public void processDataSource(DataSource ds) {
@@ -92,18 +91,17 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
     protected void runExtractionOnDataInstance(DataInstance dataInstance) {
         try {
             InputStream inputStream = downloadService.downloadDataFile(dataInstance);
-            Workbook workbook = openXLSFile(inputStream, dataInstance);
-            if(proceedWithExtraction) {
-                Retrieval retrieval = processWorkbook(workbook, dataInstance);
+            Retrieval retrieval = transformDriver.doRetrieval(dataInstance, inputStream,
+                    getMappingFileForDataInstance(dataInstance));
 
-                em.getTransaction().begin();
-                em.persist(retrieval);
-                if(retrieval.isSuccess()) {
-                    dataInstance.setLastProcessedDate(Timestamp.from(Instant.now()));
-                    em.merge(dataInstance);
-                }
-                em.getTransaction().commit();
+            em.getTransaction().begin();
+            em.persist(retrieval);
+            if(retrieval.isSuccess()) {
+                dataInstance.setLastProcessedDate(Timestamp.from(Instant.now()));
+                em.merge(dataInstance);
             }
+            em.getTransaction().commit();
+
         } catch (IOException e) {
             Logger.getLogger(this.getClass()).error("Could not download data file", e);
         }
@@ -118,19 +116,6 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
         return elapsed.dividedBy(2).compareTo(targetDuration) > 0;
     }
 
-    public void setProceedWithExtraction(boolean proceedWithExtraction) {
-        this.proceedWithExtraction = proceedWithExtraction;
-    }
-
-    protected Workbook openXLSFile(InputStream inputStream, DataInstance dataInstance) throws IOException {
-        if(dataInstance.getFormat().equals("xls")) {
-            return new HSSFWorkbook(inputStream);
-        } else {
-            return new XSSFWorkbook(inputStream);
-        }
-    }
-
     protected abstract void checkForNewDataInstance(DataSource ds);
-    protected abstract Retrieval processWorkbook(Workbook workbook, DataInstance dataInstance);
-
+    protected abstract String getMappingFileForDataInstance(DataInstance di);
 }

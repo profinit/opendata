@@ -1,7 +1,7 @@
 package eu.profinit.opendata.test;
 
-import eu.profinit.opendata.business.DataSourceHandlerFactory;
-import eu.profinit.opendata.business.ExtractionService;
+import eu.profinit.opendata.control.DataSourceHandlerFactory;
+import eu.profinit.opendata.control.ExtractionService;
 import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.DataSourceHandler;
 import eu.profinit.opendata.model.Entity;
@@ -13,7 +13,6 @@ import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static eu.profinit.opendata.test.DataGenerator.*;
 import static org.mockito.Mockito.*;
 

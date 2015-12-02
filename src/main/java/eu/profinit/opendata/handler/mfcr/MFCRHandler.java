@@ -1,6 +1,6 @@
 package eu.profinit.opendata.handler.mfcr;
 
-import eu.profinit.opendata.business.GenericDataSourceHandler;
+import eu.profinit.opendata.control.GenericDataSourceHandler;
 import eu.profinit.opendata.model.DataInstance;
 import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.Periodicity;
@@ -35,6 +35,9 @@ public class MFCRHandler extends GenericDataSourceHandler {
     @Value("${mfcr.json.orders.identifier}")
     private String orders_identifier;
 
+    @Value("${mfcr.mapping.orders}")
+    private String order_mapping_file;
+
     @PersistenceContext(unitName = "postgres")
     private EntityManager em;
 
@@ -47,31 +50,11 @@ public class MFCRHandler extends GenericDataSourceHandler {
     }
 
     @Override
-    protected Retrieval processWorkbook(Workbook workbook, DataInstance dataInstance) {
-
-        Retrieval retrieval = new Retrieval();
-        retrieval.setDataInstance(dataInstance);
-        retrieval.setDate(Timestamp.from(Instant.now()));
-
-        switch(dataInstance.getDataSource().getRecordType()) {
-            case ORDER: processOrders(workbook, retrieval); break;
-            case CONTRACT: break;
-            case INVOICE: break;
-            default: break;
+    protected String getMappingFileForDataInstance(DataInstance di) {
+        switch(di.getDataSource().getRecordType()) {
+            case ORDER: return order_mapping_file;
+            default: return null;
         }
-
-        return retrieval;
-    }
-
-    private void processOrders(Workbook workbook, Retrieval retrieval) {
-        em.getTransaction().begin();
-        Sheet sheet = workbook.getSheetAt(0);  // Only one sheet in the orders workbook
-        int start_row_num = 2;  // First row contains the heading, second row holds column names
-
-        for(int i = start_row_num; i <= sheet.getLastRowNum(); i++) {
-            Row row = sheet.getRow(i);
-        }
-        em.getTransaction().commit();
     }
 
 

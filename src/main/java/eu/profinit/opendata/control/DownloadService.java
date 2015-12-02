@@ -1,4 +1,4 @@
-package eu.profinit.opendata.business;
+package eu.profinit.opendata.control;
 
 import eu.profinit.opendata.model.DataInstance;
 import org.springframework.stereotype.Component;

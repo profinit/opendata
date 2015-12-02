@@ -3,6 +3,7 @@
     <xs:element name="mapping">
         <xs:complexType>
             <xs:sequence>
+                <xs:element name="headerRow" minOccurs="1" type="xs:nonNegativeInteger"/>
                 <xs:element minOccurs="1" maxOccurs="unbounded" name="property" type="recordProperty"/>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string"/>
