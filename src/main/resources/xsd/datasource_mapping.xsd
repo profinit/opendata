@@ -10,12 +10,13 @@
         </xs:complexType>
     </xs:element>
     <xs:complexType name="recordProperty">
-            <xs:sequence>
-                <xs:element name="sourceFileColumn" minOccurs="0" maxOccurs="unbounded" type="sourceColumn"/>
-            </xs:sequence>
-            <xs:attribute name="name" type="xs:string" use="required"/>
-            <xs:attribute name="converter" type="xs:string" use="optional"/>
-            <xs:attribute name="value" type="xs:string" use="optional"/>
+        <xs:sequence>
+            <xs:element name="sourceFileColumn" minOccurs="0" maxOccurs="unbounded" type="sourceColumn"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="converter" type="xs:string" use="optional"/>
+        <xs:attribute name="value" type="xs:string" use="optional"/>
+        <xs:attribute name="required" type="xs:boolean" use="optional"/>
     </xs:complexType>
     <xs:complexType name="sourceColumn">
         <xs:attribute name="originalName" type="xs:string" use="required"/>

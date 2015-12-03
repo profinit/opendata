@@ -18,6 +18,11 @@ public class TransformException extends Exception {
         this.severity = severity;
     }
 
+    public TransformException(String message, Throwable cause, Severity severity) {
+        super(message, cause);
+        this.severity = severity;
+    }
+
     public Severity getSeverity() {
         return severity;
     }
