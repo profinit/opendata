@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
  * Created by dm on 12/3/15.
  */
 @Component
-public class ConverterFactory implements ApplicationContextAware {
+public class ComponentFactory implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    public RecordPropertyConverter getConverter(String className) throws ClassNotFoundException {
-        return (RecordPropertyConverter) applicationContext.getBean(Class.forName(className));
+    public TransformComponent getComponent(String className) throws ClassNotFoundException {
+        return (TransformComponent) applicationContext.getBean(Class.forName(className));
     }
 
     @Override

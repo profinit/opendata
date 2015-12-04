@@ -3,7 +3,8 @@
     <xs:element name="mapping">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="headerRow" minOccurs="1" type="xs:nonNegativeInteger"/>
+                <xs:element name="headerRow" minOccurs="1" maxOccurs="1" type="xs:nonNegativeInteger"/>
+                <xs:element name="retriever" minOccurs="0" maxOccurs="1" type="oldRecordRetriever"/>
                 <xs:element minOccurs="1" maxOccurs="unbounded" name="property" type="recordProperty"/>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string"/>
@@ -17,10 +18,17 @@
         <xs:attribute name="converter" type="xs:string" use="optional"/>
         <xs:attribute name="value" type="xs:string" use="optional"/>
         <xs:attribute name="required" type="xs:boolean" use="optional"/>
+        <xs:attribute name="onlyNewRecords" type="xs:boolean" use="required"/>
     </xs:complexType>
     <xs:complexType name="sourceColumn">
         <xs:attribute name="originalName" type="xs:string" use="required"/>
         <xs:attribute name="type" type="xs:string" use="required"/>
         <xs:attribute name="argumentName" type="xs:string" use="optional"/>
+    </xs:complexType>
+    <xs:complexType name="oldRecordRetriever">
+        <xs:sequence>
+            <xs:element name="sourceFileColumn" minOccurs="0" maxOccurs="unbounded" type="sourceColumn"/>
+        </xs:sequence>
+        <xs:attribute name="className" type="xs:string" use="required"/>
     </xs:complexType>
 </xs:schema>
