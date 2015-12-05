@@ -2,7 +2,8 @@ package eu.profinit.opendata.control;
 
 import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.DataSourceHandler;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,8 @@ public class ExtractionService {
 
     @Autowired
     private DataSourceHandlerFactory dataSourceHandlerFactory;
+
+    private Logger log = LogManager.getLogger(ExtractionService.class);
 
     public DataSourceHandlerFactory getDataSourceHandlerFactory() {
         return dataSourceHandlerFactory;
@@ -38,17 +41,16 @@ public class ExtractionService {
 
 
     public void runExtraction() {
+        log.info("Extraction process began");
+
         //Get all active data sources and invoke their handling class
         List<DataSource> activeDataSources = em.createNamedQuery("findActiveDataSources", DataSource.class).getResultList();
 
         for(DataSource ds : activeDataSources) {
             Class<? extends DataSourceHandler> handlingClass = ds.getHandlingClass();
-            try {
-                DataSourceHandler handler = dataSourceHandlerFactory.getHandlerFromClass(handlingClass);
-                handler.processDataSource(ds);
-            } catch (InstantiationException | IllegalAccessException e) {
-                Logger.getLogger(ExtractionService.class).error("Could not process data source " + ds.getDataSourceId(), e);
-            }
+            log.debug("Instantiating handling class " + handlingClass.getName());
+            DataSourceHandler handler = dataSourceHandlerFactory.getHandlerFromClass(handlingClass);
+            handler.processDataSource(ds);
         }
     }
 }

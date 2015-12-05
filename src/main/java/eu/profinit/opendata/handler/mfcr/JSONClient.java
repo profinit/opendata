@@ -1,6 +1,6 @@
 package eu.profinit.opendata.handler.mfcr;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
@@ -34,7 +34,7 @@ public class JSONClient {
             URI uri = URI.create(json_api_url + packages_path + "?id=" + packageListIdentifier);
             return restTemplate.getForObject(uri, JSONPackageList.class);
         } catch (RestClientException e) {
-            Logger.getLogger(JSONClient.class).error("Could not retreive MFCR package list", e);
+            LogManager.getLogger(JSONClient.class).error("Could not retreive MFCR package list", e);
             return null;
         }
     }

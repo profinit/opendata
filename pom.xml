@@ -30,10 +30,16 @@
             <version>4.12</version>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.14</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.4.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.4.1</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -89,6 +95,8 @@
 
                 <test.database.connection.username>opendata_test</test.database.connection.username>
                 <test.database.connection.password>overdose</test.database.connection.password>
+
+                <log.location>/home/dm/Documents/Opendata/log</log.location>
             </properties>
         </profile>
     </profiles>

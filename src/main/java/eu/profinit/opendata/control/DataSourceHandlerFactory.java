@@ -14,9 +14,7 @@ public class DataSourceHandlerFactory implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    public <T extends DataSourceHandler> T getHandlerFromClass(Class<T> clazz)
-            throws IllegalAccessException, InstantiationException {
-
+    public <T extends DataSourceHandler> T getHandlerFromClass(Class<T> clazz) {
         return applicationContext.getBean(clazz);
     }
 

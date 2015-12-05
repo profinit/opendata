@@ -1,7 +1,8 @@
 package eu.profinit.opendata.model.util;
 
 import eu.profinit.opendata.model.DataSourceHandler;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.persistence.AttributeConverter;
 
@@ -22,7 +23,7 @@ public class ClassNameConverter implements AttributeConverter<Class<? extends Da
             try {
                 return (Class<? extends DataSourceHandler>) Class.forName(s);
             } catch (ClassNotFoundException | ClassCastException e) {
-                Logger log = Logger.getLogger(ClassNameConverter.class);
+                Logger log = LogManager.getLogger(ClassNameConverter.class);
                 log.error("Error converting string " + s + " to class", e);
                 return null;
             }

@@ -143,7 +143,8 @@ CREATE TABLE "data_instance"
 	"data_source_id" integer NOT NULL DEFAULT nextval(('"data_instance_data_source_id_seq"'::text)::regclass),
 	"periodicity" varchar(50)	 NOT NULL,
 	"last_processed_date" timestamp without time zone NULL,
-	"expires" date NULL
+	"expires" date NULL,
+	"lat_processed_row" integer NULL
 )
 ;
 

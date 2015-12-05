@@ -2,7 +2,8 @@ package eu.profinit.opendata.control;
 
 import eu.profinit.opendata.transform.TransformDriver;
 import eu.profinit.opendata.model.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
@@ -103,7 +104,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
             em.getTransaction().commit();
 
         } catch (IOException e) {
-            Logger.getLogger(this.getClass()).error("Could not download data file", e);
+            LogManager.getLogger(this.getClass()).error("Could not download data file", e);
         }
 
 
@@ -114,6 +115,10 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
                     .minus(Duration.ofMillis(from.getTime()));
 
         return elapsed.dividedBy(2).compareTo(targetDuration) > 0;
+    }
+
+    protected Logger getLogger() {
+        return LogManager.getLogger(getClass().getName());
     }
 
     protected abstract void checkForNewDataInstance(DataSource ds);

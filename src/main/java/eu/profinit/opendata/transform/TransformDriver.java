@@ -6,7 +6,9 @@ import eu.profinit.opendata.model.Retrieval;
 import eu.profinit.opendata.transform.jaxb.Mapping;
 import eu.profinit.opendata.transform.jaxb.RecordProperty;
 import eu.profinit.opendata.transform.jaxb.SourceColumn;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -30,6 +32,8 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -48,9 +52,17 @@ public class TransformDriver {
     @Autowired
     private ComponentFactory converterFactory;
 
-    private Logger log = Logger.getLogger(TransformDriver.class);
+    DateTimeFormatter formatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss").withZone(ZoneId.systemDefault());
+
+    private Logger log;
 
     public Retrieval doRetrieval(DataInstance dataInstance, InputStream inputStream, String mappingFile) {
+
+
+        ThreadContext.push("TIMESTAMP", formatter.format(Instant.now()));
+        log = LogManager.getLogger("transform");
+
         Retrieval retrieval = new Retrieval();
         retrieval.setDataInstance(dataInstance);
         retrieval.setDate(Timestamp.from(Instant.now()));
@@ -61,45 +73,24 @@ public class TransformDriver {
             Mapping mapping = loadMapping(mappingFile);
             processWorkbook(workbook, mapping, retrieval);
             em.getTransaction().commit();
+            retrieval.setSuccess(true);
         }
-        catch (IOException | JAXBException e) {
-            log.error("Couldn't process downloaded file", e);
-            em.getTransaction().rollback();
-            retrieval.setSuccess(false);
-            retrieval.setFailureReason(e.getMessage());
-        }
-        catch (TransformException e) {
-            log.error("An irrecoverable error occurred while performing transformation", e);
-            em.getTransaction().rollback();
-            retrieval.setSuccess(false);
-            retrieval.setFailureReason(e.getMessage());
+        catch (IOException | JAXBException | TransformException e) {
+            //Rolls back the transaction and sets Retrieval fields
+            failRetrieval(retrieval, e);
         }
 
+        ThreadContext.remove("TIMESTAMP");
         return retrieval;
     }
 
-    private Workbook openXLSFile(InputStream inputStream, DataInstance dataInstance) throws IOException {
-        if(dataInstance.getFormat().equals("xls")) {
-            return new HSSFWorkbook(inputStream);
-        } else {
-            return new XSSFWorkbook(inputStream);
-        }
-    }
-
-    private Mapping loadMapping(String mappingFile) throws JAXBException, IOException {
-        ClassPathResource cpr = new ClassPathResource(mappingFile);
-        JAXBContext jaxbContext = JAXBContext.newInstance(Mapping.class);
-        Unmarshaller u = jaxbContext.createUnmarshaller();
-        JAXBElement<?> mappingJAXBElement = (JAXBElement<?>) u.unmarshal(cpr.getFile());
-        return (Mapping) mappingJAXBElement.getValue();
-    }
-
-    //TODO: Supposes 1 record per row, which isn't the case even for MFCR (amendments, splits, etc.)
-    //Mapping file could have a special converter that could return an old record to update
-    //But then some properties shouldn't be updated in case we do find an old record - XML needs to reflect this
     private void processWorkbook(Workbook workbook, Mapping mapping, Retrieval retrieval) throws TransformException {
         Sheet sheet = workbook.getSheetAt(0);  //TODO: Mapping file should specify how to handle multiple sheets
-        int start_row_num = mapping.getHeaderRow().intValue() + 1; //TODO: This won't work for incrementally updated files
+
+        int start_row_num = mapping.getHeaderRow().intValue() + 1;
+        if(retrieval.getDataInstance().getLastProcessedRow() != null) {
+            start_row_num = retrieval.getDataInstance().getLastProcessedRow() + 1;
+        }
 
         //Create the column name mapping
         Map<String, Integer> columnNames = new HashMap<>();
@@ -116,12 +107,16 @@ public class TransformDriver {
                 retrieval.setNumRecordsInserted(retrieval.getNumRecordsInserted() + 1);
 
                 //A call to persist will throw a PersistenceException if all required attributes aren't filled
-                //Which means the whole transaction will blow up and there isn't much we can do
-                //So we check manually
+                //Which means the whole transaction will blow up. We need to check manually
                 checkRecordIntegrity(record);
 
-                //TODO: Merge if the damn thing already exists
-                em.persist(record);
+                if(record.getRecordId() != null) {
+                    em.merge(record);
+                }
+                else {
+                    em.persist(record);
+                }
+                retrieval.getDataInstance().setLastProcessedRow(i);
             }
             catch (TransformException ex) {
                 if(ex.getSeverity().equals(TransformException.Severity.FATAL)) {
@@ -137,33 +132,6 @@ public class TransformDriver {
 
         }
     }
-
-    private void checkRecordIntegrity(Record record) throws TransformException {
-        List<Field> offendingFields = new ArrayList<>();
-        String[] requiredFields = recordRequiredFields.split(",");
-
-        for(String fieldName : requiredFields) {
-            try {
-                Field field = Record.class.getField(fieldName);
-                field.setAccessible(true); //Is this a Bad Idea(TM)?
-                if(field.get(record) == null) {
-                    offendingFields.add(field);
-                }
-            } catch (NoSuchFieldException | IllegalAccessException e) {} //Why bother
-        }
-
-        if(!offendingFields.isEmpty()) {
-            StringBuffer buffer = new StringBuffer("Finished Record is missing required values for columns: ");
-            for(Field field : offendingFields) {
-                buffer.append(field.getName() + ", ");
-            }
-            buffer.delete(buffer.length() - 2, buffer.length() - 1);
-
-            throw new TransformException(buffer.toString(), TransformException.Severity.RECORD_LOCAL);
-        }
-
-    }
-
 
     private Record processRow(Row row, Mapping mapping, Retrieval retrieval, Map<String, Integer> columnNames) throws TransformException {
 
@@ -209,15 +177,6 @@ public class TransformDriver {
 
     }
 
-    private TransformComponent instantiateComponent(String className) throws TransformException {
-        try {
-            return converterFactory.getComponent(className);
-        } catch (ClassNotFoundException | ClassCastException e) {
-            String message = "Could not instantiate component " + className;
-            throw new TransformException(message, e, TransformException.Severity.FATAL);
-        }
-    }
-
     private void setProcessedValue(RecordProperty recordProperty, Record record, Row row,
                                    Map<String, Integer> columnNames) throws TransformException {
 
@@ -233,7 +192,6 @@ public class TransformDriver {
             else throw e;
         }
     }
-
 
     private void setFixedValue(Record record, RecordProperty recordProperty) throws TransformException {
         try {
@@ -258,6 +216,41 @@ public class TransformDriver {
         }
     }
 
+    private void checkRecordIntegrity(Record record) throws TransformException {
+        List<Field> offendingFields = new ArrayList<>();
+        String[] requiredFields = recordRequiredFields.split(",");
+
+        for(String fieldName : requiredFields) {
+            try {
+                Field field = Record.class.getField(fieldName);
+                field.setAccessible(true); //Is this a Bad Idea(TM)?
+                if(field.get(record) == null) {
+                    offendingFields.add(field);
+                }
+            } catch (NoSuchFieldException | IllegalAccessException e) {} //Why bother
+        }
+
+        if(!offendingFields.isEmpty()) {
+            StringBuilder buffer = new StringBuilder("Finished Record is missing required values for columns: ");
+            for(Field field : offendingFields) {
+                buffer.append(field.getName()).append(", ");
+            }
+            buffer.delete(buffer.length() - 2, buffer.length() - 1);
+
+            throw new TransformException(buffer.toString(), TransformException.Severity.RECORD_LOCAL);
+        }
+
+    }
+
+    private void failRetrieval(Retrieval retrieval, Exception e) {
+        log.error("An irrecoverable error occurred while performing transformation", e);
+        em.getTransaction().rollback();
+        retrieval.setSuccess(false);
+        retrieval.setFailureReason(e.getMessage());
+        retrieval.setNumRecordsInserted(0);
+    }
+
+
     @SuppressWarnings("unchecked")
     private <T> T getValueFromString(String string, Class<T> type) throws TransformException {
         //Primitive, wrapper or string
@@ -275,12 +268,39 @@ public class TransformDriver {
                 TransformException.Severity.FATAL);
     }
 
+
     private Map<String, Cell> getCellMapForArguments(Row row, List<SourceColumn> sourceColumns, Map<String, Integer> columnNames) {
         Map<String, Cell> argumentMap = new HashMap<>();
         for(SourceColumn sourceColumn : sourceColumns) {
             argumentMap.put(sourceColumn.getArgumentName(), row.getCell(columnNames.get(sourceColumn.getOriginalName())));
         }
         return argumentMap;
+    }
+
+    private Workbook openXLSFile(InputStream inputStream, DataInstance dataInstance) throws IOException {
+        if(dataInstance.getFormat().equals("xls")) {
+            return new HSSFWorkbook(inputStream);
+        } else {
+            return new XSSFWorkbook(inputStream);
+        }
+    }
+
+
+    private Mapping loadMapping(String mappingFile) throws JAXBException, IOException {
+        ClassPathResource cpr = new ClassPathResource(mappingFile);
+        JAXBContext jaxbContext = JAXBContext.newInstance(Mapping.class);
+        Unmarshaller u = jaxbContext.createUnmarshaller();
+        JAXBElement<?> mappingJAXBElement = (JAXBElement<?>) u.unmarshal(cpr.getFile());
+        return (Mapping) mappingJAXBElement.getValue();
+    }
+
+    private TransformComponent instantiateComponent(String className) throws TransformException {
+        try {
+            return converterFactory.getComponent(className);
+        } catch (ClassNotFoundException | ClassCastException e) {
+            String message = "Could not instantiate component " + className;
+            throw new TransformException(message, e, TransformException.Severity.FATAL);
+        }
     }
 
     //Utility

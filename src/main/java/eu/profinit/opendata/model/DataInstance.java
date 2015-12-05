@@ -6,7 +6,6 @@ import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Collection;
 
 /**
@@ -24,6 +23,7 @@ public class DataInstance {
     private Collection<Retrieval> retrievals;
     private Periodicity periodicity;
     private Date expires;
+    private Integer lastProcessedRow;
 
     @Basic
     @Column(name = "format")
@@ -74,6 +74,16 @@ public class DataInstance {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    @Basic
+    @Column(name = "last_processed_row")
+    public Integer getLastProcessedRow() {
+        return lastProcessedRow;
+    }
+
+    public void setLastProcessedRow(Integer lastProcessedRow) {
+        this.lastProcessedRow = lastProcessedRow;
     }
 
     @Id
