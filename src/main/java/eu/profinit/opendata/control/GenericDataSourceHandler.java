@@ -29,11 +29,16 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
     private TransformDriver transformDriver;
 
     @PersistenceContext(unitName = "postgres")
-    private EntityManager em;
+    protected EntityManager em;
+
+    private Logger log = LogManager.getLogger(getClass().getName());
 
     @Override
     public void processDataSource(DataSource ds) {
+        log.info("Processing of data source " + ds.getDataSourceId() + " started");
+
         if(!ds.isActive()) {
+            log.info("Data source isn't active. Exiting.");
             return;
         }
 
@@ -49,6 +54,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
         }
 
         em.getTransaction().begin();
+        log.trace("Merging DataSource object with new time of last processing");
         ds.setLastProcessedDate(Timestamp.from(Instant.now()));
         em.merge(ds);
         em.getTransaction().commit();
@@ -56,32 +62,43 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
     }
 
     protected void generateDataInstances(DataSource ds) {
+        log.info("Generating new data instances");
         if(ds.getPeriodicity().equals(Periodicity.APERIODIC)) {
+            log.info("Data source is aperiodic. Nothing to generate.");
             return;
         }
 
+        log.debug("Checking elapsed time since last processing");
         if(ds.getLastProcessedDate() == null ||
                 hasEnoughTimeElapsed(ds.getLastProcessedDate(), ds.getPeriodicity().getDuration())) {
 
             this.checkForNewDataInstance(ds);
+        } else {
+            log.info("Not enough time has elapsed since the last processing. Nothing to generate.");
         }
 
     }
 
     protected List<DataInstance> getInstancesForProcessing(DataSource ds) {
+
+        log.info("Collecting data instances to be processed");
         Collection<DataInstance> dataInstances = ds.getDataInstances();
         List<DataInstance> result = new LinkedList<>();
 
         for(DataInstance dataInstance : dataInstances) {
 
+            log.debug("Checking data instance " + dataInstance.getDataInstanceId());
             Periodicity p = dataInstance.getPeriodicity();
             Timestamp lpd = dataInstance.getLastProcessedDate();
 
             boolean isProcessed = lpd != null;
             boolean isPeriodic = !p.equals(Periodicity.APERIODIC);
             boolean hasExpired = dataInstance.hasExpired();
+            log.debug("(isProcessed, isPeriodic, hasExpired) = " +
+                      "(" + isProcessed + ", " + isPeriodic + ", " + hasExpired + ")");
 
             if(!hasExpired && (!isProcessed || (isPeriodic && hasEnoughTimeElapsed(lpd, p.getDuration())))) {
+                log.info("Marked data instance " + dataInstance.getDataInstanceId() + " for processing");
                 result.add(dataInstance);
             }
         }
@@ -90,21 +107,33 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
     }
 
     protected void runExtractionOnDataInstance(DataInstance dataInstance) {
+        log.info("Proceeding with extraction on data instance " + dataInstance.getDataInstanceId());
         try {
+            log.info("Downloading data file");
             InputStream inputStream = downloadService.downloadDataFile(dataInstance);
+
+            log.debug("Calling transform driver");
             Retrieval retrieval = transformDriver.doRetrieval(dataInstance, inputStream,
                     getMappingFileForDataInstance(dataInstance));
+            log.info("Retrieval finished.");
+            log.debug("(success, numRecordsInserted, numBadRecords, failureReason) = " +
+                      "(" + retrieval.isSuccess() + ", " + retrieval.getNumRecordsInserted() + ", " +
+                            retrieval.getNumBadRecords() + ", " + retrieval.getFailureReason() + ")");
 
             em.getTransaction().begin();
+            log.trace("Persisting the Retrieval object");
             em.persist(retrieval);
             if(retrieval.isSuccess()) {
                 dataInstance.setLastProcessedDate(Timestamp.from(Instant.now()));
+                log.trace("Merging DataInstance object");
                 em.merge(dataInstance);
             }
             em.getTransaction().commit();
 
         } catch (IOException e) {
-            LogManager.getLogger(this.getClass()).error("Could not download data file", e);
+            log.error("Could not download data file", e);
+        } catch (Exception e) {
+            log.error("Transform failed due to an exception", e);
         }
 
 
@@ -114,7 +143,8 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
         Duration elapsed = Duration.ofMillis(System.currentTimeMillis())
                     .minus(Duration.ofMillis(from.getTime()));
 
-        return elapsed.dividedBy(2).compareTo(targetDuration) > 0;
+        log.debug("Elapsed time calculated as " + elapsed + ", target is " + targetDuration);
+        return elapsed.compareTo(targetDuration.dividedBy(2)) > 0;
     }
 
     protected Logger getLogger() {
@@ -123,4 +153,8 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
 
     protected abstract void checkForNewDataInstance(DataSource ds);
     protected abstract String getMappingFileForDataInstance(DataInstance di);
+
+    public void setEm(EntityManager em) {
+        this.em = em;
+    }
 }

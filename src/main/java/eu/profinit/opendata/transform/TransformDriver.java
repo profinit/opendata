@@ -17,7 +17,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +39,6 @@ import java.util.*;
  * Created by dm on 12/2/15.
  */
 @Component
-@PropertySource("classpath:application.properties")
 public class TransformDriver {
 
     @PersistenceContext(unitName = "postgres")
@@ -60,18 +58,22 @@ public class TransformDriver {
     public Retrieval doRetrieval(DataInstance dataInstance, InputStream inputStream, String mappingFile) {
 
 
-        ThreadContext.push("TIMESTAMP", formatter.format(Instant.now()));
+        ThreadContext.put("TIMESTAMP", formatter.format(Instant.now()));
         log = LogManager.getLogger("transform");
+        log.info("Starting retrieval on data instance " + dataInstance.getDataInstanceId());
 
         Retrieval retrieval = new Retrieval();
         retrieval.setDataInstance(dataInstance);
         retrieval.setDate(Timestamp.from(Instant.now()));
 
         em.getTransaction().begin();
+        log.trace("Opened transaction on EntityManager");
         try {
             Workbook workbook = openXLSFile(inputStream, dataInstance);
             Mapping mapping = loadMapping(mappingFile);
             processWorkbook(workbook, mapping, retrieval);
+
+            log.info("Whole workbook procesed, commiting transaction");
             em.getTransaction().commit();
             retrieval.setSuccess(true);
         }
@@ -80,28 +82,33 @@ public class TransformDriver {
             failRetrieval(retrieval, e);
         }
 
-        ThreadContext.remove("TIMESTAMP");
+        ThreadContext.clearAll();
         return retrieval;
     }
 
     private void processWorkbook(Workbook workbook, Mapping mapping, Retrieval retrieval) throws TransformException {
+        log.info("Started processing workbook");
         Sheet sheet = workbook.getSheetAt(0);  //TODO: Mapping file should specify how to handle multiple sheets
 
         int start_row_num = mapping.getHeaderRow().intValue() + 1;
         if(retrieval.getDataInstance().getLastProcessedRow() != null) {
             start_row_num = retrieval.getDataInstance().getLastProcessedRow() + 1;
         }
+        log.info("First data row will be " + start_row_num);
 
         //Create the column name mapping
+        log.trace("Mapping column names to their indexes");
         Map<String, Integer> columnNames = new HashMap<>();
         Row headerRow = sheet.getRow(mapping.getHeaderRow().intValue());
         Iterator<Cell> cellIterator = headerRow.cellIterator();
         while(cellIterator.hasNext()) {
             Cell cell = cellIterator.next();
             columnNames.put(cell.getStringCellValue(), cell.getColumnIndex());
+            log.trace("Name: " + cell.getStringCellValue() + ", Index: " + cell.getColumnIndex());
         }
 
         for(int i = start_row_num; i <= sheet.getLastRowNum(); i++) {
+            log.debug("Processing row " + i);
             try {
                 Record record = processRow(sheet.getRow(i), mapping, retrieval, columnNames);
                 retrieval.setNumRecordsInserted(retrieval.getNumRecordsInserted() + 1);
@@ -110,6 +117,7 @@ public class TransformDriver {
                 //Which means the whole transaction will blow up. We need to check manually
                 checkRecordIntegrity(record);
 
+                log.debug("Persisting/merging record with existing id " + record.getRecordId());
                 if(record.getRecordId() != null) {
                     em.merge(record);
                 }
@@ -126,6 +134,7 @@ public class TransformDriver {
                     //Property local exceptions should get caught deeper down, these are record local
                     //In case we are updating an old record, we should be fine, since we don't save or merge the record
                     //The bad row will still count as a bad record though!
+                    log.warn("A record-local exception occurred, skipping row " + i + " as bad record", ex);
                     retrieval.setNumBadRecords(retrieval.getNumBadRecords() + 1);
                 }
             }
@@ -139,6 +148,7 @@ public class TransformDriver {
         boolean newRecord;
 
         if(mapping.getRetriever() != null) {
+            log.trace("Mapping specifies a retriever with class " + mapping.getRetriever().getClassName() + ", instantiating");
             RecordRetriever retriever = (RecordRetriever) instantiateComponent(mapping.getRetriever().getClassName());
             record = retriever.retrieveRecord(retrieval,
                     getCellMapForArguments(row, mapping.getRetriever().getSourceFileColumn(), columnNames));
@@ -146,19 +156,23 @@ public class TransformDriver {
 
         //Create the Record
         if(record == null) {
+            log.debug("Creating new record");
             record = new Record();
             record.setRetrieval(retrieval);
             record.setAuthority(retrieval.getDataInstance().getDataSource().getEntity());
             newRecord = true;
         }
         else {
+            log.debug("Retriever has returned an old record to update with id " + record.getRecordId());
             newRecord = false;
         }
 
         for(RecordProperty recordProperty : mapping.getProperty()) {
+            log.trace("Updating property " + recordProperty.getName()); //TODO: Fine-grain TRACE levels?
 
             //In case we're updating a record that's already been inserted
             if(!newRecord && recordProperty.isOnlyNewRecords()) {
+                log.trace("Skipping property as it can only be applied to new records");
                 continue;
             }
 
@@ -173,6 +187,7 @@ public class TransformDriver {
             }
         }
 
+        log.debug("Finished processing row");
         return record;
 
     }
@@ -278,6 +293,7 @@ public class TransformDriver {
     }
 
     private Workbook openXLSFile(InputStream inputStream, DataInstance dataInstance) throws IOException {
+        log.debug("Opening file with format " + dataInstance.getFormat());
         if(dataInstance.getFormat().equals("xls")) {
             return new HSSFWorkbook(inputStream);
         } else {
