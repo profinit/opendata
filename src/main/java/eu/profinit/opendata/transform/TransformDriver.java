@@ -44,7 +44,7 @@ public class TransformDriver {
     @PersistenceContext(unitName = "postgres")
     private EntityManager em;
 
-    @Value("{record.requiredFields}")
+    @Value("${record.requiredFields}")
     private String recordRequiredFields;
 
     @Autowired
@@ -53,7 +53,8 @@ public class TransformDriver {
     DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss").withZone(ZoneId.systemDefault());
 
-    private Logger log;
+    // The default value is only used for testing, it's overwritten in doRetrieval
+    private Logger log = LogManager.getLogger(TransformDriver.class);
 
     public Retrieval doRetrieval(DataInstance dataInstance, InputStream inputStream, String mappingFile) {
 
@@ -110,8 +111,11 @@ public class TransformDriver {
         for(int i = start_row_num; i <= sheet.getLastRowNum(); i++) {
             log.debug("Processing row " + i);
             try {
+                if(isRowEmpty(sheet.getRow(i))) {
+                    log.warn("Encountered empty row at index " + i + ", skippint");
+                    continue;
+                }
                 Record record = processRow(sheet.getRow(i), mapping, retrieval, columnNames);
-                retrieval.setNumRecordsInserted(retrieval.getNumRecordsInserted() + 1);
 
                 //A call to persist will throw a PersistenceException if all required attributes aren't filled
                 //Which means the whole transaction will blow up. We need to check manually
@@ -124,6 +128,7 @@ public class TransformDriver {
                 else {
                     em.persist(record);
                 }
+                retrieval.setNumRecordsInserted(retrieval.getNumRecordsInserted() + 1);
                 retrieval.getDataInstance().setLastProcessedRow(i);
             }
             catch (TransformException ex) {
@@ -168,7 +173,7 @@ public class TransformDriver {
         }
 
         for(RecordProperty recordProperty : mapping.getProperty()) {
-            log.trace("Updating property " + recordProperty.getName()); //TODO: Fine-grain TRACE levels?
+            log.trace("Updating property " + recordProperty.getName());
 
             //In case we're updating a record that's already been inserted
             if(!newRecord && recordProperty.isOnlyNewRecords()) {
@@ -195,6 +200,7 @@ public class TransformDriver {
     private void setProcessedValue(RecordProperty recordProperty, Record record, Row row,
                                    Map<String, Integer> columnNames) throws TransformException {
 
+        log.trace("Instantiating property converter " + recordProperty.getConverter());
         RecordPropertyConverter rpc = (RecordPropertyConverter) instantiateComponent(recordProperty.getConverter());
         Map<String, Cell> argumentMap = getCellMapForArguments(row, recordProperty.getSourceFileColumn(), columnNames);
 
@@ -210,7 +216,7 @@ public class TransformDriver {
 
     private void setFixedValue(Record record, RecordProperty recordProperty) throws TransformException {
         try {
-            Field field = Record.class.getField(recordProperty.getName());
+            Field field = Record.class.getDeclaredField(recordProperty.getName());
             Class<?> fieldType = field.getType();
             field.setAccessible(true); //TODO: This is disgusting
             field.set(record, getValueFromString(recordProperty.getValue(), fieldType));
@@ -231,18 +237,20 @@ public class TransformDriver {
         }
     }
 
-    private void checkRecordIntegrity(Record record) throws TransformException {
+    public void checkRecordIntegrity(Record record) throws TransformException {
         List<Field> offendingFields = new ArrayList<>();
         String[] requiredFields = recordRequiredFields.split(",");
 
         for(String fieldName : requiredFields) {
             try {
-                Field field = Record.class.getField(fieldName);
+                Field field = Record.class.getDeclaredField(fieldName);
                 field.setAccessible(true); //Is this a Bad Idea(TM)?
                 if(field.get(record) == null) {
                     offendingFields.add(field);
                 }
-            } catch (NoSuchFieldException | IllegalAccessException e) {} //Why bother
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                log.warn("Couldn't check integrity of field " + fieldName, e);
+            }
         }
 
         if(!offendingFields.isEmpty()) {
@@ -292,7 +300,7 @@ public class TransformDriver {
         return argumentMap;
     }
 
-    private Workbook openXLSFile(InputStream inputStream, DataInstance dataInstance) throws IOException {
+    public Workbook openXLSFile(InputStream inputStream, DataInstance dataInstance) throws IOException {
         log.debug("Opening file with format " + dataInstance.getFormat());
         if(dataInstance.getFormat().equals("xls")) {
             return new HSSFWorkbook(inputStream);
@@ -302,12 +310,12 @@ public class TransformDriver {
     }
 
 
-    private Mapping loadMapping(String mappingFile) throws JAXBException, IOException {
+    public Mapping loadMapping(String mappingFile) throws JAXBException, IOException {
         ClassPathResource cpr = new ClassPathResource(mappingFile);
         JAXBContext jaxbContext = JAXBContext.newInstance(Mapping.class);
         Unmarshaller u = jaxbContext.createUnmarshaller();
-        JAXBElement<?> mappingJAXBElement = (JAXBElement<?>) u.unmarshal(cpr.getFile());
-        return (Mapping) mappingJAXBElement.getValue();
+        return (Mapping) u.unmarshal(cpr.getFile());
+        //return (Mapping) mappingJAXBElement.getValue();
     }
 
     private TransformComponent instantiateComponent(String className) throws TransformException {
@@ -339,5 +347,19 @@ public class TransformDriver {
         return value;
     }
 
+    public static boolean isRowEmpty(Row row) {
+        for (int c = row.getFirstCellNum(); c < row.getLastCellNum(); c++) {
+            Cell cell = row.getCell(c);
+            if (cell != null && cell.getCellType() != Cell.CELL_TYPE_BLANK)
+                return false;
+        }
+        return true;
+    }
 
+    //Test
+
+
+    public void setEm(EntityManager em) {
+        this.em = em;
+    }
 }

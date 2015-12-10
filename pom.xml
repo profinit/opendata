@@ -112,6 +112,15 @@
             <testResource>
                 <directory>src/test/resources</directory>
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>test-orders.xls</exclude>
+                </excludes>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <includes>
+                    <include>test-orders.xls</include>
+                </includes>
             </testResource>
         </testResources>
         <plugins>

@@ -3,5 +3,5 @@
          xsi:noNamespaceSchemaLocation="../../xsd/datasource_mapping.xsd">
 
     <headerRow>1</headerRow>
-    <property name="recordType" value="eu.profinit.opendata.model.RecordType.ORDER"/>
+    <property name="recordType" value="eu.profinit.opendata.model.RecordType.ORDER" onlyNewRecords="true"/>
 </mapping>

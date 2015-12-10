@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="../../main/resources/xsd/datasource_mapping.xsd" name="test-mapping">
+
+    <headerRow>1</headerRow>
+</mapping>
