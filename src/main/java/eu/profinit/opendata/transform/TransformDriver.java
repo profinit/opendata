@@ -78,7 +78,7 @@ public class TransformDriver {
             em.getTransaction().commit();
             retrieval.setSuccess(true);
         }
-        catch (IOException | JAXBException | TransformException e) {
+        catch (Exception e) {
             //Rolls back the transaction and sets Retrieval fields
             failRetrieval(retrieval, e);
         }
@@ -130,6 +130,8 @@ public class TransformDriver {
                 }
                 retrieval.setNumRecordsInserted(retrieval.getNumRecordsInserted() + 1);
                 retrieval.getDataInstance().setLastProcessedRow(i);
+                //We are not adding the record to the retrieval here in case the whole thing goes belly up
+                //The retrieval will get persisted anyway but no new records should make it to the DB in that case
             }
             catch (TransformException ex) {
                 if(ex.getSeverity().equals(TransformException.Severity.FATAL)) {
@@ -205,7 +207,7 @@ public class TransformDriver {
         Map<String, Cell> argumentMap = getCellMapForArguments(row, recordProperty.getSourceFileColumn(), columnNames);
 
         try {
-            rpc.updateRecordProperty(record, argumentMap);
+            rpc.updateRecordProperty(record, argumentMap, recordProperty.getName(), log);
         } catch (TransformException e) {
             if(e.getSeverity().equals(TransformException.Severity.PROPERTY_LOCAL)) {
                 log.warn(e.getMessage(), e);
@@ -357,8 +359,6 @@ public class TransformDriver {
     }
 
     //Test
-
-
     public void setEm(EntityManager em) {
         this.em = em;
     }
