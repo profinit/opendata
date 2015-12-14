@@ -1,4 +1,4 @@
-package eu.profinit.opendata.test.converter;
+package eu.profinit.opendata.transform.convert;
 
 import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.transform.RecordPropertyConverter;
@@ -14,11 +14,12 @@ import java.util.UUID;
  * Created by dm on 12/13/15.
  */
 @Component
-public class MasterIdGenerator implements RecordPropertyConverter {
+public class MasterIdSetter implements RecordPropertyConverter {
     @Override
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger)
             throws TransformException {
 
+        //TODO: Correlate with anything that might be already in the DB
         record.setMasterId(UUID.randomUUID().toString());
 
     }

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="../../xsd/datasource_mapping.xsd">
-
-    <headerRow>1</headerRow>
-    <property name="recordType" value="eu.profinit.opendata.model.RecordType.ORDER" onlyNewRecords="true"/>
-</mapping>

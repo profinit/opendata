@@ -127,11 +127,10 @@ public class TransformDriver {
                 }
                 else {
                     em.persist(record);
+                    retrieval.getRecords().add(record);
                 }
                 retrieval.setNumRecordsInserted(retrieval.getNumRecordsInserted() + 1);
                 retrieval.getDataInstance().setLastProcessedRow(i);
-                //We are not adding the record to the retrieval here in case the whole thing goes belly up
-                //The retrieval will get persisted anyway but no new records should make it to the DB in that case
             }
             catch (TransformException ex) {
                 if(ex.getSeverity().equals(TransformException.Severity.FATAL)) {
@@ -273,6 +272,7 @@ public class TransformDriver {
         retrieval.setSuccess(false);
         retrieval.setFailureReason(e.getMessage());
         retrieval.setNumRecordsInserted(0);
+        retrieval.setRecords(new ArrayList<>());
     }
 
 

@@ -1,6 +1,6 @@
 package eu.profinit.opendata.test.mfcr;
 
-import eu.profinit.opendata.handler.mfcr.*;
+import eu.profinit.opendata.institution.mfcr.*;
 import eu.profinit.opendata.model.DataInstance;
 import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.Periodicity;

@@ -1,4 +1,4 @@
-package eu.profinit.opendata.handler.mfcr;
+package eu.profinit.opendata.institution.mfcr;
 
 /**
  * Created by dm on 11/28/15.

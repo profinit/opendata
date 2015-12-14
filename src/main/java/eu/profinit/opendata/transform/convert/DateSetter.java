@@ -1,4 +1,4 @@
-package eu.profinit.opendata.test.converter;
+package eu.profinit.opendata.transform.convert;
 
 import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.transform.RecordPropertyConverter;
@@ -15,7 +15,7 @@ import java.util.Map;
  * Created by dm on 12/13/15.
  */
 @Component
-public class DateParser implements RecordPropertyConverter {
+public class DateSetter implements RecordPropertyConverter {
 
     @Override
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger)
