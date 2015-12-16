@@ -6,7 +6,8 @@
 
     <context:component-scan base-package="eu.profinit.opendata.control"/>
     <context:component-scan base-package="eu.profinit.opendata.transform"/>
-    <context:component-scan base-package="eu.profinit.opendata.handler.mfcr"/>
+    <context:component-scan base-package="eu.profinit.opendata.institution"/>
+    <context:component-scan base-package="eu.profinit.opendata.query"/>
     <context:component-scan base-package="eu.profinit.opendata.test.converter"/>
 
 

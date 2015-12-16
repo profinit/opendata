@@ -113,6 +113,7 @@ public class TransformDriverTest extends TestCase {
 
         //Check whether the fixed value is set properly
         assertEquals(RecordType.ORDER, persistArgumentCaptor.getValue().getRecordType());
+        assertEquals(490.0, persistArgumentCaptor.getValue().getOriginalCurrencyAmount());
 
         //Check whether values are preserved on old records
         assertEquals(RecordType.ORDER, mergeArgumentCaptor.getValue().getRecordType());

@@ -66,6 +66,7 @@ public class TransformDriver {
         Retrieval retrieval = new Retrieval();
         retrieval.setDataInstance(dataInstance);
         retrieval.setDate(Timestamp.from(Instant.now()));
+        retrieval.setRecords(new ArrayList<>());
 
         em.getTransaction().begin();
         log.trace("Opened transaction on EntityManager");
