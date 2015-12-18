@@ -13,7 +13,7 @@ import javax.persistence.PersistenceContext;
 @Component
 public class PartnerQueryService {
 
-    @PersistenceContext(unitName = "postgres")
+    @PersistenceContext
     private EntityManager em;
 
     public Entity findOrCreateEntity(String name, String ico, String dic) {

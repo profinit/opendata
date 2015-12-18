@@ -19,7 +19,7 @@
         <sourceFileColumn originalName="Měna" argumentName="inputCurrencyCode"/>
     </property>
 
-    <property name="originalCurrencyAmount" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.MoneySetter">
+    <property name="originalCurrencyAmount" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectMoneySetter">
         <sourceFileColumn originalName="Částka_v_měně" argumentName="inputAmount"/>
     </property>
 
@@ -28,7 +28,7 @@
     </property>
 
     <property name="amountCzkWithVat" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CZKAmountSetter">
-        <sourceFileColumn originalName="Částka" argumentName="inputAmount"/>
+        <sourceFileColumn originalName="Ćástka" argumentName="inputAmount"/> <!-- Ano, opravdu je tam carka misto hacku -->
     </property>
 
     <property name="authorityIdentifier" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">

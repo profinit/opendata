@@ -28,7 +28,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
     @Autowired
     private TransformDriver transformDriver;
 
-    @PersistenceContext(unitName = "postgres")
+    @PersistenceContext
     protected EntityManager em;
 
     private Logger log = LogManager.getLogger(getClass().getName());

@@ -41,7 +41,7 @@ import java.util.*;
 @Component
 public class TransformDriver {
 
-    @PersistenceContext(unitName = "postgres")
+    @PersistenceContext
     private EntityManager em;
 
     @Value("${record.requiredFields}")
@@ -295,10 +295,16 @@ public class TransformDriver {
     }
 
 
-    private Map<String, Cell> getCellMapForArguments(Row row, List<SourceColumn> sourceColumns, Map<String, Integer> columnNames) {
+    private Map<String, Cell> getCellMapForArguments(Row row, List<SourceColumn> sourceColumns,
+                                                     Map<String, Integer> columnNames) throws TransformException {
         Map<String, Cell> argumentMap = new HashMap<>();
         for(SourceColumn sourceColumn : sourceColumns) {
-            argumentMap.put(sourceColumn.getArgumentName(), row.getCell(columnNames.get(sourceColumn.getOriginalName())));
+            Integer columnIndex = columnNames.get(sourceColumn.getOriginalName());
+            if(columnIndex == null) {
+                throw new TransformException("Cannot find source column with name " + sourceColumn.getOriginalName(),
+                        TransformException.Severity.FATAL);
+            }
+            argumentMap.put(sourceColumn.getArgumentName(), row.getCell(columnIndex));
         }
         return argumentMap;
     }
@@ -362,5 +368,9 @@ public class TransformDriver {
     //Test
     public void setEm(EntityManager em) {
         this.em = em;
+    }
+
+    public EntityManager getEm() {
+        return em;
     }
 }

@@ -8,10 +8,16 @@ import eu.profinit.opendata.transform.jaxb.Mapping;
 import junit.framework.TestCase;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -29,14 +35,19 @@ import static org.mockito.Mockito.*;
 /**
  * Created by dm on 12/10/15.
  */
-public class TransformDriverTest extends TestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        "classpath*:beans.xml",
+        "classpath*:test-beans.xml"})
+public class TransformDriverTest extends TestCase implements ApplicationContextAware {
 
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
 
-    public TransformDriverTest() {
+    /*public TransformDriverTest() {
         applicationContext = new ClassPathXmlApplicationContext("beans.xml");
-    }
+    }*/
 
+    @Test
     public void testLoadMapping() throws Exception {
         TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
         Mapping mapping = transformDriver.loadMapping("test-mapping.xml");
@@ -45,6 +56,7 @@ public class TransformDriverTest extends TestCase {
         assertEquals("test-mapping", mapping.getName());
     }
 
+    @Test
     public void testOpenWorkbook() throws Exception {
         TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
         DataInstance dataInstance = new DataInstance();
@@ -65,6 +77,7 @@ public class TransformDriverTest extends TestCase {
         assertEquals(31, nonEmptyRows);
     }
 
+    @Test
     public void testValidateRecord() throws Exception {
         TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
         Record record = new Record();
@@ -87,6 +100,7 @@ public class TransformDriverTest extends TestCase {
 
     }
 
+    @Test
     public void testTransform() throws Exception {
         TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
         DataInstance dataInstance = new DataInstance();
@@ -120,6 +134,7 @@ public class TransformDriverTest extends TestCase {
         assertEquals("123456789", mergeArgumentCaptor.getValue().getMasterId());
     }
 
+    @Test
     public void testTransformWithFatalError() throws Exception {
         TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
         DataInstance dataInstance = new DataInstance();
@@ -143,4 +158,14 @@ public class TransformDriverTest extends TestCase {
         verify(mockTransaction, times(1)).rollback();
     }
 
+    @Test
+    public void testEntityManagerInjected() throws Exception {
+        TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
+        assertNotNull(transformDriver.getEm());
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 }

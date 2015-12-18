@@ -17,7 +17,7 @@ import java.util.List;
 @Component
 public class ExtractionService {
 
-    @PersistenceContext(unitName = "postgres")
+    @PersistenceContext
     private EntityManager em;
 
     @Autowired

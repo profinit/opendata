@@ -14,8 +14,7 @@ import java.util.Map;
 /**
  * Created by dm on 12/16/15.
  */
-@Component
-public class MoneySetter implements RecordPropertyConverter {
+public abstract class MoneySetter implements RecordPropertyConverter {
     @Override
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger)
             throws TransformException {
