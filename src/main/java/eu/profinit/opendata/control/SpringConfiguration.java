@@ -10,7 +10,6 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  */
 @Configuration
 @PropertySource("classpath:application.properties")
-@PropertySource("classpath:mfcr.properties")
 public class SpringConfiguration {
 
     @Bean

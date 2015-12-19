@@ -5,26 +5,21 @@ import eu.profinit.opendata.test.converter.Killjoy;
 import eu.profinit.opendata.transform.TransformDriver;
 import eu.profinit.opendata.transform.TransformException;
 import eu.profinit.opendata.transform.jaxb.Mapping;
-import junit.framework.TestCase;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.junit.AfterClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import java.io.IOException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.io.InputStream;
 import java.sql.Date;
 import java.time.Instant;
+import java.util.Collection;
 
 
 import static org.junit.Assert.*;
@@ -35,17 +30,10 @@ import static org.mockito.Mockito.*;
 /**
  * Created by dm on 12/10/15.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-        "classpath*:beans.xml",
-        "classpath*:test-beans.xml"})
-public class TransformDriverTest extends TestCase implements ApplicationContextAware {
+public class TransformDriverTest extends ApplicationContextTestCase {
 
-    protected ApplicationContext applicationContext;
-
-    /*public TransformDriverTest() {
-        applicationContext = new ClassPathXmlApplicationContext("beans.xml");
-    }*/
+    @PersistenceContext
+    private EntityManager em;
 
     @Test
     public void testLoadMapping() throws Exception {
@@ -113,13 +101,11 @@ public class TransformDriverTest extends TestCase implements ApplicationContextA
 
         EntityManager mockEm = mock(EntityManager.class);
         transformDriver.setEm(mockEm);
-        EntityTransaction mockTransaction = mock(EntityTransaction.class);
-        when(mockEm.getTransaction()).thenReturn(mockTransaction);
 
         ArgumentCaptor<Record> persistArgumentCaptor = ArgumentCaptor.forClass(Record.class);
         ArgumentCaptor<Record> mergeArgumentCaptor = ArgumentCaptor.forClass(Record.class);
 
-        Retrieval retrieval = transformDriver.doRetrieval(dataInstance, inputStream, "test-mapping.xml");
+        Retrieval retrieval = transformDriver.doRetrieval(dataInstance, "test-mapping.xml", inputStream);
         verify(mockEm, times(1)).merge(mergeArgumentCaptor.capture()); //Retriever will return 1 old record
         verify(mockEm, times(26)).persist(persistArgumentCaptor.capture()); //26 remaining good rows in the test data instance
         assertEquals(27, retrieval.getNumRecordsInserted());
@@ -147,15 +133,12 @@ public class TransformDriverTest extends TestCase implements ApplicationContextA
 
         EntityManager mockEm = mock(EntityManager.class);
         transformDriver.setEm(mockEm);
-        EntityTransaction mockTransaction = mock(EntityTransaction.class);
-        when(mockEm.getTransaction()).thenReturn(mockTransaction);
 
         //The mapping contains a Killjoy that will throw a FATAL exception
-        Retrieval retrieval = transformDriver.doRetrieval(dataInstance, inputStream, "bad-mapping.xml");
+        Retrieval retrieval = transformDriver.doRetrieval(dataInstance, "bad-mapping.xml", inputStream);
         assertEquals(0, retrieval.getNumRecordsInserted());
         assertFalse(retrieval.isSuccess());
         assertEquals(Killjoy.MANIFESTO, retrieval.getFailureReason());
-        verify(mockTransaction, times(1)).rollback();
     }
 
     @Test
@@ -164,8 +147,37 @@ public class TransformDriverTest extends TestCase implements ApplicationContextA
         assertNotNull(transformDriver.getEm());
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    @Test
+    public void testTransactions() throws Exception {
+        TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
+        DataInstance dataInstance = new DataInstance();
+        dataInstance.setFormat("xls");
+        InputStream inputStream = new ClassPathResource("test-orders.xls").getInputStream();
+
+        Entity entity = DataGenerator.getTestMinistry();
+        DataSource ds = DataGenerator.getDataSource(entity);
+        dataInstance.setDataSource(ds);
+
+        //Retrieval retrieval = transformDriver.doRetrieval(dataInstance, "mappings/mapping-orders.xml", inputStream);
+        //Check there are now 27 records
+
+
+        //Check that there is a Retrieval but no Records when the thing goes belly up
     }
+
+    @AfterClass
+    public void tearDownClass() {
+        deleteAll("Entity");
+        deleteAll("DataSource");
+        deleteAll("DataInstance");
+        deleteAll("Record");
+        deleteAll("Retrieval");
+    }
+
+    private int deleteAll(String table){
+        String hql = String.format("delete from %s p", table);
+        Query query = em.createQuery(hql);
+        return query.executeUpdate();
+    }
+
 }

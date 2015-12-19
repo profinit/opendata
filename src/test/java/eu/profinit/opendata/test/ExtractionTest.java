@@ -1,7 +1,7 @@
 package eu.profinit.opendata.test;
 
 import eu.profinit.opendata.control.DataSourceHandlerFactory;
-import eu.profinit.opendata.control.ExtractionService;
+import eu.profinit.opendata.control.impl.ExtractionServiceImpl;
 import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.DataSourceHandler;
 import eu.profinit.opendata.model.Entity;
@@ -20,7 +20,7 @@ public class ExtractionTest {
 
     @Test
     public void testInvokeHandlingClass() throws Exception {
-        ExtractionService extractionService = new ExtractionService();
+        ExtractionServiceImpl extractionService = new ExtractionServiceImpl();
 
         List<DataSource> dataSourceList = new ArrayList<>();
         Entity entity = getTestMinistry();

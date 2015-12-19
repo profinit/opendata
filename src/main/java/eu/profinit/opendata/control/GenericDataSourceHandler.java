@@ -5,6 +5,8 @@ import eu.profinit.opendata.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -23,9 +25,6 @@ import java.util.List;
 public abstract class GenericDataSourceHandler implements DataSourceHandler {
 
     @Autowired
-    private DownloadService downloadService;
-
-    @Autowired
     private TransformDriver transformDriver;
 
     @PersistenceContext
@@ -34,6 +33,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
     private Logger log = LogManager.getLogger(getClass().getName());
 
     @Override
+    @Transactional
     public void processDataSource(DataSource ds) {
         log.info("Processing of data source " + ds.getDataSourceId() + " started");
 
@@ -53,11 +53,9 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
             runExtractionOnDataInstance(dataInstance);
         }
 
-        em.getTransaction().begin();
         log.trace("Merging DataSource object with new time of last processing");
         ds.setLastProcessedDate(Timestamp.from(Instant.now()));
         em.merge(ds);
-        em.getTransaction().commit();
 
     }
 
@@ -106,36 +104,20 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
         return result;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     protected void runExtractionOnDataInstance(DataInstance dataInstance) {
         log.info("Proceeding with extraction on data instance " + dataInstance.getDataInstanceId());
-        try {
-            log.info("Downloading data file");
-            InputStream inputStream = downloadService.downloadDataFile(dataInstance);
-
-            log.debug("Calling transform driver");
-            Retrieval retrieval = transformDriver.doRetrieval(dataInstance, inputStream,
-                    getMappingFileForDataInstance(dataInstance));
-            log.info("Retrieval finished.");
-            log.debug("(success, numRecordsInserted, numBadRecords, failureReason) = " +
+        Retrieval retrieval = transformDriver.doRetrieval(dataInstance, getMappingFileForDataInstance(dataInstance));
+        log.info("Retrieval finished.");
+        log.debug("(success, numRecordsInserted, numBadRecords, failureReason) = " +
                       "(" + retrieval.isSuccess() + ", " + retrieval.getNumRecordsInserted() + ", " +
                             retrieval.getNumBadRecords() + ", " + retrieval.getFailureReason() + ")");
 
-            em.getTransaction().begin();
-            log.trace("Persisting the Retrieval object");
-            em.persist(retrieval);
-            if(retrieval.isSuccess()) {
-                dataInstance.setLastProcessedDate(Timestamp.from(Instant.now()));
-                log.trace("Merging DataInstance object");
-                em.merge(dataInstance);
-            }
-            em.getTransaction().commit();
-
-        } catch (IOException e) {
-            log.error("Could not download data file", e);
-        } catch (Exception e) {
-            log.error("Transform failed due to an exception", e);
+        em.persist(retrieval);
+        if(retrieval.isSuccess()) {
+            dataInstance.setLastProcessedDate(Timestamp.from(Instant.now()));
+            em.merge(dataInstance);
         }
-
 
     }
 

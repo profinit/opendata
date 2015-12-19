@@ -1,5 +1,6 @@
 package eu.profinit.opendata.transform;
 
+import eu.profinit.opendata.control.DownloadService;
 import eu.profinit.opendata.model.DataInstance;
 import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.model.Retrieval;
@@ -19,11 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
@@ -50,14 +52,20 @@ public class TransformDriver {
     @Autowired
     private ComponentFactory converterFactory;
 
+    @Autowired
+    private DownloadService DownloadService;
+
     DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss").withZone(ZoneId.systemDefault());
 
     // The default value is only used for testing, it's overwritten in doRetrieval
     private Logger log = LogManager.getLogger(TransformDriver.class);
 
-    public Retrieval doRetrieval(DataInstance dataInstance, InputStream inputStream, String mappingFile) {
+    public Retrieval doRetrieval(DataInstance dataInstance, String mappingFile) {
+        return doRetrieval(dataInstance, mappingFile, null);
+    }
 
+    public Retrieval doRetrieval(DataInstance dataInstance, String mappingFile, InputStream inputStream) {
 
         ThreadContext.put("TIMESTAMP", formatter.format(Instant.now()));
         log = LogManager.getLogger("transform");
@@ -68,26 +76,33 @@ public class TransformDriver {
         retrieval.setDate(Timestamp.from(Instant.now()));
         retrieval.setRecords(new ArrayList<>());
 
-        em.getTransaction().begin();
-        log.trace("Opened transaction on EntityManager");
         try {
+            if(inputStream == null) {
+                log.info("Downloading data file from " + dataInstance.getUrl());
+                inputStream = DownloadService.downloadDataFile(dataInstance);
+            }
+
             Workbook workbook = openXLSFile(inputStream, dataInstance);
             Mapping mapping = loadMapping(mappingFile);
             processWorkbook(workbook, mapping, retrieval);
 
-            log.info("Whole workbook procesed, commiting transaction");
-            em.getTransaction().commit();
+            log.info("Whole workbook procesed successfully");
             retrieval.setSuccess(true);
         }
         catch (Exception e) {
-            //Rolls back the transaction and sets Retrieval fields
-            failRetrieval(retrieval, e);
+            log.error("An irrecoverable error occurred while performing transformation", e);
+            retrieval.setSuccess(false);
+            retrieval.setFailureReason(e.getMessage());
+            retrieval.setNumRecordsInserted(0);
+            retrieval.setRecords(new ArrayList<>());
         }
 
         ThreadContext.clearAll();
         return retrieval;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW,
+                   rollbackFor = {TransformException.class, RuntimeException.class})
     private void processWorkbook(Workbook workbook, Mapping mapping, Retrieval retrieval) throws TransformException {
         log.info("Started processing workbook");
         Sheet sheet = workbook.getSheetAt(0);  //TODO: Mapping file should specify how to handle multiple sheets
@@ -265,15 +280,6 @@ public class TransformDriver {
             throw new TransformException(buffer.toString(), TransformException.Severity.RECORD_LOCAL);
         }
 
-    }
-
-    private void failRetrieval(Retrieval retrieval, Exception e) {
-        log.error("An irrecoverable error occurred while performing transformation", e);
-        em.getTransaction().rollback();
-        retrieval.setSuccess(false);
-        retrieval.setFailureReason(e.getMessage());
-        retrieval.setNumRecordsInserted(0);
-        retrieval.setRecords(new ArrayList<>());
     }
 
 

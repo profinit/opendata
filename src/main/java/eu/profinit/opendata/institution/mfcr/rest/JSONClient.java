@@ -1,4 +1,4 @@
-package eu.profinit.opendata.institution.mfcr;
+package eu.profinit.opendata.institution.mfcr.rest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

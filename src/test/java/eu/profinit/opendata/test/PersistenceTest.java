@@ -2,48 +2,42 @@ package eu.profinit.opendata.test;
 
 import eu.profinit.opendata.model.*;
 import junit.framework.TestCase;
+import org.junit.Test;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import static eu.profinit.opendata.test.DataGenerator.*;
 
 /**
  * Created by DM on 9. 11. 2015.
  */
-public class PersistenceTest extends TestCase {
-    
+public class PersistenceTest extends ApplicationContextTestCase {
+
+    @PersistenceContext
     private EntityManager em;
 
-    public PersistenceTest() {
-        try {
-            em = Persistence.createEntityManagerFactory("postgres")
-                    .createEntityManager();
-        }
-        catch(Exception ex) {
-            fail(ex.getMessage());
-        }
-    }
-
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void setUp() throws Exception {
         assertTrue(em.isOpen());
 
-        em.getTransaction().begin();
         deleteAll("Entity");
         deleteAll("DataSource");
         deleteAll("DataInstance");
         deleteAll("Record");
         deleteAll("Retrieval");
-        em.getTransaction().commit();
 
     }
 
+    @Test
+    @Transactional
     public void testSaveEntity() throws Exception {
-        em.getTransaction().begin();
         Entity entity = getTestMinistry();
         em.persist(entity);
-        em.getTransaction().commit();
         assertNotNull(entity.getEntityId());
         Long id = entity.getEntityId();
 
@@ -51,12 +45,12 @@ public class PersistenceTest extends TestCase {
         assertNotNull(retrieved);
         assertEquals(EntityType.MINISTRY, retrieved.getEntityType());
 
-        em.getTransaction().begin();
         em.remove(entity);
         assertNull(em.find(Entity.class, id));
-        em.getTransaction().commit();
     }
 
+    @Test
+    @Transactional
     public void testRelationships() {
         Entity ministry = getTestMinistry();
         Entity company = getTestCompany();
@@ -68,7 +62,6 @@ public class PersistenceTest extends TestCase {
 
         inv.setParentRecord(contract);
 
-        em.getTransaction().begin();
         em.persist(ministry);
         em.persist(company);
         em.persist(ds);
@@ -76,12 +69,12 @@ public class PersistenceTest extends TestCase {
         em.persist(ret);
         em.persist(contract);
         em.persist(inv);
-        em.getTransaction().commit();
 
         assertNotNull(ministry.getEntityId());
         assertNotNull(contract.getRecordId());
         assertNotNull(di.getDataInstanceId());
 
+        em.flush();
         em.clear();
 
         //Entity to Data Source
@@ -122,10 +115,8 @@ public class PersistenceTest extends TestCase {
         contract = em.find(Record.class, contract.getRecordId());
         assertTrue(contract.getChildRecords().contains(inv));
 
-        em.getTransaction().begin();
         em.remove(ministry);
         em.remove(company);
-        em.getTransaction().commit();
 
         inv = em.find(Record.class, inv.getRecordId());
         assertNull(inv);
