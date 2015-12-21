@@ -10,7 +10,8 @@ import javax.persistence.AttributeConverter;
 public class PeriodicityConverter implements AttributeConverter<Periodicity, String> {
     @Override
     public String convertToDatabaseColumn(Periodicity periodicity) {
-        return periodicity.name().toLowerCase();
+        if(periodicity != null) return periodicity.name().toLowerCase();
+        return "aperiodic";
     }
 
     @Override

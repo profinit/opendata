@@ -28,7 +28,7 @@
             <AppenderRef ref="TRANSFORM"/>
         </Logger>
 
-        <Logger name="org.hibernate" level="warn"/>
+        <Logger name="org.hibernate" level="trace"/>
         <Logger name="org.springframework" level="info"/>
 
         <Root level="debug">

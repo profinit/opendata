@@ -7,10 +7,12 @@ import eu.profinit.opendata.transform.TransformException;
 import eu.profinit.opendata.transform.jaxb.Mapping;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -20,6 +22,7 @@ import java.io.InputStream;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.List;
 
 
 import static org.junit.Assert.*;
@@ -148,30 +151,42 @@ public class TransformDriverTest extends ApplicationContextTestCase {
     }
 
     @Test
+    @Transactional
     public void testTransactions() throws Exception {
         TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xls");
+        dataInstance.setUrl("http://example.me");
         InputStream inputStream = new ClassPathResource("test-orders.xls").getInputStream();
 
         Entity entity = DataGenerator.getTestMinistry();
+        em.persist(entity);
         DataSource ds = DataGenerator.getDataSource(entity);
+        em.persist(ds);
         dataInstance.setDataSource(ds);
+        em.persist(dataInstance);
+        em.flush();
 
-        //Retrieval retrieval = transformDriver.doRetrieval(dataInstance, "mappings/mapping-orders.xml", inputStream);
+        Retrieval retrieval = transformDriver.doRetrieval(dataInstance, "mappings/mapping-orders.xml", inputStream);
+        em.persist(retrieval);
         //Check there are now 27 records
-
+        List<Record> recordList = em.createQuery(
+                "SELECT r FROM Record r WHERE r.retrieval = :retr", Record.class)
+                .setParameter("retr", retrieval)
+                .setMaxResults(10)
+                .getResultList();
+        assertEquals(27, recordList.size());
 
         //Check that there is a Retrieval but no Records when the thing goes belly up
     }
 
-    @AfterClass
-    public void tearDownClass() {
-        deleteAll("Entity");
-        deleteAll("DataSource");
-        deleteAll("DataInstance");
+    public void deleteDatabase() {
+        em.clear();
         deleteAll("Record");
         deleteAll("Retrieval");
+        deleteAll("DataInstance");
+        deleteAll("DataSource");
+        deleteAll("Entity");
     }
 
     private int deleteAll(String table){
