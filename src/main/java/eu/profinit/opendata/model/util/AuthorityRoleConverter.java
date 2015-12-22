@@ -10,7 +10,9 @@ import javax.persistence.AttributeConverter;
 public class AuthorityRoleConverter implements AttributeConverter<AuthorityRole, String> {
     @Override
     public String convertToDatabaseColumn(AuthorityRole authorityRole) {
-        return authorityRole.name().toLowerCase();
+        if (authorityRole != null) {
+            return authorityRole.name().toLowerCase();
+        } else return null;
     }
 
     @Override

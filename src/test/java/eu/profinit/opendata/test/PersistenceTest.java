@@ -20,19 +20,6 @@ public class PersistenceTest extends ApplicationContextTestCase {
     @PersistenceContext
     private EntityManager em;
 
-    @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void setUp() throws Exception {
-        assertTrue(em.isOpen());
-
-        deleteAll("Entity");
-        deleteAll("DataSource");
-        deleteAll("DataInstance");
-        deleteAll("Record");
-        deleteAll("Retrieval");
-
-    }
-
     @Test
     @Transactional
     public void testSaveEntity() throws Exception {

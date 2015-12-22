@@ -8,7 +8,11 @@ import eu.profinit.opendata.transform.RecordRetriever;
 import eu.profinit.opendata.transform.TransformException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.Map;
@@ -18,13 +22,16 @@ import java.util.Map;
  */
 @Component
 public class RandomOldRecordRetriever implements RecordRetriever {
+
+    @PersistenceContext
+    private EntityManager em;
+
     @Override
     public Record retrieveRecord(Retrieval currentRetrieval, Map<String, Cell> sourceValues) throws TransformException {
         if(sourceValues.get("orderNumber").getStringCellValue().equals("1403000370")) {
             Record record = new Record();
-            record.setRecordId(1L);
+            record.setRecordId(-666L);
             record.setCurrency("CZK");
-            record.setAuthority(new Entity());
             record.setDateCreated(new java.sql.Date(Instant.now().toEpochMilli()));
             record.setMasterId("123456789");
             return record;

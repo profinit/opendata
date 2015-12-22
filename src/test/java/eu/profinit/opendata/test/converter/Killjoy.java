@@ -21,6 +21,8 @@ public class Killjoy implements RecordPropertyConverter {
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger)
             throws TransformException {
 
-        throw new TransformException(MANIFESTO, TransformException.Severity.FATAL);
+        if(sourceValues.get("orderNumber").getStringCellValue().equals("1403000370")) {
+            throw new TransformException(MANIFESTO, TransformException.Severity.FATAL);
+        }
     }
 }

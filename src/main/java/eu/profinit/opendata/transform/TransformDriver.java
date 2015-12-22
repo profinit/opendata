@@ -56,7 +56,7 @@ public class TransformDriver {
     private DownloadService DownloadService;
 
     DateTimeFormatter formatter =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss").withZone(ZoneId.systemDefault());
+            DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss.SSS").withZone(ZoneId.systemDefault());
 
     // The default value is only used for testing, it's overwritten in doRetrieval
     private Logger log = LogManager.getLogger(TransformDriver.class);
@@ -88,6 +88,7 @@ public class TransformDriver {
 
             log.info("Whole workbook procesed successfully");
             retrieval.setSuccess(true);
+            em.merge(retrieval.getDataInstance()); // Save last processed row
         }
         catch (Exception e) {
             log.error("An irrecoverable error occurred while performing transformation", e);
@@ -137,7 +138,7 @@ public class TransformDriver {
                 //Which means the whole transaction will blow up. We need to check manually
                 checkRecordIntegrity(record);
 
-                log.debug("Persisting/merging record with existing id " + record.getRecordId());
+                log.debug("Record finished, persisting/merging");
                 if(record.getRecordId() != null) {
                     em.merge(record);
                 }
