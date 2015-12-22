@@ -165,7 +165,6 @@ public class TransformDriverTest extends ApplicationContextTestCase {
         em.persist(ds);
         dataInstance.setDataSource(ds);
         em.persist(dataInstance);
-        em.flush();
 
         Retrieval retrieval = transformDriver.doRetrieval(dataInstance, "test-mapping.xml", inputStream);
         em.persist(retrieval);
@@ -176,14 +175,30 @@ public class TransformDriverTest extends ApplicationContextTestCase {
                 .getResultList();
         assertEquals(26, recordList.size());
 
-        //Check that there is a Retrieval but no Records when the thing goes belly up
-        dataInstance.setLastProcessedRow(null);
-        inputStream = new ClassPathResource("test-orders.xls").getInputStream();
-        retrieval = transformDriver.doRetrieval(dataInstance, "bad-mapping.xml", inputStream);
+
+    }
+
+    @Test
+    @Transactional
+    public void testRollback() throws Exception {
+        TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
+        DataInstance dataInstance = new DataInstance();
+        dataInstance.setFormat("xls");
+        dataInstance.setUrl("http://example.me");
+        InputStream inputStream = new ClassPathResource("test-orders.xls").getInputStream();
+
+        Entity entity = DataGenerator.getTestMinistry();
+        em.persist(entity);
+        DataSource ds = DataGenerator.getDataSource(entity);
+        em.persist(ds);
+        dataInstance.setDataSource(ds);
+        em.persist(dataInstance);
+
+        Retrieval retrieval = transformDriver.doRetrieval(dataInstance, "bad-mapping.xml", inputStream);
         assertEquals(0, retrieval.getNumRecordsInserted());
         assertEquals(0, retrieval.getRecords().size());
         em.persist(retrieval);
-        recordList = em.createQuery(
+        List<Record> recordList = em.createQuery(
                 "SELECT r FROM Record r WHERE r.retrieval = :retr", Record.class)
                 .setParameter("retr", retrieval)
                 .getResultList();
