@@ -3,29 +3,25 @@ package eu.profinit.opendata.test;
 import eu.profinit.opendata.model.*;
 import eu.profinit.opendata.test.converter.Killjoy;
 import eu.profinit.opendata.transform.TransformDriver;
+import eu.profinit.opendata.transform.impl.TransformDriverImpl;
 import eu.profinit.opendata.transform.TransformException;
 import eu.profinit.opendata.transform.jaxb.Mapping;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import java.io.InputStream;
 import java.sql.Date;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.List;
 
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -36,9 +32,11 @@ public class TransformDriverTest extends ApplicationContextTestCase {
     @PersistenceContext
     private EntityManager em;
 
+    @Autowired
+    private TransformDriver transformDriver;
+
     @Test
     public void testLoadMapping() throws Exception {
-        TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
         Mapping mapping = transformDriver.loadMapping("test-mapping.xml");
         assertNotNull(mapping);
         assertEquals(1, mapping.getHeaderRow().intValue());
@@ -47,7 +45,6 @@ public class TransformDriverTest extends ApplicationContextTestCase {
 
     @Test
     public void testOpenWorkbook() throws Exception {
-        TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xls");
         InputStream inputStream = new ClassPathResource("test-orders.xls").getInputStream();
@@ -58,7 +55,7 @@ public class TransformDriverTest extends ApplicationContextTestCase {
         assertEquals(0, sheet.getFirstRowNum());
         int nonEmptyRows = 0;
         for(int i = 0; i < sheet.getLastRowNum(); i++) {
-            if(!transformDriver.isRowEmpty(sheet.getRow(i))) {
+            if(!TransformDriverImpl.isRowEmpty(sheet.getRow(i))) {
                 nonEmptyRows++;
             }
         }
@@ -68,7 +65,6 @@ public class TransformDriverTest extends ApplicationContextTestCase {
 
     @Test
     public void testValidateRecord() throws Exception {
-        TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
         Record record = new Record();
         record.setMasterId("blah");
         record.setCurrency("JPY");
@@ -91,7 +87,6 @@ public class TransformDriverTest extends ApplicationContextTestCase {
 
     @Test
     public void testTransform() throws Exception {
-        TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xls");
         InputStream inputStream = new ClassPathResource("test-orders.xls").getInputStream();
@@ -125,7 +120,6 @@ public class TransformDriverTest extends ApplicationContextTestCase {
 
     @Test
     public void testTransformWithFatalError() throws Exception {
-        TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xls");
         InputStream inputStream = new ClassPathResource("test-orders.xls").getInputStream();
@@ -146,14 +140,12 @@ public class TransformDriverTest extends ApplicationContextTestCase {
 
     @Test
     public void testEntityManagerInjected() throws Exception {
-        TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
         assertNotNull(transformDriver.getEm());
     }
 
     @Test
     @Transactional
     public void testTransactions() throws Exception {
-        TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xls");
         dataInstance.setUrl("http://example.me");
@@ -181,7 +173,6 @@ public class TransformDriverTest extends ApplicationContextTestCase {
     @Test
     @Transactional
     public void testRollback() throws Exception {
-        TransformDriver transformDriver = applicationContext.getBean(TransformDriver.class);
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xls");
         dataInstance.setUrl("http://example.me");
