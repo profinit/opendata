@@ -21,16 +21,11 @@ public interface TransformDriver {
 
     Retrieval doRetrieval(DataInstance dataInstance, String mappingFile, InputStream inputStream);
 
-    @Transactional(propagation = Propagation.NESTED,
-                   rollbackFor = {TransformException.class, RuntimeException.class})
-    void processWorkbook(Workbook workbook, Mapping mapping, Retrieval retrieval) throws TransformException;
-
-    void checkRecordIntegrity(Record record) throws TransformException;
-
     Workbook openXLSFile(InputStream inputStream, DataInstance dataInstance) throws IOException;
 
     Mapping loadMapping(String mappingFile) throws JAXBException, IOException;
 
     void setEm(EntityManager em);
     EntityManager getEm();
+
 }

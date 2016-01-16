@@ -17,6 +17,9 @@ public class AuthorityRoleConverter implements AttributeConverter<AuthorityRole,
 
     @Override
     public AuthorityRole convertToEntityAttribute(String s) {
+        if(s == null) {
+            return null;
+        }
         return AuthorityRole.valueOf(s.toUpperCase());
     }
 }

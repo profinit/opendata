@@ -2,16 +2,23 @@ package eu.profinit.opendata.test;
 
 import eu.profinit.opendata.model.*;
 import eu.profinit.opendata.test.converter.Killjoy;
+import eu.profinit.opendata.test.util.DatabaseCleaner;
 import eu.profinit.opendata.transform.TransformDriver;
+import eu.profinit.opendata.transform.WorkbookProcessor;
 import eu.profinit.opendata.transform.impl.TransformDriverImpl;
 import eu.profinit.opendata.transform.TransformException;
+import eu.profinit.opendata.transform.impl.WorkbookProcessorImpl;
 import eu.profinit.opendata.transform.jaxb.Mapping;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -35,6 +42,12 @@ public class TransformDriverTest extends ApplicationContextTestCase {
     @Autowired
     private TransformDriver transformDriver;
 
+    @Autowired
+    private WorkbookProcessor workbookProcessor;
+
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
     @Test
     public void testLoadMapping() throws Exception {
         Mapping mapping = transformDriver.loadMapping("test-mapping.xml");
@@ -55,7 +68,7 @@ public class TransformDriverTest extends ApplicationContextTestCase {
         assertEquals(0, sheet.getFirstRowNum());
         int nonEmptyRows = 0;
         for(int i = 0; i < sheet.getLastRowNum(); i++) {
-            if(!TransformDriverImpl.isRowEmpty(sheet.getRow(i))) {
+            if(!WorkbookProcessorImpl.isRowEmpty(sheet.getRow(i))) {
                 nonEmptyRows++;
             }
         }
@@ -71,50 +84,17 @@ public class TransformDriverTest extends ApplicationContextTestCase {
         record.setDateCreated(new Date(Instant.now().toEpochMilli()));
         record.setRecordType(RecordType.CONTRACT);
 
-        transformDriver.checkRecordIntegrity(record); // Shouldn't throw an exception
+        workbookProcessor.checkRecordIntegrity(record); // Shouldn't throw an exception
 
         record.setMasterId(null);
         try {
-            transformDriver.checkRecordIntegrity(record);
+            workbookProcessor.checkRecordIntegrity(record);
         } catch (TransformException ex) {
             assertEquals(TransformException.Severity.RECORD_LOCAL, ex.getSeverity());
             return;
         }
 
         fail("Exception wasn't thrown while checking the integrity of an invalid record");
-
-    }
-
-    @Test
-    public void testTransform() throws Exception {
-        DataInstance dataInstance = new DataInstance();
-        dataInstance.setFormat("xls");
-        InputStream inputStream = new ClassPathResource("test-orders.xls").getInputStream();
-
-        Entity entity = DataGenerator.getTestMinistry();
-        DataSource ds = DataGenerator.getDataSource(entity);
-        dataInstance.setDataSource(ds);
-
-        EntityManager mockEm = mock(EntityManager.class);
-        transformDriver.setEm(mockEm);
-
-        ArgumentCaptor<Record> persistArgumentCaptor = ArgumentCaptor.forClass(Record.class);
-        ArgumentCaptor<Record> mergeArgumentCaptor = ArgumentCaptor.forClass(Record.class);
-
-        Retrieval retrieval = transformDriver.doRetrieval(dataInstance, "test-mapping.xml", inputStream);
-        verify(mockEm, times(2)).merge(mergeArgumentCaptor.capture()); //Retriever will return 1 old record + data instance merge
-        verify(mockEm, times(26)).persist(persistArgumentCaptor.capture()); //26 remaining good rows in the test data instance
-        assertEquals(27, retrieval.getNumRecordsInserted());
-        assertEquals(2, retrieval.getNumBadRecords()); //Two bad rows in the test DI
-        assertEquals(30, dataInstance.getLastProcessedRow().intValue());
-
-        //Check whether the fixed value is set properly
-        assertEquals(RecordType.ORDER, persistArgumentCaptor.getValue().getRecordType());
-        assertEquals(490.0, persistArgumentCaptor.getValue().getOriginalCurrencyAmount());
-
-        //Check whether values are preserved on old records
-        assertEquals(RecordType.ORDER, mergeArgumentCaptor.getAllValues().get(0).getRecordType());
-        assertEquals("123456789", mergeArgumentCaptor.getAllValues().get(0).getMasterId());
 
     }
 
@@ -167,7 +147,23 @@ public class TransformDriverTest extends ApplicationContextTestCase {
                 .getResultList();
         assertEquals(26, recordList.size());
 
+        assertEquals(27, retrieval.getNumRecordsInserted());
+        assertEquals(2, retrieval.getNumBadRecords()); //Two bad rows in the test DI
+        assertEquals(30, dataInstance.getLastProcessedRow().intValue());
 
+        //Check whether the fixed value is set properly
+        assertEquals(RecordType.ORDER, recordList.get(0).getRecordType());
+        assertEquals(1533.91, recordList.get(0).getOriginalCurrencyAmount());
+
+        //Check whether values are preserved on old records
+        List<Record> mergedList = em.createQuery(
+                "SELECT r FROM Record r WHERE r.retrieval is null", Record.class)
+                .getResultList();
+        assertEquals(1, mergedList.size());
+        assertEquals(RecordType.ORDER, mergedList.get(0).getRecordType());
+        assertEquals("123456789", mergedList.get(0).getMasterId());
+
+        databaseCleaner.cleanRecords();
     }
 
     @Test
@@ -185,6 +181,7 @@ public class TransformDriverTest extends ApplicationContextTestCase {
         dataInstance.setDataSource(ds);
         em.persist(dataInstance);
 
+        //transformDriver.processWorkbook(null, null, null);
         Retrieval retrieval = transformDriver.doRetrieval(dataInstance, "bad-mapping.xml", inputStream);
         assertEquals(0, retrieval.getNumRecordsInserted());
         assertEquals(0, retrieval.getRecords().size());
@@ -194,7 +191,16 @@ public class TransformDriverTest extends ApplicationContextTestCase {
                 .setParameter("retr", retrieval)
                 .getResultList();
         assertEquals(0, recordList.size());
-        assertNull(dataInstance.getLastProcessedRow());
+        List<Record> mergedList = em.createQuery(
+                "SELECT r FROM Record r WHERE r.retrieval is null", Record.class)
+                .getResultList();
+        assertEquals(0, mergedList.size());
+        int dis = em.createQuery("select i from DataInstance i where i.lastProcessedRow is not null")
+                .getResultList().size();
+        assertEquals(0, dis);
+
+        //assertNull(dataInstance.getLastProcessedRow());
     }
+
 
 }
