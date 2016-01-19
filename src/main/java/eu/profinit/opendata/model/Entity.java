@@ -13,6 +13,16 @@ import eu.profinit.opendata.model.util.EntityTypeConverter;
 @javax.persistence.Entity
 @SequenceGenerator(name = "seq_pk", sequenceName = "entity_entity_id_seq")
 @Table(name = "entity", schema = "public", catalog = "opendata")
+@NamedQueries({
+        @NamedQuery(name = "findByICO",
+                query = "SELECT OBJECT(e) FROM Entity e WHERE e.ico = :ico"),
+        @NamedQuery(name = "findByDIC",
+                query = "SELECT OBJECT(e) FROM Entity e WHERE e.dic = :dic"),
+        @NamedQuery(name = "findByICOAndDIC",
+                    query = "SELECT OBJECT(e) FROM Entity e WHERE e.ico = :ico AND e.dic = :dic"),
+        @NamedQuery(name = "findByName",
+        query = "SELECT OBJECT(e) FROM Entity e WHERE lower(e.name) LIKE :name")
+})
 public class Entity {
     private String dic;
     private String ico;
