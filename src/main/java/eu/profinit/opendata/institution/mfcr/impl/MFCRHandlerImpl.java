@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,7 +46,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
     private Logger log = LogManager.getLogger(MFCRHandler.class);
 
     @Override
-    protected void updateDataInstances(DataSource ds) {
+    public void updateDataInstances(DataSource ds) {
         switch(ds.getRecordType()) {
             case ORDER: updateOrdersDataInstance(ds); break;
             case INVOICE: updateInvoicesDataInstance(ds); break;
@@ -122,7 +123,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
 
 
     @Transactional
-    private void updateInvoicesDataInstance(DataSource ds) {
+    public void updateInvoicesDataInstance(DataSource ds) {
         log.info("Updating information about data instances containing invoices");
 
         JSONPackageList packageList = jsonClient.getPackageList(invoices_identifier);
@@ -140,13 +141,13 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
             if (resource.getFormat().equals("xls") || resource.getFormat().equals("xlsx")) {
                 // Check for "uhrazene faktury" and "za rok {YYYY}" and not "privatizace"
                 String name = resource.getName();
-                Pattern pattern = Pattern.compile("^Uhrazené faktury(?: MF)? za rok (?<year>\\d{4})(?: včetně položky rozpočtu)$");
+                Pattern pattern = Pattern.compile("^Uhrazené faktury(?: MF)? za rok (?<year>\\d{4})(?: včetně položky rozpočtu)?$");
                 Matcher matcher = pattern.matcher(name);
                 if(!matcher.find()) continue;
 
                 Integer year = Integer.parseInt(matcher.group("year"));
                 if(year < 2015) {
-                    // Older instances have a different format
+                    // Older instances have a different format - implement later if needed
                     continue;
                 }
 
@@ -173,10 +174,11 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
                 // Get the year the data instance is holding data from - if in the past and has already been processed
                 // after its year has ended, expire it
                 Integer currentYear = new GregorianCalendar().get(Calendar.YEAR);
-                    if(currentYear > year && dataInstance.getLastProcessedDate()
-                            .after(new GregorianCalendar(currentYear, Calendar.JANUARY, 1).getTime())) {
-                        dataInstance.expire();
-                    }
+                Timestamp lpd = dataInstance.getLastProcessedDate();
+                if(currentYear > year && lpd != null
+                        && lpd.after(new GregorianCalendar(currentYear, Calendar.JANUARY, 1).getTime())) {
+                    dataInstance.expire();
+                }
 
                 // Merge/persist the DataInstance
                 em.persist(dataInstance);

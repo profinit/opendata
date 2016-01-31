@@ -33,15 +33,18 @@ public class PartnerSetter implements RecordPropertyConverter {
         String name = null;
 
         if(sourceValues.containsKey("ico")) {
-            ico = sourceValues.get("ico").getStringCellValue();
-            if(ico.length() < 8) {
-                ico = String.format("%08d", Integer.parseInt(ico));
+            sourceValues.get("ico").setCellType(Cell.CELL_TYPE_STRING);
+            if(!isNullOrEmpty(sourceValues.get("ico").getStringCellValue())) {
+                ico = sourceValues.get("ico").getStringCellValue();
+                if (ico.length() < 8) {
+                    ico = String.format("%08d", Integer.parseInt(ico));
+                }
             }
         }
-        if(sourceValues.containsKey("dic")) {
+        if(sourceValues.containsKey("dic") && !isNullOrEmpty(sourceValues.get("dic").getStringCellValue())) {
             dic = sourceValues.get("dic").getStringCellValue();
         }
-        if(sourceValues.containsKey("name")) {
+        if(sourceValues.containsKey("name") && !isNullOrEmpty(sourceValues.get("name").getStringCellValue())) {
             name = sourceValues.get("name").getStringCellValue();
         }
 

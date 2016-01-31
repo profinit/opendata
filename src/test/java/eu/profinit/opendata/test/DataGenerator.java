@@ -10,7 +10,7 @@ import java.sql.Timestamp;
  */
 public class DataGenerator {
 
-    static Entity getTestMinistry() {
+    public static Entity getTestMinistry() {
         Entity entity = new Entity();
         entity.setName("Ministerstvo zpraseného kódu");
         entity.setEntityType(EntityType.MINISTRY);
@@ -18,7 +18,7 @@ public class DataGenerator {
         return entity;
     }
 
-    static Entity getTestCompany() {
+    public static Entity getTestCompany() {
         Entity entity = new Entity();
         entity.setName("Git a. s.");
         entity.setEntityType(EntityType.COMPANY);
@@ -27,7 +27,7 @@ public class DataGenerator {
         return entity;
     }
 
-    static DataSource getDataSource(Entity forEntity) {
+    public static DataSource getDataSource(Entity forEntity) {
         DataSource ds = new DataSource();
         ds.setEntity(forEntity);
         ds.setRecordType(RecordType.INVOICE);
@@ -36,7 +36,7 @@ public class DataGenerator {
         return ds;
     }
 
-    static DataInstance getDataInstance(DataSource forDataSource) {
+    public static DataInstance getDataInstance(DataSource forDataSource) {
         DataInstance di = new DataInstance();
         di.setDataSource(forDataSource);
         di.setFormat("xls");
@@ -45,7 +45,7 @@ public class DataGenerator {
         return di;
     }
 
-    static Retrieval getRetrieval(DataInstance forDataInstance) {
+    public static Retrieval getRetrieval(DataInstance forDataInstance) {
         Retrieval ret = new Retrieval();
         ret.setDate(new Timestamp(System.currentTimeMillis()));
         ret.setNumRecordsInserted(100);
@@ -55,7 +55,7 @@ public class DataGenerator {
         return ret;
     }
 
-    static Record getInvoice(Retrieval fromRetrieval, Entity authority, Entity partner) {
+    public static Record getInvoice(Retrieval fromRetrieval, Entity authority, Entity partner) {
         Record record = new Record();
         record.setAuthorityRole(AuthorityRole.CUSTOMER);
         record.setCurrency("CZK");
@@ -69,7 +69,7 @@ public class DataGenerator {
         return record;
     }
 
-    static Record getContract(Retrieval fromRetrieval, Entity authority, Entity partner) {
+    public static Record getContract(Retrieval fromRetrieval, Entity authority, Entity partner) {
         Record record = new Record();
         record.setAuthorityRole(AuthorityRole.CUSTOMER);
         record.setCurrency("CZK");

@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 import static org.mockito.Mockito.*;
@@ -161,6 +163,11 @@ public class TransformDriverTest extends ApplicationContextTestCase {
         //Check whether the fixed value is set properly
         assertEquals(RecordType.ORDER, recordList.get(0).getRecordType());
         assertEquals(1533.91, recordList.get(0).getOriginalCurrencyAmount());
+
+        //Make sure master ids have been set - one for each record minus one for the lone tuple
+        Set<String> masterIds = recordList.stream().map(Record::getMasterId)
+                .collect(Collectors.toSet());
+        assertEquals(26, masterIds.size());
 
         //Check whether values are preserved on old records
         List<Record> mergedList = em.createQuery(

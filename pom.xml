@@ -53,7 +53,12 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>3.11</version>
+            <version>3.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml-schemas</artifactId>
+            <version>3.13</version>
         </dependency>
 
         <dependency>
@@ -132,12 +137,14 @@
                 <filtering>true</filtering>
                 <excludes>
                     <exclude>test-orders.xls</exclude>
+                    <exclude>test-invoices.xlsx</exclude>
                 </excludes>
             </testResource>
             <testResource>
                 <directory>src/test/resources</directory>
                 <includes>
                     <include>test-orders.xls</include>
+                    <include>test-invoices.xlsx</include>
                 </includes>
             </testResource>
         </testResources>

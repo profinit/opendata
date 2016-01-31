@@ -38,7 +38,7 @@ public class DataInstance {
     }
 
     @Basic
-    @Column(name = "authoridy_id")
+    @Column(name = "authority_id")
     public String getAuthorityId() {
         return authorityId;
     }

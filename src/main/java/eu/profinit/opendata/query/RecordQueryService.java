@@ -1,17 +1,20 @@
 package eu.profinit.opendata.query;
 
 import eu.profinit.opendata.model.Record;
+import eu.profinit.opendata.model.Retrieval;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by dm on 1/31/16.
@@ -21,6 +24,24 @@ public class RecordQueryService {
 
     @PersistenceContext
     private EntityManager em;
+
+    public List<Record> findRecordsByFilter(HashMap<String, String> filter, Retrieval currentRetrieval) {
+        // Look in the retrieval first
+        Collection<Record> finishedRecords = currentRetrieval.getRecords();
+        Stream<Record> stream = finishedRecords.stream();
+        for(String key : filter.keySet()) {
+            stream = stream.filter(new RecordPropertyPredicate(key, filter.get(key)));
+        }
+        List<Record> found = stream.collect(Collectors.toList());
+
+        // Then try older records
+        if(found.isEmpty()) {
+            found = findRecordsByFilter(filter);
+        }
+
+        return found;
+
+    }
 
     public List<Record> findRecordsByFilter(HashMap<String, String> filter) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -33,5 +54,25 @@ public class RecordQueryService {
         }
 
         return em.createQuery(qr).getResultList();
+    }
+
+    class RecordPropertyPredicate implements Predicate<Record> {
+
+        String property;
+        String value;
+
+        public RecordPropertyPredicate(String property, String value) {
+            this.property = property;
+            this.value = value;
+        }
+
+        @Override
+        public boolean test(Record record) {
+            switch(property) {
+                // TODO: There should be all the others here
+                case "authorityIdentifier": return record.getAuthorityIdentifier().equals(value);
+                default: return false;
+            }
+        }
     }
 }

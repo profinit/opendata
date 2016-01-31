@@ -14,7 +14,7 @@ import java.util.UUID;
  * Created by dm on 12/13/15.
  */
 @Component
-public class MasterIdSetter implements RecordPropertyConverter {
+public class RandomMasterIdSetter implements RecordPropertyConverter {
     @Override
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger)
             throws TransformException {

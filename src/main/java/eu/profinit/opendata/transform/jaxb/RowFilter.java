@@ -17,12 +17,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for oldRecordRetriever complex type.
+ * <p>Java class for rowFilter complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="oldRecordRetriever">
+ * &lt;complexType name="rowFilter">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
@@ -37,10 +37,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "oldRecordRetriever", propOrder = {
+@XmlType(name = "rowFilter", propOrder = {
     "sourceFileColumn"
 })
-public class OldRecordRetriever {
+public class RowFilter {
 
     protected List<SourceColumn> sourceFileColumn;
     @XmlAttribute(name = "className", required = true)

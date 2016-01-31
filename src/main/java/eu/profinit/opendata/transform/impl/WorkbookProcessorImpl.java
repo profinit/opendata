@@ -5,6 +5,7 @@ import eu.profinit.opendata.model.Retrieval;
 import eu.profinit.opendata.transform.*;
 import eu.profinit.opendata.transform.jaxb.Mapping;
 import eu.profinit.opendata.transform.jaxb.RecordProperty;
+import eu.profinit.opendata.transform.jaxb.RowFilter;
 import eu.profinit.opendata.transform.jaxb.SourceColumn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -87,17 +88,19 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
                     continue;
                 }
                 Record record = processRow(sheet.getRow(i), mapping, retrieval, columnNames);
+                if(record == null) {
+                    continue;
+                }
 
                 //A call to persist will throw a PersistenceException if all required attributes aren't filled
                 //Which means the whole transaction will blow up. We need to check manually
                 checkRecordIntegrity(record);
 
-                log.debug("Record finished, persisting/merging");
-                if(record.getRecordId() != null) {
-                    em.merge(record);
-                }
-                else {
+                log.debug("Record finished, persisting");
+                if(record.getRecordId() == null) {
                     retrieval.getRecords().add(record);
+                } else {
+                    em.merge(record);
                 }
                 retrieval.setNumRecordsInserted(retrieval.getNumRecordsInserted() + 1);
                 retrieval.getDataInstance().setLastProcessedRow(i);
@@ -122,6 +125,17 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
 
         Record record = null;
         boolean newRecord;
+
+        if(mapping.getFilter() != null && !mapping.getFilter().isEmpty()) {
+            for(RowFilter rowFilter : mapping.getFilter()) {
+                log.trace("Mapping specifies a filter with class " + rowFilter.getClassName() + ", instantiating");
+                SourceRowFilter filter = (SourceRowFilter) instantiateComponent(rowFilter.getClassName());
+                if(!filter.proceedWithRow(retrieval, getCellMapForArguments(row, rowFilter.getSourceFileColumn(), columnNames))) {
+                    log.debug("Filter " + rowFilter.getClassName() + " has disqualified this row");
+                    return null;
+                }
+            }
+        }
 
         if(mapping.getRetriever() != null) {
             log.trace("Mapping specifies a retriever with class " + mapping.getRetriever().getClassName() + ", instantiating");
@@ -302,6 +316,8 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
     }
 
     public static boolean isRowEmpty(Row row) {
+        if(row == null) return true;
+
         for (int c = row.getFirstCellNum(); c < row.getLastCellNum(); c++) {
             Cell cell = row.getCell(c);
             if (cell != null && cell.getCellType() != Cell.CELL_TYPE_BLANK)

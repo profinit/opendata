@@ -4,12 +4,19 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="headerRow" minOccurs="1" maxOccurs="1" type="xs:nonNegativeInteger"/>
+                <xs:element name="filter" minOccurs="0" maxOccurs="unbounded" type="rowFilter"/>
                 <xs:element name="retriever" minOccurs="0" maxOccurs="1" type="oldRecordRetriever"/>
                 <xs:element minOccurs="1" maxOccurs="unbounded" name="property" type="recordProperty"/>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string"/>
         </xs:complexType>
     </xs:element>
+    <xs:complexType name="rowFilter">
+        <xs:sequence>
+            <xs:element name="sourceFileColumn" minOccurs="0" maxOccurs="unbounded" type="sourceColumn"/>
+        </xs:sequence>
+        <xs:attribute name="className" type="xs:string" use="required" />
+    </xs:complexType>
     <xs:complexType name="recordProperty">
         <xs:sequence>
             <xs:element name="sourceFileColumn" minOccurs="0" maxOccurs="unbounded" type="sourceColumn"/>

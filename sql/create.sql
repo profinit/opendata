@@ -137,7 +137,7 @@ CREATE TABLE "data_source"
 
 CREATE TABLE "data_instance"
 (
-	"format" varchar(3)	 NOT NULL,
+	"format" varchar(6)	 NOT NULL,
 	"url" varchar(255)	 NOT NULL,
 	"data_instance_id" integer NOT NULL DEFAULT nextval(('"data_instance_data_instance_id_seq"'::text)::regclass),
 	"data_source_id" integer NOT NULL DEFAULT nextval(('"data_instance_data_source_id_seq"'::text)::regclass),
