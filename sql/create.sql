@@ -144,7 +144,9 @@ CREATE TABLE "data_instance"
 	"periodicity" varchar(50)	 NOT NULL,
 	"last_processed_date" timestamp without time zone NULL,
 	"expires" date NULL,
-	"last_processed_row" integer NULL
+	"last_processed_row" integer NULL,
+	"authority_id" varchar(255) NULL,
+	"description" varchar(255) NULL
 )
 ;
 

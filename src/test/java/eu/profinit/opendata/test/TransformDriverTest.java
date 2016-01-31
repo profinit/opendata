@@ -126,6 +126,7 @@ public class TransformDriverTest extends ApplicationContextTestCase {
     @Test
     @Transactional
     public void testTransactions() throws Exception {
+        databaseCleaner.cleanRecords();
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xls");
         dataInstance.setUrl("http://example.me");
@@ -151,6 +152,12 @@ public class TransformDriverTest extends ApplicationContextTestCase {
         assertEquals(2, retrieval.getNumBadRecords()); //Two bad rows in the test DI
         assertEquals(30, dataInstance.getLastProcessedRow().intValue());
 
+        //Test that partners have been set
+        List<Entity> entities = em.createQuery(
+                "Select e FROM Entity e where e.public = false", Entity.class
+        ).getResultList();
+        assertEquals(13, entities.size());
+
         //Check whether the fixed value is set properly
         assertEquals(RecordType.ORDER, recordList.get(0).getRecordType());
         assertEquals(1533.91, recordList.get(0).getOriginalCurrencyAmount());
@@ -162,13 +169,12 @@ public class TransformDriverTest extends ApplicationContextTestCase {
         assertEquals(1, mergedList.size());
         assertEquals(RecordType.ORDER, mergedList.get(0).getRecordType());
         assertEquals("123456789", mergedList.get(0).getMasterId());
-
-        databaseCleaner.cleanRecords();
     }
 
     @Test
     @Transactional
     public void testRollback() throws Exception {
+        databaseCleaner.cleanRecords();
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xls");
         dataInstance.setUrl("http://example.me");
@@ -199,7 +205,13 @@ public class TransformDriverTest extends ApplicationContextTestCase {
                 .getResultList().size();
         assertEquals(0, dis);
 
-        //assertNull(dataInstance.getLastProcessedRow());
+        //Test that no partners have been set
+        List<Entity> entities = em.createQuery(
+                "Select e FROM Entity e where e.public = false", Entity.class)
+                .getResultList();
+        assertEquals(0, entities.size());
+
+        assertNull(dataInstance.getLastProcessedRow());
     }
 
 

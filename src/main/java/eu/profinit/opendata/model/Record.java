@@ -13,6 +13,9 @@ import java.util.Collection;
 @javax.persistence.Entity
 @Table(name = "record", schema = "public", catalog = "opendata")
 @SequenceGenerator(name = "seq_pk", sequenceName = "record_record_id_seq")
+@NamedQuery(name = "findByAuthorityIdAndEntity",
+        query = "SELECT OBJECT(r) FROM Record r WHERE r.authorityIdentifier = :authorityIdentifier " +
+                "AND r.authority = :authority")
 public class Record {
     private Double amountCzkWithVat;
 

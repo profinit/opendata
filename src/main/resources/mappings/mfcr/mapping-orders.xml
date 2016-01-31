@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="../xsd/datasource_mapping.xsd">
+         xsi:noNamespaceSchemaLocation="../../xsd/datasource_mapping.xsd">
 
     <headerRow>1</headerRow>
 
@@ -20,19 +20,29 @@
     </property>
 
     <property name="originalCurrencyAmount" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectMoneySetter">
-        <sourceFileColumn originalName="Částka_v_měně" argumentName="inputAmount"/>
+        <sourceFileColumn originalName="Částka_řádku_v_měně" argumentName="inputAmount"/>
     </property>
 
     <property name="amountCzkWithoutVat" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CZKAmountSetter">
-        <sourceFileColumn originalName="Částka_bez_DPH" argumentName="inputAmount"/>
+        <sourceFileColumn originalName="Částka_řádku_bez_DPH" argumentName="inputAmount"/>
     </property>
 
     <property name="amountCzkWithVat" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CZKAmountSetter">
-        <sourceFileColumn originalName="Ćástka" argumentName="inputAmount"/> <!-- Ano, opravdu je tam carka misto hacku -->
+        <sourceFileColumn originalName="Částka_řádku" argumentName="inputAmount"/>
     </property>
+
 
     <property name="authorityIdentifier" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
         <sourceFileColumn originalName="Číslo_objednávky" argumentName="inputString"/>
+    </property>
+
+    <property name="partner" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.PartnerSetter">
+        <sourceFileColumn originalName="Název_partnera" argumentName="name"/>
+        <sourceFileColumn originalName="IČO" argumentName="ico"/>
+    </property>
+
+    <property name="masterId" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.PropertyBasedMasterIdSetter">
+        <sourceFileColumn originalName="Číslo_objednávky" argumentName="authorityIdentifier"/>
     </property>
 
 </mapping>

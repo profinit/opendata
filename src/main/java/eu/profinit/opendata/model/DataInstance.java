@@ -24,6 +24,8 @@ public class DataInstance {
     private Periodicity periodicity;
     private Date expires;
     private Integer lastProcessedRow;
+    private String authorityId;
+    private String description;
 
     @Basic
     @Column(name = "format")
@@ -35,6 +37,25 @@ public class DataInstance {
         this.format = format;
     }
 
+    @Basic
+    @Column(name = "authoridy_id")
+    public String getAuthorityId() {
+        return authorityId;
+    }
+
+    public void setAuthorityId(String authorityId) {
+        this.authorityId = authorityId;
+    }
+
+    @Basic
+    @Column(name = "description")
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @Basic
     @Column(name = "last_processed_date")

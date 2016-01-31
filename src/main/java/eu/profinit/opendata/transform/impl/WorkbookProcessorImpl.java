@@ -152,6 +152,7 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
                 continue;
             }
 
+
             //For each property, either set the corresponding fixed value by resolving a string
             if(recordProperty.getValue() != null) {
                 setFixedValue(record, recordProperty);

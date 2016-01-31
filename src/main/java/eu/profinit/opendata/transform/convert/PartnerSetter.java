@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Field;
 import java.util.Map;
 
+import static eu.profinit.opendata.common.Util.isNullOrEmpty;
+
 /**
  * Created by dm on 12/16/15.
  */
@@ -32,6 +34,9 @@ public class PartnerSetter implements RecordPropertyConverter {
 
         if(sourceValues.containsKey("ico")) {
             ico = sourceValues.get("ico").getStringCellValue();
+            if(ico.length() < 8) {
+                ico = String.format("%08d", Integer.parseInt(ico));
+            }
         }
         if(sourceValues.containsKey("dic")) {
             dic = sourceValues.get("dic").getStringCellValue();
@@ -62,13 +67,9 @@ public class PartnerSetter implements RecordPropertyConverter {
         } catch (TransformException e) {
             throw e;
         }
-
-
     }
 
-    private boolean isNullOrEmpty(String s) {
-        return s == null || s.isEmpty();
-    }
+
 
 
 }

@@ -9,6 +9,8 @@ import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 
+import static eu.profinit.opendata.common.Util.isNullOrEmpty;
+
 /**
  * Created by dm on 12/16/15.
  */
@@ -25,10 +27,10 @@ public class PartnerQueryService {
 
         // Pokud vracime kandidata, ktery ma neco nevyplnene, doplnime a zmergujeme
         if(found != null) {
-            if(dic != null && found.getDic() == null) {
+            if(!isNullOrEmpty(dic) && found.getDic() == null) {
                 found.setDic(dic);
             }
-            if(ico != null && found.getIco() == null) {
+            if(!isNullOrEmpty(ico) && found.getIco() == null) {
                 found.setIco(ico);
             }
             em.merge(found);
@@ -54,18 +56,18 @@ public class PartnerQueryService {
         // Pokud jsme jeste nic nenalezli, zkusime podle ico
         // Mame-li kandidata, vracime ho.
 
-        if(ico != null && dic != null) {
+        if(!isNullOrEmpty(ico) && !isNullOrEmpty(dic)) {
             candidates = em.createNamedQuery("findByICOAndDIC", Entity.class)
                     .setParameter("ico", ico)
                     .setParameter("dic", dic)
                     .getResultList();
         }
-        if(candidates.isEmpty() && ico != null) {
+        if(candidates.isEmpty() && !isNullOrEmpty(ico)) {
             candidates = em.createNamedQuery("findByICO", Entity.class)
                     .setParameter("ico", ico)
                     .getResultList();
         }
-        if(candidates.isEmpty() && dic != null) {
+        if(candidates.isEmpty() && !isNullOrEmpty(dic)) {
             candidates = em.createNamedQuery("findByDIC", Entity.class)
                     .setParameter("dic", ico)
                     .getResultList();
@@ -103,4 +105,5 @@ public class PartnerQueryService {
 
         return null;
     }
+
 }

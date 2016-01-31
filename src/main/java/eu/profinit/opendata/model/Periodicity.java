@@ -6,6 +6,7 @@ import java.time.Duration;
  * Created by DM on 13. 11. 2015.
  */
 public enum Periodicity {
+    DAILY(Duration.ofDays(1)),
     MONTHLY(Duration.ofDays(30)),
     YEARLY(Duration.ofDays(365)),
     WEEKLY(Duration.ofDays(7)),

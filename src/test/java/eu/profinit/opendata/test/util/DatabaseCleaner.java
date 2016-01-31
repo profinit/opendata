@@ -19,5 +19,6 @@ public class DatabaseCleaner {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void cleanRecords() {
         em.createQuery("Delete from Record r").executeUpdate();
+        em.createQuery("Delete from Entity e where e.public = false").executeUpdate();
     }
 }

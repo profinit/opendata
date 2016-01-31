@@ -68,7 +68,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
         if(ds.getLastProcessedDate() == null ||
                 hasEnoughTimeElapsed(ds.getLastProcessedDate(), ds.getPeriodicity().getDuration())) {
 
-            this.checkForNewDataInstance(ds);
+            this.updateDataInstances(ds);
         } else {
             log.info("Not enough time has elapsed since the last processing. Nothing to generate.");
         }
@@ -131,7 +131,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
         return LogManager.getLogger(getClass().getName());
     }
 
-    protected abstract void checkForNewDataInstance(DataSource ds);
+    protected abstract void updateDataInstances(DataSource ds);
     protected abstract String getMappingFileForDataInstance(DataInstance di);
 
     public void setEm(EntityManager em) {
