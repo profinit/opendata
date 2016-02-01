@@ -8,3 +8,7 @@ INSERT INTO data_source(entity_id, record_type, periodicity, handling_class, act
 INSERT INTO data_source(entity_id, record_type, periodicity, handling_class, active, description) VALUES (
   (SELECT entity_id FROM entity WHERE name = 'Ministerstvo financí ČR'),
   'invoice', 'daily', 'eu.profinit.opendata.institution.mfcr.MFCRHandler', TRUE, 'Faktury MFČR');
+
+INSERT INTO data_source(entity_id, record_type, periodicity, handling_class, active, description) VALUES (
+  (SELECT entity_id FROM entity WHERE name = 'Ministerstvo financí ČR'),
+  'contract', 'daily', 'eu.profinit.opendata.institution.mfcr.MFCRHandler', TRUE, 'Smlouvy MFČR');
