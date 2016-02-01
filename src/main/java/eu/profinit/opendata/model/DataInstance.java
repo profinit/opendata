@@ -7,6 +7,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Created by DM on 8. 11. 2015.
@@ -125,7 +126,7 @@ public class DataInstance {
 
         DataInstance that = (DataInstance) o;
 
-        if (dataInstanceId != that.dataInstanceId) return false;
+        if (!Objects.equals(dataInstanceId, that.dataInstanceId)) return false;
         if (periodicity != null ? !periodicity.equals(that.periodicity) : that.periodicity != null) return false;
         if (lastProcessedDate != null ?
                 !lastProcessedDate.equals(that.lastProcessedDate) : that.lastProcessedDate != null) return false;

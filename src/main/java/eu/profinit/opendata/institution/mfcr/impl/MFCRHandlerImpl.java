@@ -69,7 +69,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
      * @param ds An ORDERS DataSource
      */
     @Transactional
-    private void updateOrdersDataInstance(DataSource ds) {
+    public void updateOrdersDataInstance(DataSource ds) {
         log.info("Updating information about data instances containing orders");
 
         //Load list of resources from the JSON API

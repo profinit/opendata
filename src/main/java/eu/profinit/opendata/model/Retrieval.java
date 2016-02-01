@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Created by DM on 8. 11. 2015.
@@ -110,7 +111,7 @@ public class Retrieval {
 
         if (numBadRecords != retrieval.numBadRecords) return false;
         if (numRecordsInserted != retrieval.numRecordsInserted) return false;
-        if (retrievalId != retrieval.retrievalId) return false;
+        if (!Objects.equals(retrievalId, retrieval.retrievalId)) return false;
         if (success != retrieval.success) return false;
         if (date != null ? !date.equals(retrieval.date) : retrieval.date != null) return false;
         if (failureReason != null ? !failureReason.equals(retrieval.failureReason) : retrieval.failureReason != null)

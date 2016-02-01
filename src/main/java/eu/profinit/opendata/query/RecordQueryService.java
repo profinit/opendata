@@ -70,8 +70,11 @@ public class RecordQueryService {
         public boolean test(Record record) {
             switch(property) {
                 // TODO: There should be all the others here
-                case "authorityIdentifier": return record.getAuthorityIdentifier().equals(value);
-                default: return false;
+                case "authorityIdentifier":
+                    return record.getAuthorityIdentifier() != null
+                            && record.getAuthorityIdentifier().equals(value);
+                default:
+                    return false;
             }
         }
     }

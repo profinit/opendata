@@ -59,7 +59,7 @@ public class TestMFCR extends ApplicationContextTestCase {
         ds.getDataInstances().add(oldDataInstance);
         ds.setRecordType(RecordType.ORDER);
 
-        handler.processDataSource(ds);
+        handler.updateOrdersDataInstance(ds);
 
         assertNotNull(oldDataInstance.getExpires());
         assertEquals(2, ds.getDataInstances().size());
