@@ -41,6 +41,12 @@ public class PropertyBasedRecordRetriever implements RecordRetriever {
             filters.put(key, sourceValues.get(key).getStringCellValue());
         }
 
+        return retrieveRecordByStrings(currentRetrieval, filters);
+    }
+
+    public Record retrieveRecordByStrings(Retrieval currentRetrieval, Map<String, String> filters)
+            throws TransformException {
+
         List<Record> found = recordQueryService.findRecordsByFilter(filters, currentRetrieval);
         found = found.stream()
                 .filter(i -> i.getAuthority().equals(currentRetrieval.getDataInstance().getDataSource().getEntity()))
@@ -56,5 +62,6 @@ public class PropertyBasedRecordRetriever implements RecordRetriever {
         }
 
         return null;
+
     }
 }

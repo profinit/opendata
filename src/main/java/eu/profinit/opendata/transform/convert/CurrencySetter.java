@@ -1,5 +1,6 @@
 package eu.profinit.opendata.transform.convert;
 
+import eu.profinit.opendata.common.Util;
 import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.transform.RecordPropertyConverter;
 import eu.profinit.opendata.transform.TransformException;
@@ -46,8 +47,10 @@ public class CurrencySetter implements RecordPropertyConverter{
         if(iso4217Currencies.contains(sourceCurrencyString)) {
             record.setCurrency(sourceCurrencyString);
         }
+        else if(Util.isNullOrEmpty(sourceCurrencyString)) {
+            record.setCurrency("CZK");
+        }
         else {
-            //TODO: Set something anyway, CZK or closest to the source string?
             throw new TransformException("Unrecognized currency code: " + sourceCurrencyString, TransformException.Severity.PROPERTY_LOCAL);
         }
     }

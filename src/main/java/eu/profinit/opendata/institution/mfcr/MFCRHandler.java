@@ -11,6 +11,5 @@ import javax.persistence.EntityManager;
 public interface MFCRHandler extends DataSourceHandler {
     //Test
     void setEm(EntityManager em);
-    void updateInvoicesDataInstance(DataSource ds);
-    void updateOrdersDataInstance(DataSource ds);
+    void updateDataInstances(DataSource ds);
 }

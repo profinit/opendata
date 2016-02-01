@@ -30,6 +30,10 @@ public class DateSetter implements RecordPropertyConverter {
             field.setAccessible(true);
 
             Date inputDate = sourceValues.get("inputDateString").getDateCellValue();
+            if(inputDate == null) {
+                logger.trace("Couldn't set Date - input String is null");
+                return;
+            }
             java.sql.Date dateToSet = new java.sql.Date(inputDate.getTime());
 
             field.set(record, dateToSet);

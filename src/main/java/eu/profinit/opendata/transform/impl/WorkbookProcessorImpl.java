@@ -69,14 +69,21 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
         }
         log.info("First data row will be " + start_row_num);
 
-        //Create the column name mapping
+        // Create the column name mapping - if two or more columns share the same name, a numeric suffi
+        // is appended going from left to right. First occurrence gets no suffix, second gets 01, etc.
         log.trace("Mapping column names to their indexes");
         Map<String, Integer> columnNames = new HashMap<>();
         Row headerRow = sheet.getRow(mapping.getHeaderRow().intValue());
         Iterator<Cell> cellIterator = headerRow.cellIterator();
         while(cellIterator.hasNext()) {
             Cell cell = cellIterator.next();
-            columnNames.put(cell.getStringCellValue(), cell.getColumnIndex());
+            String columnName = cell.getStringCellValue();
+            int i = 1;
+            while(columnNames.containsKey(columnName)) {
+                columnName += String.format("%02d", i);
+                i++;
+            }
+            columnNames.put(columnName, cell.getColumnIndex());
             log.trace("Name: " + cell.getStringCellValue() + ", Index: " + cell.getColumnIndex());
         }
 
@@ -97,9 +104,9 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
                 checkRecordIntegrity(record);
 
                 log.debug("Record finished, persisting");
-                if(record.getRecordId() == null) {
+                if(record.getRetrieval().equals(retrieval) && !retrieval.getRecords().contains(record)) {
                     retrieval.getRecords().add(record);
-                } else {
+                } else if(record.getRecordId() != null) {
                     em.merge(record);
                 }
                 retrieval.setNumRecordsInserted(retrieval.getNumRecordsInserted() + 1);

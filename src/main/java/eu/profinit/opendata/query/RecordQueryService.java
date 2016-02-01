@@ -12,6 +12,7 @@ import javax.persistence.criteria.Root;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,7 +26,7 @@ public class RecordQueryService {
     @PersistenceContext
     private EntityManager em;
 
-    public List<Record> findRecordsByFilter(HashMap<String, String> filter, Retrieval currentRetrieval) {
+    public List<Record> findRecordsByFilter(Map<String, String> filter, Retrieval currentRetrieval) {
         // Look in the retrieval first
         Collection<Record> finishedRecords = currentRetrieval.getRecords();
         Stream<Record> stream = finishedRecords.stream();
@@ -43,7 +44,7 @@ public class RecordQueryService {
 
     }
 
-    public List<Record> findRecordsByFilter(HashMap<String, String> filter) {
+    public List<Record> findRecordsByFilter(Map<String, String> filter) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Record> qr = cb.createQuery(Record.class);
         Root<Record> root = qr.from(Record.class);

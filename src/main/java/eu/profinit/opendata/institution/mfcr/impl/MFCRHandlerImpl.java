@@ -37,19 +37,26 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
     @Value("${mfcr.json.invoices.identifier}")
     private String invoices_identifier;
 
+    @Value("${mfcr.json.contracts.identifier}")
+    private String contracts_identifier;
+
     @Value("${mfcr.mapping.orders}")
     private String order_mapping_file;
 
     @Value("${mfcr.mapping.invoices}")
     private String invoices_mapping_file;
 
+    @Value("${mfcr.mapping.contracts}")
+    private String contracts_mapping_file;
+
     private Logger log = LogManager.getLogger(MFCRHandler.class);
 
     @Override
     public void updateDataInstances(DataSource ds) {
         switch(ds.getRecordType()) {
-            case ORDER: updateOrdersDataInstance(ds); break;
+            case ORDER: updateOrdersOrContractsDataInstance(ds, orders_identifier); break;
             case INVOICE: updateInvoicesDataInstance(ds); break;
+            case CONTRACT: updateOrdersOrContractsDataInstance(ds, contracts_identifier); break;
             default: break;
         }
     }
@@ -59,6 +66,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
         switch(di.getDataSource().getRecordType()) {
             case ORDER: return order_mapping_file;
             case INVOICE: return invoices_mapping_file;
+            case CONTRACT: return contracts_mapping_file;
             default: return null;
         }
     }
@@ -69,11 +77,11 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
      * @param ds An ORDERS DataSource
      */
     @Transactional
-    public void updateOrdersDataInstance(DataSource ds) {
+    public void updateOrdersOrContractsDataInstance(DataSource ds, String identifier) {
         log.info("Updating information about data instances containing orders");
 
         //Load list of resources from the JSON API
-        JSONPackageList packageList = jsonClient.getPackageList(orders_identifier);
+        JSONPackageList packageList = jsonClient.getPackageList(identifier);
         if(packageList == null) {
             log.warn("JSONClient returned null package list. Exiting.");
             return;
@@ -186,5 +194,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
         }
 
     }
+
+
 
 }
