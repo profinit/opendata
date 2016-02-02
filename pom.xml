@@ -119,7 +119,7 @@
                 <test.database.connection.username>opendata_test</test.database.connection.username>
                 <test.database.connection.password>overdose</test.database.connection.password>
 
-                <log.location>/home/dm/Documents/Opendata/log</log.location>
+                <log.location>log</log.location>
             </properties>
         </profile>
     </profiles>
