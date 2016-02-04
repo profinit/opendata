@@ -31,7 +31,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
     private Logger log = LogManager.getLogger(getClass().getName());
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void processDataSource(DataSource ds) {
         log.info("Processing of data source " + ds.getDataSourceId() + " started");
 
@@ -102,16 +102,23 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
         return result;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     protected void runExtractionOnDataInstance(DataInstance dataInstance) {
         log.info("Proceeding with extraction on data instance " + dataInstance.getDataInstanceId());
         Retrieval retrieval = transformDriver.doRetrieval(dataInstance, getMappingFileForDataInstance(dataInstance));
         log.info("Retrieval finished.");
+
+        try {
+            em.persist(retrieval);
+        } catch (Exception ex) {
+
+        }
+
         log.debug("(success, numRecordsInserted, numBadRecords, failureReason) = " +
                       "(" + retrieval.isSuccess() + ", " + retrieval.getNumRecordsInserted() + ", " +
                             retrieval.getNumBadRecords() + ", " + retrieval.getFailureReason() + ")");
 
-        em.persist(retrieval);
+
         if(retrieval.isSuccess()) {
             dataInstance.setLastProcessedDate(Timestamp.from(Instant.now()));
             em.merge(dataInstance);

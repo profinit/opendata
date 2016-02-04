@@ -32,7 +32,7 @@ public class PartnerSetter implements RecordPropertyConverter {
         String dic = null;
         String name = null;
 
-        if(sourceValues.containsKey("ico")) {
+        if(sourceValues.containsKey("ico") && sourceValues.get("ico") != null) {
             sourceValues.get("ico").setCellType(Cell.CELL_TYPE_STRING);
             if(!isNullOrEmpty(sourceValues.get("ico").getStringCellValue())) {
                 ico = sourceValues.get("ico").getStringCellValue();
@@ -41,10 +41,12 @@ public class PartnerSetter implements RecordPropertyConverter {
                 }
             }
         }
-        if(sourceValues.containsKey("dic") && !isNullOrEmpty(sourceValues.get("dic").getStringCellValue())) {
+        if(sourceValues.containsKey("dic") && sourceValues.get("dic") != null
+                && !isNullOrEmpty(sourceValues.get("dic").getStringCellValue())) {
             dic = sourceValues.get("dic").getStringCellValue();
         }
-        if(sourceValues.containsKey("name") && !isNullOrEmpty(sourceValues.get("name").getStringCellValue())) {
+        if(sourceValues.containsKey("name") && sourceValues.get("name") != null
+                && !isNullOrEmpty(sourceValues.get("name").getStringCellValue())) {
             name = sourceValues.get("name").getStringCellValue();
         }
 

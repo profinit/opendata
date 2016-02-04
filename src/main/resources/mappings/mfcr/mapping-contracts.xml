@@ -19,7 +19,8 @@
         <sourceFileColumn originalName="Číslo_smlouvy/dodatku" argumentName="inputString"/>
     </property>
 
-    <property name="partner" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.PartnerSetter">
+    <property name="partner" onlyNewRecords="true"
+              converter="eu.profinit.opendata.transform.convert.PartnerSetter">
         <sourceFileColumn originalName="IČO" argumentName="ico"/>
         <sourceFileColumn originalName="Název_partnera" argumentName="name"/>
     </property>

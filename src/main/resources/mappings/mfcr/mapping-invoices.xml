@@ -45,7 +45,7 @@
     </property>
 
     <property name="dateCreated" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
-        <sourceFileColumn originalName="[DATUMVYSTAVENI]" argumentName="inputDateString"/>
+        <sourceFileColumn originalName="[DATUMPRIJETI]" argumentName="inputDateString"/>
     </property>
 
     <property name="dueDate" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">

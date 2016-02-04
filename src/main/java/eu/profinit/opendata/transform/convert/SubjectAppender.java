@@ -35,6 +35,10 @@ public class SubjectAppender implements RecordPropertyConverter {
                 record.setSubject(mainSubject + ": " + lineSubject);
             }
 
+            if(record.getSubject().length() > 1000) {
+                record.setSubject("A very long subject");
+            }
+
         } catch (Exception e) {
             String message = "Couldn't set String value for field " + fieldName;
             throw new TransformException(message, e, TransformException.Severity.PROPERTY_LOCAL);

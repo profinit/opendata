@@ -14,7 +14,7 @@ import java.util.Objects;
  */
 @javax.persistence.Entity
 @Table(name = "data_instance", schema = "public", catalog = "opendata")
-@SequenceGenerator(name = "seq_pk", sequenceName = "data_instance_data_instance_id_seq")
+@SequenceGenerator(name = "seq_pk", sequenceName = "data_instance_data_instance_id_seq", allocationSize = 1)
 public class DataInstance {
     private String format;
     private Timestamp lastProcessedDate;

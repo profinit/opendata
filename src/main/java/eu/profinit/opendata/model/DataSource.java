@@ -12,7 +12,7 @@ import java.util.Collection;
  * Created by DM on 8. 11. 2015.
  */
 @javax.persistence.Entity
-@SequenceGenerator(name = "seq_pk", sequenceName = "data_source_data_source_id_seq")
+@SequenceGenerator(name = "seq_pk", sequenceName = "data_source_data_source_id_seq", allocationSize = 1)
 @Table(name = "data_source", schema = "public", catalog = "opendata")
 @NamedQuery(
         name="findActiveDataSources",

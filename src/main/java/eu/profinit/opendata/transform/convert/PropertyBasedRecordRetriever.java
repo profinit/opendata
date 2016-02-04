@@ -49,7 +49,8 @@ public class PropertyBasedRecordRetriever implements RecordRetriever {
 
         List<Record> found = recordQueryService.findRecordsByFilter(filters, currentRetrieval);
         found = found.stream()
-                .filter(i -> i.getAuthority().equals(currentRetrieval.getDataInstance().getDataSource().getEntity()))
+                .filter(i -> i.getAuthority().equals(currentRetrieval.getDataInstance().getDataSource().getEntity())
+                          && i.getRecordType().equals(currentRetrieval.getDataInstance().getDataSource().getRecordType()))
                 .collect(Collectors.toList());
 
         if(!found.isEmpty()) {

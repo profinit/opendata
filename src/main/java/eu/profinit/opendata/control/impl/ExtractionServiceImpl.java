@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,11 +29,12 @@ public class ExtractionServiceImpl implements ExtractionService {
     private Logger log = LogManager.getLogger(ExtractionServiceImpl.class);
 
     @Override
+    @Transactional
     public void runExtraction() {
         log.info("Extraction process began");
 
         //Get all active data sources and invoke their handling class
-        List<DataSource> activeDataSources = em.createNamedQuery("findActiveDataSources", DataSource.class).getResultList();
+        List<DataSource> activeDataSources = getActiveDatasources();
         if(activeDataSources.isEmpty()) {
             log.info("There are no active data sources. Exiting.");
         }
@@ -48,6 +50,12 @@ public class ExtractionServiceImpl implements ExtractionService {
                 log.error("Processing of data source failed due to an exception", e);
             }
         }
+
+        log.info("All active data sources have been processed");
+    }
+
+    private List<DataSource> getActiveDatasources() {
+        return em.createNamedQuery("findActiveDataSources", DataSource.class).getResultList();
     }
 
 

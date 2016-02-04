@@ -11,7 +11,7 @@ import eu.profinit.opendata.model.util.EntityTypeConverter;
  * Created by DM on 8. 11. 2015.
  */
 @javax.persistence.Entity
-@SequenceGenerator(name = "seq_pk", sequenceName = "entity_entity_id_seq")
+@SequenceGenerator(name = "seq_pk", sequenceName = "entity_entity_id_seq", allocationSize = 1)
 @Table(name = "entity", schema = "public", catalog = "opendata")
 @NamedQueries({
         @NamedQuery(name = "findByICO",

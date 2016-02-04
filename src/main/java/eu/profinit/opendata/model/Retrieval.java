@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "retrieval", schema = "public", catalog = "opendata")
-@SequenceGenerator(name = "seq_pk", sequenceName = "retrieval_retrieval_id_seq")
+@SequenceGenerator(name = "seq_pk", sequenceName = "retrieval_retrieval_id_seq", allocationSize = 1)
 public class Retrieval {
     private Timestamp date;
     private String failureReason;

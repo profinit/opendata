@@ -76,7 +76,6 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
      * Assumes that the JSON API only returns a single xls(x) resource (true as of Nov 2015)
      * @param ds An ORDERS DataSource
      */
-    @Transactional
     public void updateOrdersOrContractsDataInstance(DataSource ds, String identifier) {
         log.info("Updating information about data instances containing orders");
 
@@ -129,8 +128,6 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
         }
     }
 
-
-    @Transactional
     public void updateInvoicesDataInstance(DataSource ds) {
         log.info("Updating information about data instances containing invoices");
 
