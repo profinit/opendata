@@ -95,7 +95,7 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
                 "SELECT r FROM Record r WHERE r.retrieval = :retr", Record.class)
                 .setParameter("retr", retrieval)
                 .getResultList();
-        assertEquals(23, recordList.size());
+        assertEquals(39, recordList.size());
 
     }
 

@@ -6,5 +6,6 @@ package eu.profinit.opendata.model;
 public enum RecordType {
     ORDER,
     CONTRACT,
+    PAYMENT,
     INVOICE;
 }

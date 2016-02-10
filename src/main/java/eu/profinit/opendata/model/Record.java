@@ -161,6 +161,18 @@ public class Record {
         this.partnerCode = partnerCode;
     }
 
+    private String budgetCategory;
+
+    @Basic
+    @Column(name = "budget_category")
+    public String getBudgetCategory() {
+        return budgetCategory;
+    }
+
+    public void setBudgetCategory(String budgetCategory) {
+        this.budgetCategory = budgetCategory;
+    }
+
     private String subject;
 
     @Basic

@@ -95,7 +95,8 @@ CREATE TABLE "record"
 	"parent_id" integer NULL,
 	"retrieval_id" integer NULL,
 	"record_type" varchar(50)	 NOT NULL,
-	"authority_role" varchar(50)	 NULL
+	"authority_role" varchar(50)	 NULL,
+	"budget_category" varchar(500) NULL
 )
 ;
 

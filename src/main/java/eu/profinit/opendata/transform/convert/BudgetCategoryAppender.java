@@ -10,34 +10,31 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * Created by dm on 12/16/15.
+ * Created by dm on 2/10/16.
  */
 @Component
-public class SubjectAppender implements RecordPropertyConverter {
+public class BudgetCategoryAppender implements RecordPropertyConverter {
     @Override
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger)
             throws TransformException {
 
         try {
 
-            String currentSubject = record.getSubject();
-            String mainSubject = sourceValues.get("mainSubject").getStringCellValue();
-            String lineSubject = "";
+            String currentCategory = record.getBudgetCategory();
+            String newCategory = sourceValues.get("category").getStringCellValue();
 
-            if(sourceValues.get("lineSubject") != null) {
-                lineSubject = sourceValues.get("lineSubject").getStringCellValue();
+            if(currentCategory != null && newCategory.length() > 0) {
+                record.setBudgetCategory(currentCategory + "; " + newCategory);
+            }
+            else if (currentCategory == null) {
+                record.setBudgetCategory(newCategory);
             }
 
-            if(currentSubject != null && lineSubject.length() > 0) {
-                record.setSubject(currentSubject + "; " + lineSubject);
-            }
-            else if (currentSubject == null) {
-                record.setSubject(mainSubject + ": " + lineSubject);
-            }
 
         } catch (Exception e) {
             String message = "Couldn't set String value for field " + fieldName;
             throw new TransformException(message, e, TransformException.Severity.PROPERTY_LOCAL);
         }
+
     }
 }
