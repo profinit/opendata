@@ -46,6 +46,9 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
     @Value("${mfcr.mapping.invoices}")
     private String invoices_mapping_file;
 
+    @Value("${mfcr.mapping.old.invoices}")
+    private String old_invoices_mapping_file;
+
     @Value("${mfcr.mapping.contracts}")
     private String contracts_mapping_file;
 
@@ -54,20 +57,10 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
     @Override
     public void updateDataInstances(DataSource ds) {
         switch(ds.getRecordType()) {
-            case ORDER: updateOrdersOrContractsDataInstance(ds, orders_identifier); break;
+            case ORDER: updateOrdersOrContractsDataInstance(ds, orders_identifier, order_mapping_file); break;
             case INVOICE: updateInvoicesDataInstance(ds); break;
-            case CONTRACT: updateOrdersOrContractsDataInstance(ds, contracts_identifier); break;
+            case CONTRACT: updateOrdersOrContractsDataInstance(ds, contracts_identifier, contracts_mapping_file); break;
             default: break;
-        }
-    }
-
-    @Override
-    protected String getMappingFileForDataInstance(DataInstance di) {
-        switch(di.getDataSource().getRecordType()) {
-            case ORDER: return order_mapping_file;
-            case INVOICE: return invoices_mapping_file;
-            case CONTRACT: return contracts_mapping_file;
-            default: return null;
         }
     }
 
@@ -76,7 +69,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
      * Assumes that the JSON API only returns a single xls(x) resource (true as of Nov 2015)
      * @param ds An ORDERS DataSource
      */
-    public void updateOrdersOrContractsDataInstance(DataSource ds, String identifier) {
+    public void updateOrdersOrContractsDataInstance(DataSource ds, String identifier, String mappingFile) {
         log.info("Updating information about data instances containing orders");
 
         //Load list of resources from the JSON API
@@ -115,6 +108,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
                     di.setPeriodicity(Periodicity.MONTHLY);
                     di.setUrl(resource.getUrl());
                     di.setDescription(resource.getName());
+                    di.setMappingFile(mappingFile);
 
                     ds.getDataInstances().add(di);
                     log.trace("Persisting new DataInstance");
@@ -151,12 +145,9 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
                 if(!matcher.find()) continue;
 
                 Integer year = Integer.parseInt(matcher.group("year"));
-                if(year < 2015) {
-                    // Older instances have a different format - implement later if needed
-                    continue;
-                }
-
                 DataInstance dataInstance = new DataInstance();
+
+
 
                 // Check if we already have a data instance with the same given id - if yes, simply update the URL
                 // If not, create a new one
@@ -167,6 +158,13 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
                     dataInstance.setUrl(resource.getUrl());
                 }
                 else {
+                    if(year < 2015) {
+                        dataInstance.setMappingFile(old_invoices_mapping_file);
+                    }
+                    else {
+                        dataInstance.setMappingFile(invoices_mapping_file);
+                    }
+
                     dataInstance.setDataSource(ds);
                     dataInstance.setUrl(resource.getUrl());
                     dataInstance.setAuthorityId(resource.getId());

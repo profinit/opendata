@@ -105,7 +105,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
     @Transactional
     protected void runExtractionOnDataInstance(DataInstance dataInstance) {
         log.info("Proceeding with extraction on data instance " + dataInstance.getDataInstanceId());
-        Retrieval retrieval = transformDriver.doRetrieval(dataInstance, getMappingFileForDataInstance(dataInstance));
+        Retrieval retrieval = transformDriver.doRetrieval(dataInstance);
         log.info("Retrieval finished.");
 
         try {
@@ -139,7 +139,6 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
     }
 
     protected abstract void updateDataInstances(DataSource ds);
-    protected abstract String getMappingFileForDataInstance(DataInstance di);
 
     public void setEm(EntityManager em) {
         this.em = em;

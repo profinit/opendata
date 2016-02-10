@@ -91,7 +91,7 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
             log.debug("Processing row " + i);
             try {
                 if(isRowEmpty(sheet.getRow(i))) {
-                    log.warn("Encountered empty row at index " + i + ", skippint");
+                    log.warn("Encountered empty row at index " + i + ", skipping");
                     continue;
                 }
                 Record record = processRow(sheet.getRow(i), mapping, retrieval, columnNames);
@@ -104,7 +104,7 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
                 checkRecordIntegrity(record);
 
                 log.debug("Record finished, persisting");
-                if(record.getRetrieval().equals(retrieval) && !retrieval.getRecords().contains(record)) {
+                if(retrieval.equals(record.getRetrieval()) && !retrieval.getRecords().contains(record)) {
                     retrieval.getRecords().add(record);
                 } else if(record.getRecordId() != null) {
                     em.merge(record);
@@ -173,12 +173,10 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
                 continue;
             }
 
-
             //For each property, either set the corresponding fixed value by resolving a string
             if(recordProperty.getValue() != null) {
                 setFixedValue(record, recordProperty);
             }
-
             else {
                 //Or instantiate and call the corresponding converter with a hashmap of arguments
                 setProcessedValue(recordProperty, record, row, columnNames);
@@ -187,7 +185,6 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
 
         log.debug("Finished processing row");
         return record;
-
     }
 
     private void setProcessedValue(RecordProperty recordProperty, Record record, Row row,

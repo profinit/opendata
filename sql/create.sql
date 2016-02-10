@@ -147,7 +147,8 @@ CREATE TABLE "data_instance"
 	"expires" date NULL,
 	"last_processed_row" integer NULL,
 	"authority_id" varchar(255) NULL,
-	"description" varchar(255) NULL
+	"description" varchar(255) NULL,
+	"mapping_file" varchar(255) NULL
 )
 ;
 

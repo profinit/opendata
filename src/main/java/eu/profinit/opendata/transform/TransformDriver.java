@@ -17,7 +17,7 @@ import java.io.InputStream;
  * Created by dm on 12/22/15.
  */
 public interface TransformDriver {
-    Retrieval doRetrieval(DataInstance dataInstance, String mappingFile);
+    Retrieval doRetrieval(DataInstance dataInstance);
 
     Retrieval doRetrieval(DataInstance dataInstance, String mappingFile, InputStream inputStream);
 

@@ -50,8 +50,8 @@ public class TransformDriverImpl implements TransformDriver {
     private Logger log = LogManager.getLogger(TransformDriverImpl.class);
 
     @Override
-    public Retrieval doRetrieval(DataInstance dataInstance, String mappingFile) {
-        return doRetrieval(dataInstance, mappingFile, null);
+    public Retrieval doRetrieval(DataInstance dataInstance) {
+        return doRetrieval(dataInstance, dataInstance.getMappingFile(), null);
     }
 
     @Override

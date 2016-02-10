@@ -27,6 +27,7 @@ public class DataInstance {
     private Integer lastProcessedRow;
     private String authorityId;
     private String description;
+    private String mappingFile;
 
     @Basic
     @Column(name = "format")
@@ -36,6 +37,16 @@ public class DataInstance {
 
     public void setFormat(String format) {
         this.format = format;
+    }
+
+    @Basic
+    @Column(name = "mapping_file")
+    public String getMappingFile() {
+        return mappingFile;
+    }
+
+    public void setMappingFile(String mappingFile) {
+        this.mappingFile = mappingFile;
     }
 
     @Basic

@@ -113,6 +113,7 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
         Entity entity = DataGenerator.getTestMinistry();
         em.persist(entity);
         DataSource ds = DataGenerator.getDataSource(entity);
+        ds.setRecordType(RecordType.CONTRACT);
         em.persist(ds);
         dataInstance.setDataSource(ds);
         em.persist(dataInstance);
