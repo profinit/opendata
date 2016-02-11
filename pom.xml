@@ -139,6 +139,8 @@
                     <exclude>test-orders.xls</exclude>
                     <exclude>test-invoices.xlsx</exclude>
                     <exclude>test-contracts.xls</exclude>
+                    <exclude>test-old-invoices.xlsx</exclude>
+                    <exclude>test-partners.xlsx</exclude>
                 </excludes>
             </testResource>
             <testResource>
@@ -146,6 +148,8 @@
                 <includes>
                     <include>test-orders.xls</include>
                     <include>test-invoices.xlsx</include>
+                    <include>test-old-invoices.xlsx</include>
+                    <include>test-partners.xlsx</include>
                     <include>test-contracts.xls</include>
                 </includes>
             </testResource>

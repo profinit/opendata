@@ -1,5 +1,6 @@
 package eu.profinit.opendata.test;
 
+import eu.profinit.opendata.common.Util;
 import eu.profinit.opendata.model.*;
 import eu.profinit.opendata.test.converter.Killjoy;
 import eu.profinit.opendata.test.util.DatabaseCleaner;
@@ -70,7 +71,7 @@ public class TransformDriverTest extends ApplicationContextTestCase {
         assertEquals(0, sheet.getFirstRowNum());
         int nonEmptyRows = 0;
         for(int i = 0; i < sheet.getLastRowNum(); i++) {
-            if(!WorkbookProcessorImpl.isRowEmpty(sheet.getRow(i))) {
+            if(!Util.isRowEmpty(sheet.getRow(i))) {
                 nonEmptyRows++;
             }
         }

@@ -24,6 +24,9 @@ DROP SEQUENCE IF EXISTS "data_instance_data_instance_id_seq"
 DROP SEQUENCE IF EXISTS "data_instance_data_source_id_seq"
 ;
 
+DROP SEQUENCE IF EXISTS "partner_list_entry_partner_list_entry_id_seq"
+;
+
 /* Drop Tables */
 
 DROP TABLE IF EXISTS "retrieval" CASCADE
@@ -51,6 +54,9 @@ DROP TABLE IF EXISTS "data_instance" CASCADE
 ;
 
 DROP TABLE IF EXISTS "authority_role" CASCADE
+;
+
+DROP TABLE IF EXISTS "partner_list_entry" CASCADE
 ;
 
 /* Create Tables */
@@ -158,6 +164,15 @@ CREATE TABLE "authority_role"
 )
 ;
 
+CREATE TABLE "partner_list_entry"
+(
+	"authority_id" integer NOT NULL,
+	"partner_id" integer NOT NULL,
+	"code" varchar(50)	 NOT NULL,
+	"partner_list_entry_id" integer NOT NULL DEFAULT nextval(('"partner_list_entry_partner_list_entry_id_seq"'::text)::regclass)
+)
+;
+
 /* Create Table Comments, Sequences for Autonumber Columns */
 
 CREATE SEQUENCE "retrieval_retrieval_id_seq" INCREMENT 1 START 1
@@ -176,6 +191,9 @@ CREATE SEQUENCE "data_instance_data_instance_id_seq" INCREMENT 1 START 1
 ;
 
 CREATE SEQUENCE "data_instance_data_source_id_seq" INCREMENT 1 START 1
+;
+
+CREATE SEQUENCE "partner_list_entry_partner_list_entry_id_seq" INCREMENT 1 START 1
 ;
 
 /* Create Primary Keys, Indexes, Uniques, Checks */
@@ -214,6 +232,10 @@ ALTER TABLE "data_instance" ADD CONSTRAINT "PK_data_instance"
 
 ALTER TABLE "authority_role" ADD CONSTRAINT "PK_authority_role"
 	PRIMARY KEY ("authority_role")
+;
+
+ALTER TABLE "partner_list_entry" ADD CONSTRAINT "PK_PartnerListEntry"
+	PRIMARY KEY ("partner_list_entry_id")
 ;
 
 /* Create Foreign Key Constraints */
@@ -269,3 +291,12 @@ ALTER TABLE "data_instance" ADD CONSTRAINT "FK_data_instance_periodicity"
 ALTER TABLE "data_instance" ADD CONSTRAINT "FK_data_instance_data_source"
 	FOREIGN KEY ("data_source_id") REFERENCES "data_source" ("data_source_id") ON DELETE Cascade ON UPDATE Cascade
 ;
+
+ALTER TABLE "partner_list_entry" ADD CONSTRAINT "FK_partner_list_entry_entity"
+	FOREIGN KEY ("authority_id") REFERENCES "entity" ("entity_id") ON DELETE No Action ON UPDATE No Action
+;
+
+ALTER TABLE "partner_list_entry" ADD CONSTRAINT "FK_partner_list_entry_entity_02"
+	FOREIGN KEY ("partner_id") REFERENCES "entity" ("entity_id") ON DELETE No Action ON UPDATE No Action
+;
+

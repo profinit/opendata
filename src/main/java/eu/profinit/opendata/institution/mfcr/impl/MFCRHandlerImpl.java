@@ -1,23 +1,34 @@
 package eu.profinit.opendata.institution.mfcr.impl;
 
+import eu.profinit.opendata.common.Util;
+import eu.profinit.opendata.control.DownloadService;
 import eu.profinit.opendata.control.GenericDataSourceHandler;
 import eu.profinit.opendata.institution.mfcr.MFCRHandler;
 import eu.profinit.opendata.institution.mfcr.rest.JSONClient;
 import eu.profinit.opendata.institution.mfcr.rest.JSONPackageList;
 import eu.profinit.opendata.institution.mfcr.rest.JSONPackageListResource;
-import eu.profinit.opendata.model.DataInstance;
-import eu.profinit.opendata.model.DataSource;
-import eu.profinit.opendata.model.Periodicity;
+import eu.profinit.opendata.model.*;
+import eu.profinit.opendata.query.PartnerQueryService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.appender.SyslogAppender;
 import org.apache.logging.log4j.core.config.plugins.convert.TypeConverters;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
+import java.sql.Date;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,6 +41,12 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
 
     @Autowired
     private JSONClient jsonClient;
+
+    @Autowired
+    private DownloadService downloadService;
+
+    @Autowired
+    private PartnerQueryService partnerQueryService;
 
     @Value("${mfcr.json.orders.identifier}")
     private String orders_identifier;
@@ -140,6 +157,11 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
             if (resource.getFormat().equals("xls") || resource.getFormat().equals("xlsx")) {
                 // Check for "uhrazene faktury" and "za rok {YYYY}" and not "privatizace"
                 String name = resource.getName();
+
+                if(name.contains("Seznam partnerů")) {
+                    processPartnerListDataInstance(ds, resource);
+                }
+
                 Pattern pattern = Pattern.compile("^Uhrazené faktury(?: MF)? za rok (?<year>\\d{4})(?: včetně položky rozpočtu)?$");
                 Matcher matcher = pattern.matcher(name);
                 if(!matcher.find()) continue;
@@ -188,6 +210,58 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
             }
         }
 
+    }
+
+    private void processPartnerListDataInstance(DataSource ds, JSONPackageListResource resource) {
+        log.info("Will download and process list of partners. This will take a few minutes.");
+        Optional<DataInstance> oldPartnerInstance = ds.getDataInstances().stream()
+                .filter(i -> i.getDescription().contains("Seznam partnerů")).findFirst();
+
+        DataInstance toProcess = new DataInstance();
+        if(oldPartnerInstance.isPresent()) {
+            toProcess = oldPartnerInstance.get();
+            toProcess.setUrl(resource.getUrl());
+            em.merge(toProcess);
+        }
+        else {
+            toProcess.setDataSource(ds);
+            toProcess.setUrl(resource.getUrl());
+            toProcess.setFormat("xlsx");
+            toProcess.setPeriodicity(Periodicity.APERIODIC);
+            ds.getDataInstances().add(toProcess);
+            em.persist(toProcess);
+        }
+
+        Timestamp lpd = toProcess.getLastProcessedDate();
+        if(lpd == null || hasEnoughTimeElapsed(lpd, Duration.ofDays(30))) {
+            try {
+                InputStream is = downloadService.downloadDataFile(toProcess.getUrl());
+                log.debug("Got partner list. Extracting entities");
+                processListOfPartners(ds, is);
+            } catch (IOException e) {
+                log.error("Couldn't download or process list of partners", e);
+            }
+        }
+        toProcess.setLastProcessedDate(Timestamp.from(Instant.now()));
+        log.info("List of partners has been processed");
+        em.merge(toProcess);
+    }
+
+    public void processListOfPartners(DataSource ds, InputStream inputStream) throws IOException {
+        Workbook workbook = new XSSFWorkbook(inputStream);
+        Sheet sheet = workbook.getSheetAt(0);
+        for(int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if(Util.isRowEmpty(row)) continue;
+
+            String partnerCode = row.getCell(0).getStringCellValue();
+            String ico = row.getCell(1).getStringCellValue();
+            String name = row.getCell(2).getStringCellValue();
+
+            log.trace("Processing entity " + name);
+            Entity partner = partnerQueryService.findOrCreateEntity(name, ico, null);
+            partnerQueryService.findOrCreatePartnerListEntry(ds.getEntity(), partner, partnerCode);
+        }
     }
 
 

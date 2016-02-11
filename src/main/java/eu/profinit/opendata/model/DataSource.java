@@ -7,6 +7,7 @@ import eu.profinit.opendata.model.util.RecordTypeConverter;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Created by DM on 8. 11. 2015.
@@ -107,7 +108,7 @@ public class DataSource {
 
         DataSource that = (DataSource) o;
 
-        if (dataSourceId != that.dataSourceId) return false;
+        if (!Objects.equals(dataSourceId, that.dataSourceId)) return false;
         if (active != that.active) return false;
         if (lastProcessedDate != null ? !lastProcessedDate.equals(that.lastProcessedDate) : that.lastProcessedDate != null)
             return false;

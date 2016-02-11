@@ -54,6 +54,10 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
         Collection<DataInstance> dataInstanceList = ds.getDataInstances();
         assertTrue(1 <= dataInstanceList.size());
 
+        Optional<DataInstance> oldPartnerInstance = ds.getDataInstances().stream()
+                .filter(i -> i.getDescription().contains("Seznam partnerů")).findFirst();
+        assertTrue(oldPartnerInstance.isPresent());
+
     }
 
     @Test
@@ -104,7 +108,6 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
     public void testProcessContractsWorkbook() throws Exception {
         databaseCleaner.cleanRecords();
 
-
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xls");
         dataInstance.setUrl("http://example.me");
@@ -132,5 +135,45 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
                 recordList.stream().filter(i -> i.getAuthorityIdentifier().length() > 10).collect(Collectors.toList());
 
         assertNotNull(amendments.get(0).getParentRecord());
+    }
+
+    @Test
+    @Transactional
+    public void testProcessPartnersAndOldInvoices() throws Exception {
+        databaseCleaner.cleanRecords();
+
+        DataInstance dataInstance = new DataInstance();
+        dataInstance.setFormat("xls");
+        dataInstance.setUrl("http://example.me");
+        InputStream inputStream = new ClassPathResource("test-old-invoices.xlsx").getInputStream();
+
+        Entity entity = DataGenerator.getTestMinistry();
+        em.persist(entity);
+        DataSource ds = DataGenerator.getDataSource(entity);
+        ds.setRecordType(RecordType.CONTRACT);
+        em.persist(ds);
+        dataInstance.setDataSource(ds);
+        em.persist(dataInstance);
+
+        InputStream partnerInputStream = new ClassPathResource("test-partners.xlsx").getInputStream();
+        mfcrHandler.processListOfPartners(ds, partnerInputStream);
+
+        Retrieval retrieval = transformDriver.doRetrieval(dataInstance, "mappings/mfcr/mapping-old-invoices.xml", inputStream);
+        em.persist(retrieval);
+
+        List<Record> recordList = em.createQuery(
+                "SELECT r FROM Record r WHERE r.retrieval = :retr", Record.class)
+                .setParameter("retr", retrieval)
+                .getResultList();
+        assertEquals(23, recordList.size());
+
+        for(Record record : recordList) {
+            assertNotNull(record.getPartner());
+        }
+
+        List<Entity> entityList = em.createQuery("Select e FROM Entity e WHERE e.public = false", Entity.class)
+                .getResultList();
+        assertEquals(15, entityList.size());
+
     }
 }

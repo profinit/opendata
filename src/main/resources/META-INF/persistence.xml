@@ -10,6 +10,7 @@
         <class>eu.profinit.opendata.model.DataInstance</class>
         <class>eu.profinit.opendata.model.DataSource</class>
         <class>eu.profinit.opendata.model.Entity</class>
+        <class>eu.profinit.opendata.model.PartnerListEntry</class>
         <class>eu.profinit.opendata.model.Record</class>
         <class>eu.profinit.opendata.model.Retrieval</class>
 

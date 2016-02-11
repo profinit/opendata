@@ -3,6 +3,7 @@ package eu.profinit.opendata.model;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import eu.profinit.opendata.model.util.EntityTypeConverter;
@@ -26,6 +27,7 @@ import eu.profinit.opendata.model.util.EntityTypeConverter;
 public class Entity {
     private String dic;
     private String ico;
+    private String authorityIdentifier;
     private boolean isPublic;
 
     private String name;
@@ -103,7 +105,7 @@ public class Entity {
 
         Entity entity = (Entity) o;
 
-        if (entityId != entity.entityId) return false;
+        if (!Objects.equals(entityId, entity.entityId)) return false;
         if (isPublic != entity.isPublic) return false;
         if (dic != null ? !dic.equals(entity.dic) : entity.dic != null) return false;
         if (entityType != null ? !entityType.equals(entity.entityType) : entity.entityType != null) return false;

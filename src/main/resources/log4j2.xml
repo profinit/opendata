@@ -24,7 +24,7 @@
         </Routing>
     </Appenders>
     <Loggers>
-        <Logger name="transform" level="trace" additivity="false">
+        <Logger name="transform" level="trace" additivity="true"> <!-- additivity false to suppress mixing main and transform logs -->
             <AppenderRef ref="TRANSFORM"/>
         </Logger>
 

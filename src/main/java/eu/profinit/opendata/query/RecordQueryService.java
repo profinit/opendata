@@ -57,7 +57,7 @@ public class RecordQueryService {
         return em.createQuery(qr).getResultList();
     }
 
-    class RecordPropertyPredicate implements Predicate<Record> {
+    static class RecordPropertyPredicate implements Predicate<Record> {
 
         String property;
         String value;

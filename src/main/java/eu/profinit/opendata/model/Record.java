@@ -6,6 +6,7 @@ import eu.profinit.opendata.model.util.RecordTypeConverter;
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Created by DM on 8. 11. 2015.
@@ -300,7 +301,7 @@ public class Record {
 
         Record record = (Record) o;
 
-        if (recordId != record.recordId) return false;
+        if (!Objects.equals(recordId, record.recordId)) return false;
         if (amountCzkWithVat != null ? !amountCzkWithVat.equals(record.amountCzkWithVat) : record.amountCzkWithVat != null)
             return false;
         if (amountCzkWithoutVat != null ? !amountCzkWithoutVat.equals(record.amountCzkWithoutVat) : record.amountCzkWithoutVat != null)

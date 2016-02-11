@@ -23,7 +23,12 @@ public class DownloadServiceImpl implements DownloadService {
     @Override
     public InputStream downloadDataFile(DataInstance dataInstance) throws IOException {
         log.debug("Downloading from " + dataInstance.getUrl() + "...");
-        URL url  = new URL(dataInstance.getUrl());
+        return downloadDataFile(dataInstance.getUrl());
+    }
+
+    @Override
+    public InputStream downloadDataFile(String urlString) throws IOException {
+        URL url  = new URL(urlString);
         ReadableByteChannel rbc = Channels.newChannel(url.openStream());
         log.debug("Download complete");
         return Channels.newInputStream(rbc);

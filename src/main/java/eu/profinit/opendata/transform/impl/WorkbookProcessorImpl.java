@@ -1,5 +1,6 @@
 package eu.profinit.opendata.transform.impl;
 
+import eu.profinit.opendata.common.Util;
 import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.model.Retrieval;
 import eu.profinit.opendata.transform.*;
@@ -90,7 +91,7 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
         for(int i = start_row_num; i <= sheet.getLastRowNum(); i++) {
             log.debug("Processing row " + i);
             try {
-                if(isRowEmpty(sheet.getRow(i))) {
+                if(Util.isRowEmpty(sheet.getRow(i))) {
                     log.warn("Encountered empty row at index " + i + ", skipping");
                     continue;
                 }
@@ -319,16 +320,6 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
         return value;
     }
 
-    public static boolean isRowEmpty(Row row) {
-        if(row == null) return true;
-
-        for (int c = row.getFirstCellNum(); c < row.getLastCellNum(); c++) {
-            Cell cell = row.getCell(c);
-            if (cell != null && cell.getCellType() != Cell.CELL_TYPE_BLANK)
-                return false;
-        }
-        return true;
-    }
 
     //Test
     @Override

@@ -10,4 +10,5 @@ import java.io.InputStream;
  */
 public interface DownloadService {
     InputStream downloadDataFile(DataInstance dataInstance) throws IOException;
+    InputStream downloadDataFile(String url) throws IOException;
 }

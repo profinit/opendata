@@ -2,6 +2,7 @@ package eu.profinit.opendata.query;
 
 import eu.profinit.opendata.model.Entity;
 import eu.profinit.opendata.model.EntityType;
+import eu.profinit.opendata.model.PartnerListEntry;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
@@ -19,6 +20,41 @@ public class PartnerQueryService {
 
     @PersistenceContext
     private EntityManager em;
+
+    public Entity findEntityByAuthorityId(String authorityId) {
+        return em.createNamedQuery("findByAuthId", Entity.class)
+                .setParameter("authId", authorityId)
+                .getSingleResult();
+    }
+
+    public PartnerListEntry findOrCreatePartnerListEntry(Entity authority, Entity partner, String code) {
+        PartnerListEntry found = em.createNamedQuery("findByAuthorityAndCode", PartnerListEntry.class)
+                                                .setParameter("authority", authority)
+                                                .setParameter("code", code)
+                                                .getSingleResult();
+
+        if(found == null) {
+            PartnerListEntry result = new PartnerListEntry();
+            result.setAuthority(authority);
+            result.setPartner(partner);
+            result.setCode(code);
+            em.persist(result);
+            return result;
+        }
+        else return found;
+    }
+
+    public Entity findFromPartnerList(Entity authority, String code) {
+        PartnerListEntry found = em.createNamedQuery("findByAuthorityAndCode", PartnerListEntry.class)
+                .setParameter("authority", authority)
+                .setParameter("code", code)
+                .getSingleResult();
+
+        if(found != null) {
+            return found.getPartner();
+        }
+        return null;
+    }
 
     public Entity findOrCreateEntity(String name, String ico, String dic) {
 

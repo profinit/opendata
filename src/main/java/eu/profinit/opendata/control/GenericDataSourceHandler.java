@@ -126,7 +126,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
 
     }
 
-    private boolean hasEnoughTimeElapsed(Timestamp from, Duration targetDuration) {
+    protected boolean hasEnoughTimeElapsed(Timestamp from, Duration targetDuration) {
         Duration elapsed = Duration.ofMillis(System.currentTimeMillis())
                     .minus(Duration.ofMillis(from.getTime()));
 
