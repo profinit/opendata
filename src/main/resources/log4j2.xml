@@ -24,14 +24,14 @@
         </Routing>
     </Appenders>
     <Loggers>
-        <Logger name="transform" level="trace" additivity="true"> <!-- additivity false to suppress mixing main and transform logs -->
+        <Logger name="transform" level="trace" additivity="false"> <!-- additivity false to suppress mixing main and transform logs -->
             <AppenderRef ref="TRANSFORM"/>
         </Logger>
 
         <Logger name="org.hibernate" level="info"/>
         <Logger name="org.springframework" level="info"/>
 
-        <Root level="debug">
+        <Root level="trace">
             <AppenderRef ref="STDOUT"/>
             <AppenderRef ref="FILE"/>
         </Root>

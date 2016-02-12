@@ -53,10 +53,12 @@ public class PartnerSetter implements RecordPropertyConverter {
         //Sanity check
         if(isNullOrEmpty(ico) && isNullOrEmpty(dic) && isNullOrEmpty(name)) {
             throw new TransformException("Could not set partner because ico, dic and name are all null or blank",
-                    TransformException.Severity.RECORD_LOCAL);
+                    TransformException.Severity.PROPERTY_LOCAL);
         }
 
+        logger.trace("Calling PartnerQueryService to find or create entity");
         Entity partner = partnerQueryService.findOrCreateEntity(name, ico, dic);
+        logger.trace("Got back entity " + partner.getName());
 
         Field field = null;
         try {
@@ -71,6 +73,8 @@ public class PartnerSetter implements RecordPropertyConverter {
             throw new TransformException("Field " + fieldName + " probably doesn't exist", e, TransformException.Severity.FATAL);
         } catch (TransformException e) {
             throw e;
+        } finally {
+            logger.trace("PartnerSetter exiting");
         }
     }
 

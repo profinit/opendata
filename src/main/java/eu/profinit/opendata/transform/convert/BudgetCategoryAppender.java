@@ -1,5 +1,6 @@
 package eu.profinit.opendata.transform.convert;
 
+import eu.profinit.opendata.common.Util;
 import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.transform.RecordPropertyConverter;
 import eu.profinit.opendata.transform.TransformException;
@@ -21,7 +22,11 @@ public class BudgetCategoryAppender implements RecordPropertyConverter {
         try {
 
             String currentCategory = record.getBudgetCategory();
+
+            if(sourceValues.get("category") == null) return;
+
             String newCategory = sourceValues.get("category").getStringCellValue();
+            if(Util.isNullOrEmpty(newCategory)) return;
 
             if(currentCategory != null && newCategory.length() > 0) {
                 record.setBudgetCategory(currentCategory + "; " + newCategory);
@@ -33,6 +38,7 @@ public class BudgetCategoryAppender implements RecordPropertyConverter {
 
         } catch (Exception e) {
             String message = "Couldn't set String value for field " + fieldName;
+            logger.error(e);
             throw new TransformException(message, e, TransformException.Severity.PROPERTY_LOCAL);
         }
 

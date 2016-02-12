@@ -4,11 +4,13 @@ import eu.profinit.opendata.common.Util;
 import eu.profinit.opendata.control.DownloadService;
 import eu.profinit.opendata.control.GenericDataSourceHandler;
 import eu.profinit.opendata.institution.mfcr.MFCRHandler;
+import eu.profinit.opendata.institution.mfcr.PartnerListProcessor;
 import eu.profinit.opendata.institution.mfcr.rest.JSONClient;
 import eu.profinit.opendata.institution.mfcr.rest.JSONPackageList;
 import eu.profinit.opendata.institution.mfcr.rest.JSONPackageListResource;
 import eu.profinit.opendata.model.*;
 import eu.profinit.opendata.query.PartnerQueryService;
+import eu.profinit.opendata.transform.TransformException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.appender.SyslogAppender;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -43,10 +46,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
     private JSONClient jsonClient;
 
     @Autowired
-    private DownloadService downloadService;
-
-    @Autowired
-    private PartnerQueryService partnerQueryService;
+    private PartnerListProcessor partnerListProcessor;
 
     @Value("${mfcr.json.orders.identifier}")
     private String orders_identifier;
@@ -79,6 +79,11 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
             case CONTRACT: updateOrdersOrContractsDataInstance(ds, contracts_identifier, contracts_mapping_file); break;
             default: break;
         }
+    }
+
+    @Override
+    public void setPartnerListProcessor(PartnerListProcessor plp) {
+        this.partnerListProcessor = plp;
     }
 
     /**
@@ -159,7 +164,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
                 String name = resource.getName();
 
                 if(name.contains("Seznam partnerů")) {
-                    processPartnerListDataInstance(ds, resource);
+                    partnerListProcessor.processPartnerListDataInstance(ds, resource);
                 }
 
                 Pattern pattern = Pattern.compile("^Uhrazené faktury(?: MF)? za rok (?<year>\\d{4})(?: včetně položky rozpočtu)?$");
@@ -168,8 +173,6 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
 
                 Integer year = Integer.parseInt(matcher.group("year"));
                 DataInstance dataInstance = new DataInstance();
-
-
 
                 // Check if we already have a data instance with the same given id - if yes, simply update the URL
                 // If not, create a new one
@@ -211,59 +214,5 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
         }
 
     }
-
-    private void processPartnerListDataInstance(DataSource ds, JSONPackageListResource resource) {
-        log.info("Will download and process list of partners. This will take a few minutes.");
-        Optional<DataInstance> oldPartnerInstance = ds.getDataInstances().stream()
-                .filter(i -> i.getDescription().contains("Seznam partnerů")).findFirst();
-
-        DataInstance toProcess = new DataInstance();
-        if(oldPartnerInstance.isPresent()) {
-            toProcess = oldPartnerInstance.get();
-            toProcess.setUrl(resource.getUrl());
-            em.merge(toProcess);
-        }
-        else {
-            toProcess.setDataSource(ds);
-            toProcess.setUrl(resource.getUrl());
-            toProcess.setFormat("xlsx");
-            toProcess.setPeriodicity(Periodicity.APERIODIC);
-            ds.getDataInstances().add(toProcess);
-            em.persist(toProcess);
-        }
-
-        Timestamp lpd = toProcess.getLastProcessedDate();
-        if(lpd == null || hasEnoughTimeElapsed(lpd, Duration.ofDays(30))) {
-            try {
-                InputStream is = downloadService.downloadDataFile(toProcess.getUrl());
-                log.debug("Got partner list. Extracting entities");
-                processListOfPartners(ds, is);
-            } catch (IOException e) {
-                log.error("Couldn't download or process list of partners", e);
-            }
-        }
-        toProcess.setLastProcessedDate(Timestamp.from(Instant.now()));
-        log.info("List of partners has been processed");
-        em.merge(toProcess);
-    }
-
-    public void processListOfPartners(DataSource ds, InputStream inputStream) throws IOException {
-        Workbook workbook = new XSSFWorkbook(inputStream);
-        Sheet sheet = workbook.getSheetAt(0);
-        for(int i = 1; i <= sheet.getLastRowNum(); i++) {
-            Row row = sheet.getRow(i);
-            if(Util.isRowEmpty(row)) continue;
-
-            String partnerCode = row.getCell(0).getStringCellValue();
-            String ico = row.getCell(1).getStringCellValue();
-            String name = row.getCell(2).getStringCellValue();
-
-            log.trace("Processing entity " + name);
-            Entity partner = partnerQueryService.findOrCreateEntity(name, ico, null);
-            partnerQueryService.findOrCreatePartnerListEntry(ds.getEntity(), partner, partnerCode);
-        }
-    }
-
-
 
 }

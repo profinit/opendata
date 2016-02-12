@@ -1,13 +1,18 @@
 package eu.profinit.opendata.test.mfcr;
 
 import eu.profinit.opendata.institution.mfcr.MFCRHandler;
+import eu.profinit.opendata.institution.mfcr.PartnerListProcessor;
+import eu.profinit.opendata.institution.mfcr.rest.JSONPackageList;
+import eu.profinit.opendata.institution.mfcr.rest.JSONPackageListResource;
 import eu.profinit.opendata.model.*;
 import eu.profinit.opendata.test.ApplicationContextTestCase;
 import eu.profinit.opendata.test.DataGenerator;
 import eu.profinit.opendata.test.util.DatabaseCleaner;
 import eu.profinit.opendata.transform.TransformDriver;
 import eu.profinit.opendata.transform.WorkbookProcessor;
+import org.junit.After;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +23,9 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by dm on 1/30/16.
@@ -32,7 +39,7 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
     private DatabaseCleaner databaseCleaner;
 
     @Autowired
-    private WorkbookProcessor workbookProcessor;
+    private PartnerListProcessor partnerListProcessor;
 
     @Autowired
     private TransformDriver transformDriver;
@@ -42,6 +49,7 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
 
 
     @Test
+    @Transactional
     public void testCreateInvoicesDataInstances() throws Exception {
         DataSource ds = new DataSource();
         ds.setDataInstances(new ArrayList<>());
@@ -50,13 +58,14 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
         EntityManager mockEm = mock(EntityManager.class);
         mfcrHandler.setEm(mockEm);
 
+        PartnerListProcessor mockPlp = mock(PartnerListProcessor.class);
+        mfcrHandler.setPartnerListProcessor(mockPlp);
+
         mfcrHandler.updateDataInstances(ds);
         Collection<DataInstance> dataInstanceList = ds.getDataInstances();
         assertTrue(1 <= dataInstanceList.size());
 
-        Optional<DataInstance> oldPartnerInstance = ds.getDataInstances().stream()
-                .filter(i -> i.getDescription().contains("Seznam partnerů")).findFirst();
-        assertTrue(oldPartnerInstance.isPresent());
+        verify(mockPlp).processPartnerListDataInstance(Matchers.eq(ds), any(JSONPackageListResource.class));
 
     }
 
@@ -143,12 +152,12 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
         databaseCleaner.cleanRecords();
 
         DataInstance dataInstance = new DataInstance();
-        dataInstance.setFormat("xls");
+        dataInstance.setFormat("xlsx");
         dataInstance.setUrl("http://example.me");
         InputStream inputStream = new ClassPathResource("test-old-invoices.xlsx").getInputStream();
 
-        Entity entity = DataGenerator.getTestMinistry();
-        em.persist(entity);
+        Entity entity = em.createQuery("Select e from Entity e where e.ico = '00006947'", Entity.class)
+                .getSingleResult();
         DataSource ds = DataGenerator.getDataSource(entity);
         ds.setRecordType(RecordType.CONTRACT);
         em.persist(ds);
@@ -156,7 +165,7 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
         em.persist(dataInstance);
 
         InputStream partnerInputStream = new ClassPathResource("test-partners.xlsx").getInputStream();
-        mfcrHandler.processListOfPartners(ds, partnerInputStream);
+        partnerListProcessor.processListOfPartners(ds, partnerInputStream);
 
         Retrieval retrieval = transformDriver.doRetrieval(dataInstance, "mappings/mfcr/mapping-old-invoices.xml", inputStream);
         em.persist(retrieval);
@@ -167,13 +176,13 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
                 .getResultList();
         assertEquals(23, recordList.size());
 
-        for(Record record : recordList) {
-            assertNotNull(record.getPartner());
-        }
-
         List<Entity> entityList = em.createQuery("Select e FROM Entity e WHERE e.public = false", Entity.class)
                 .getResultList();
         assertEquals(15, entityList.size());
 
+        for(Record record : recordList) {
+            assertNotNull(record.getPartner());
+        }
     }
+
 }

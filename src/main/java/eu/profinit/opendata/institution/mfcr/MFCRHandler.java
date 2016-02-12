@@ -14,5 +14,5 @@ public interface MFCRHandler extends DataSourceHandler {
     //Test
     void setEm(EntityManager em);
     void updateDataInstances(DataSource ds);
-    void processListOfPartners(DataSource ds, InputStream is) throws IOException;
+    void setPartnerListProcessor(PartnerListProcessor plp);
 }

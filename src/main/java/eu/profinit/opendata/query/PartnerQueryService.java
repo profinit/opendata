@@ -3,6 +3,8 @@ package eu.profinit.opendata.query;
 import eu.profinit.opendata.model.Entity;
 import eu.profinit.opendata.model.EntityType;
 import eu.profinit.opendata.model.PartnerListEntry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
@@ -21,19 +23,15 @@ public class PartnerQueryService {
     @PersistenceContext
     private EntityManager em;
 
-    public Entity findEntityByAuthorityId(String authorityId) {
-        return em.createNamedQuery("findByAuthId", Entity.class)
-                .setParameter("authId", authorityId)
-                .getSingleResult();
-    }
+    private Logger logger = LogManager.getLogger(PartnerQueryService.class);
 
     public PartnerListEntry findOrCreatePartnerListEntry(Entity authority, Entity partner, String code) {
-        PartnerListEntry found = em.createNamedQuery("findByAuthorityAndCode", PartnerListEntry.class)
+        List<PartnerListEntry> found = em.createNamedQuery("findByAuthorityAndCode", PartnerListEntry.class)
                                                 .setParameter("authority", authority)
                                                 .setParameter("code", code)
-                                                .getSingleResult();
+                                                .getResultList();
 
-        if(found == null) {
+        if(found.isEmpty()) {
             PartnerListEntry result = new PartnerListEntry();
             result.setAuthority(authority);
             result.setPartner(partner);
@@ -41,23 +39,23 @@ public class PartnerQueryService {
             em.persist(result);
             return result;
         }
-        else return found;
+        else return found.get(0);
     }
 
     public Entity findFromPartnerList(Entity authority, String code) {
-        PartnerListEntry found = em.createNamedQuery("findByAuthorityAndCode", PartnerListEntry.class)
+        List<PartnerListEntry> found = em.createNamedQuery("findByAuthorityAndCode", PartnerListEntry.class)
                 .setParameter("authority", authority)
                 .setParameter("code", code)
-                .getSingleResult();
+                .getResultList();
 
-        if(found != null) {
-            return found.getPartner();
+        if(!found.isEmpty()) {
+            return found.get(0).getPartner();
         }
         return null;
     }
 
     public Entity findOrCreateEntity(String name, String ico, String dic) {
-
+        //logger.trace("Calling findEntity");
         Entity found = findEntity(name, ico, dic);
         // Pokud nemame ani jednoho kandidata, musime vytvorit noveho
 
@@ -92,6 +90,7 @@ public class PartnerQueryService {
         // Pokud jsme jeste nic nenalezli, zkusime podle ico
         // Mame-li kandidata, vracime ho.
 
+        //logger.trace("Calling query");
         if(!isNullOrEmpty(ico) && !isNullOrEmpty(dic)) {
             candidates = em.createNamedQuery("findByICOAndDIC", Entity.class)
                     .setParameter("ico", ico)
@@ -108,6 +107,7 @@ public class PartnerQueryService {
                     .setParameter("dic", ico)
                     .getResultList();
         }
+        //logger.trace("Entity query completed with " + candidates.size() + " candidates.");
 
         // Pokud mame jenom jmeno nebo jsme jeste nenasli,
         // hledame podle jmena

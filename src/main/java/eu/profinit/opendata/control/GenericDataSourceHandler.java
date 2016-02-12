@@ -1,5 +1,6 @@
 package eu.profinit.opendata.control;
 
+import eu.profinit.opendata.common.Util;
 import eu.profinit.opendata.transform.TransformDriver;
 import eu.profinit.opendata.model.*;
 import org.apache.logging.log4j.LogManager;
@@ -66,7 +67,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
 
         log.debug("Checking elapsed time since last processing");
         if(ds.getLastProcessedDate() == null ||
-                hasEnoughTimeElapsed(ds.getLastProcessedDate(), ds.getPeriodicity().getDuration())) {
+                Util.hasEnoughTimeElapsed(ds.getLastProcessedDate(), ds.getPeriodicity().getDuration())) {
 
             this.updateDataInstances(ds);
         } else {
@@ -93,7 +94,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
             log.debug("(isProcessed, isPeriodic, hasExpired) = " +
                       "(" + isProcessed + ", " + isPeriodic + ", " + hasExpired + ")");
 
-            if(!hasExpired && (!isProcessed || (isPeriodic && hasEnoughTimeElapsed(lpd, p.getDuration())))) {
+            if(!hasExpired && (!isProcessed || (isPeriodic && Util.hasEnoughTimeElapsed(lpd, p.getDuration())))) {
                 log.info("Marked data instance " + dataInstance.getDataInstanceId() + " for processing");
                 result.add(dataInstance);
             }
@@ -124,14 +125,6 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
             em.merge(dataInstance);
         }
 
-    }
-
-    protected boolean hasEnoughTimeElapsed(Timestamp from, Duration targetDuration) {
-        Duration elapsed = Duration.ofMillis(System.currentTimeMillis())
-                    .minus(Duration.ofMillis(from.getTime()));
-
-        log.debug("Elapsed time calculated as " + elapsed + ", target is " + targetDuration);
-        return elapsed.compareTo(targetDuration.dividedBy(2)) > 0;
     }
 
     protected Logger getLogger() {

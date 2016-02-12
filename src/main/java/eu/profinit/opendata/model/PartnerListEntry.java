@@ -6,10 +6,14 @@ import javax.persistence.*;
  * Created by dm on 2/11/16.
  */
 @javax.persistence.Entity
-@Table(name = "record", schema = "public", catalog = "opendata")
+@Table(name = "partner_list_entry", schema = "public", catalog = "opendata")
 @SequenceGenerator(name = "seq_pk", sequenceName = "partner_list_entry_partner_list_entry_id_seq", allocationSize = 1)
-@NamedQuery(name = "findByAuthorityAndCode",
-        query = "SELECT OBJECT(p) FROM PartnerListEntry p WHERE p.authority = :authority AND p.code = :code")
+@NamedQueries({
+        @NamedQuery(name = "findByAuthorityAndCode",
+        query = "SELECT OBJECT(p) FROM PartnerListEntry p WHERE p.authority = :authority AND p.code = :code"),
+        @NamedQuery(name = "findByCode",
+                query = "SELECT OBJECT(p) FROM PartnerListEntry p WHERE p.code = :code")
+})
 public class PartnerListEntry {
 
     private Entity authority;

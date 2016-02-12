@@ -107,10 +107,10 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
                 log.debug("Record finished, persisting");
                 if(retrieval.equals(record.getRetrieval()) && !retrieval.getRecords().contains(record)) {
                     retrieval.getRecords().add(record);
+                    retrieval.setNumRecordsInserted(retrieval.getNumRecordsInserted() + 1);
                 } else if(record.getRecordId() != null) {
                     em.merge(record);
                 }
-                retrieval.setNumRecordsInserted(retrieval.getNumRecordsInserted() + 1);
                 retrieval.getDataInstance().setLastProcessedRow(i);
             }
             catch (TransformException ex) {
