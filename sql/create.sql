@@ -27,6 +27,9 @@ DROP SEQUENCE IF EXISTS "data_instance_data_source_id_seq"
 DROP SEQUENCE IF EXISTS "partner_list_entry_partner_list_entry_id_seq"
 ;
 
+DROP SEQUENCE IF EXISTS "unresolved_relationship_unresolved_relationship_id_seq"
+;
+
 /* Drop Tables */
 
 DROP TABLE IF EXISTS "retrieval" CASCADE
@@ -57,6 +60,9 @@ DROP TABLE IF EXISTS "authority_role" CASCADE
 ;
 
 DROP TABLE IF EXISTS "partner_list_entry" CASCADE
+;
+
+DROP TABLE IF EXISTS "unresolved_relationship" CASCADE
 ;
 
 /* Create Tables */
@@ -173,6 +179,14 @@ CREATE TABLE "partner_list_entry"
 )
 ;
 
+CREATE TABLE "unresolved_relationship"
+(
+	"bound_authority_identifier" varchar(50)	 NOT NULL,
+	"saved_record_id" integer NOT NULL,
+	"unresolved_relationship_id" integer NOT NULL DEFAULT nextval(('"unresolved_relationship_unresolved_relationship_id_seq"'::text)::regclass)
+)
+;
+
 /* Create Table Comments, Sequences for Autonumber Columns */
 
 CREATE SEQUENCE "retrieval_retrieval_id_seq" INCREMENT 1 START 1
@@ -195,6 +209,10 @@ CREATE SEQUENCE "data_instance_data_source_id_seq" INCREMENT 1 START 1
 
 CREATE SEQUENCE "partner_list_entry_partner_list_entry_id_seq" INCREMENT 1 START 1
 ;
+
+CREATE SEQUENCE "unresolved_relationship_unresolved_relationship_id_seq" INCREMENT 1 START 1
+;
+
 
 /* Create Primary Keys, Indexes, Uniques, Checks */
 
@@ -237,6 +255,11 @@ ALTER TABLE "authority_role" ADD CONSTRAINT "PK_authority_role"
 ALTER TABLE "partner_list_entry" ADD CONSTRAINT "PK_PartnerListEntry"
 	PRIMARY KEY ("partner_list_entry_id")
 ;
+
+ALTER TABLE "unresolved_relationship" ADD CONSTRAINT "PK_unresolved_relationship"
+PRIMARY KEY ("unresolved_relationship_id")
+;
+
 
 /* Create Foreign Key Constraints */
 
@@ -300,3 +323,6 @@ ALTER TABLE "partner_list_entry" ADD CONSTRAINT "FK_partner_list_entry_entity_02
 	FOREIGN KEY ("partner_id") REFERENCES "entity" ("entity_id") ON DELETE No Action ON UPDATE No Action
 ;
 
+ALTER TABLE "unresolved_relationship" ADD CONSTRAINT "FK_unresolved_relationship_record"
+FOREIGN KEY ("saved_record_id") REFERENCES "record" ("record_id") ON DELETE No Action ON UPDATE No Action
+;
