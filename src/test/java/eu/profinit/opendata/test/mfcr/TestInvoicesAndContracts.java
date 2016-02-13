@@ -65,7 +65,7 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
         Collection<DataInstance> dataInstanceList = ds.getDataInstances();
         assertTrue(1 <= dataInstanceList.size());
 
-        verify(mockPlp).processPartnerListDataInstance(Matchers.eq(ds), any(JSONPackageListResource.class));
+        verify(mockPlp).processListOfPartners(Matchers.eq(ds), any(InputStream.class));
 
     }
 

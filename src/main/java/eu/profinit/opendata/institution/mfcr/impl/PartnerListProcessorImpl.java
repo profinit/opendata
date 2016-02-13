@@ -42,47 +42,8 @@ public class PartnerListProcessorImpl implements PartnerListProcessor {
     private Logger log = LogManager.getLogger(PartnerListProcessor.class);
 
     @Autowired
-    private DownloadService downloadService;
-
-    @Autowired
     private PartnerQueryService partnerQueryService;
 
-
-    @Override
-    public void processPartnerListDataInstance(DataSource ds, JSONPackageListResource resource) {
-        log.info("Will download and process list of partners. This will take a few minutes.");
-        Optional<DataInstance> oldPartnerInstance = ds.getDataInstances().stream()
-                .filter(i -> i.getDescription().contains("Seznam partnerů")).findFirst();
-
-        DataInstance toProcess = new DataInstance();
-        if(oldPartnerInstance.isPresent()) {
-            toProcess = oldPartnerInstance.get();
-            toProcess.setUrl(resource.getUrl());
-            em.merge(toProcess);
-        }
-        else {
-            toProcess.setDataSource(ds);
-            toProcess.setUrl(resource.getUrl());
-            toProcess.setFormat("xlsx");
-            toProcess.setPeriodicity(Periodicity.APERIODIC);
-            ds.getDataInstances().add(toProcess);
-            em.persist(toProcess);
-        }
-
-        Timestamp lpd = toProcess.getLastProcessedDate();
-        if(lpd == null || Util.hasEnoughTimeElapsed(lpd, Duration.ofDays(30))) {
-            try {
-                InputStream is = downloadService.downloadDataFile(toProcess.getUrl());
-                log.debug("Got partner list. Extracting entities");
-                processListOfPartners(ds, is);
-            } catch (IOException e) {
-                log.error("Couldn't download or process list of partners", e);
-            }
-        }
-        toProcess.setLastProcessedDate(Timestamp.from(Instant.now()));
-        log.info("List of partners has been processed");
-        em.merge(toProcess);
-    }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW,

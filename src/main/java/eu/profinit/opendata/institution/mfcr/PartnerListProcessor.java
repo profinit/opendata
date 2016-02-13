@@ -11,7 +11,6 @@ import java.io.InputStream;
  * Created by dm on 2/12/16.
  */
 public interface PartnerListProcessor {
-    void processPartnerListDataInstance(DataSource ds, JSONPackageListResource resource);
     void processListOfPartners(DataSource ds, InputStream inputStream) throws IOException;
 
     //Test

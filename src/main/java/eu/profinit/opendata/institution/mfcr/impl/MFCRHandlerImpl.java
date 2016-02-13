@@ -48,6 +48,9 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
     @Autowired
     private PartnerListProcessor partnerListProcessor;
 
+    @Autowired
+    private DownloadService downloadService;
+
     @Value("${mfcr.json.orders.identifier}")
     private String orders_identifier;
 
@@ -164,7 +167,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
                 String name = resource.getName();
 
                 if(name.contains("Seznam partnerů")) {
-                    partnerListProcessor.processPartnerListDataInstance(ds, resource);
+                    processPartnerListDataInstance(ds, resource);
                 }
 
                 Pattern pattern = Pattern.compile("^Uhrazené faktury(?: MF)? za rok (?<year>\\d{4})(?: včetně položky rozpočtu)?$");
@@ -213,6 +216,41 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
             }
         }
 
+    }
+
+    public void processPartnerListDataInstance(DataSource ds, JSONPackageListResource resource) {
+        log.info("Will download and process list of partners. This will take a few minutes.");
+        Optional<DataInstance> oldPartnerInstance = ds.getDataInstances().stream()
+                .filter(i -> i.getDescription().contains("Seznam partnerů")).findFirst();
+
+        DataInstance toProcess = new DataInstance();
+        if(oldPartnerInstance.isPresent()) {
+            toProcess = oldPartnerInstance.get();
+            toProcess.setUrl(resource.getUrl());
+            em.merge(toProcess);
+        }
+        else {
+            toProcess.setDataSource(ds);
+            toProcess.setUrl(resource.getUrl());
+            toProcess.setFormat("xlsx");
+            toProcess.setPeriodicity(Periodicity.APERIODIC);
+            ds.getDataInstances().add(toProcess);
+            em.persist(toProcess);
+        }
+
+        Timestamp lpd = toProcess.getLastProcessedDate();
+        if(lpd == null || Util.hasEnoughTimeElapsed(lpd, Duration.ofDays(30))) {
+            try {
+                InputStream is = downloadService.downloadDataFile(toProcess.getUrl());
+                log.debug("Got partner list. Extracting entities");
+                partnerListProcessor.processListOfPartners(ds, is);
+            } catch (IOException e) {
+                log.error("Couldn't download or process list of partners", e);
+            }
+        }
+        toProcess.setLastProcessedDate(Timestamp.from(Instant.now()));
+        log.info("List of partners has been processed");
+        em.merge(toProcess);
     }
 
 }
