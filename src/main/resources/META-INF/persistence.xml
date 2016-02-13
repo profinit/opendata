@@ -13,6 +13,7 @@
         <class>eu.profinit.opendata.model.PartnerListEntry</class>
         <class>eu.profinit.opendata.model.Record</class>
         <class>eu.profinit.opendata.model.Retrieval</class>
+        <class>eu.profinit.opendata.model.UnresolvedRelationship</class>
 
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL94Dialect"/>

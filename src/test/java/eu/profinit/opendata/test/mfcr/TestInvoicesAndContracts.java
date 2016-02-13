@@ -1,16 +1,13 @@
 package eu.profinit.opendata.test.mfcr;
 
+import eu.profinit.opendata.control.RelationshipResolver;
 import eu.profinit.opendata.institution.mfcr.MFCRHandler;
 import eu.profinit.opendata.institution.mfcr.PartnerListProcessor;
-import eu.profinit.opendata.institution.mfcr.rest.JSONPackageList;
-import eu.profinit.opendata.institution.mfcr.rest.JSONPackageListResource;
 import eu.profinit.opendata.model.*;
 import eu.profinit.opendata.test.ApplicationContextTestCase;
 import eu.profinit.opendata.test.DataGenerator;
-import eu.profinit.opendata.test.util.DatabaseCleaner;
+import eu.profinit.opendata.test.util.DatabaseUtils;
 import eu.profinit.opendata.transform.TransformDriver;
-import eu.profinit.opendata.transform.WorkbookProcessor;
-import org.junit.After;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +33,16 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
     private MFCRHandler mfcrHandler;
 
     @Autowired
-    private DatabaseCleaner databaseCleaner;
+    private DatabaseUtils databaseUtils;
 
     @Autowired
     private PartnerListProcessor partnerListProcessor;
 
     @Autowired
     private TransformDriver transformDriver;
+
+    @Autowired
+    private RelationshipResolver relationshipResolver;
 
     @PersistenceContext
     private EntityManager em;
@@ -87,7 +87,7 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
     @Test
     @Transactional
     public void testProcessInvoiceWorkbook() throws Exception {
-        databaseCleaner.cleanRecords();
+        databaseUtils.cleanRecords();
 
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xlsx");
@@ -115,7 +115,7 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
     @Test
     @Transactional
     public void testProcessContractsWorkbook() throws Exception {
-        databaseCleaner.cleanRecords();
+        databaseUtils.cleanRecords();
 
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xls");
@@ -144,12 +144,18 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
                 recordList.stream().filter(i -> i.getAuthorityIdentifier().length() > 10).collect(Collectors.toList());
 
         assertNotNull(amendments.get(0).getParentRecord());
+
+        // Connection to invoices
+        List<UnresolvedRelationship> unresolvedRelationships = em.createQuery(
+                "Select u from UnresolvedRelationship u", UnresolvedRelationship.class)
+                .getResultList();
+        assertEquals(16, unresolvedRelationships.size());
     }
 
     @Test
     @Transactional
     public void testProcessPartnersAndOldInvoices() throws Exception {
-        databaseCleaner.cleanRecords();
+        databaseUtils.cleanRecords();
 
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xlsx");
@@ -178,7 +184,7 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
 
         List<Entity> entityList = em.createQuery("Select e FROM Entity e WHERE e.public = false", Entity.class)
                 .getResultList();
-        assertEquals(15, entityList.size());
+        assertEquals(16, entityList.size());
 
         for(Record record : recordList) {
             assertNotNull(record.getPartner());

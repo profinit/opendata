@@ -3,23 +3,16 @@ package eu.profinit.opendata.test;
 import eu.profinit.opendata.common.Util;
 import eu.profinit.opendata.model.*;
 import eu.profinit.opendata.test.converter.Killjoy;
-import eu.profinit.opendata.test.util.DatabaseCleaner;
+import eu.profinit.opendata.test.util.DatabaseUtils;
 import eu.profinit.opendata.transform.TransformDriver;
 import eu.profinit.opendata.transform.WorkbookProcessor;
-import eu.profinit.opendata.transform.impl.TransformDriverImpl;
 import eu.profinit.opendata.transform.TransformException;
-import eu.profinit.opendata.transform.impl.WorkbookProcessorImpl;
 import eu.profinit.opendata.transform.jaxb.Mapping;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -49,7 +42,7 @@ public class TransformDriverTest extends ApplicationContextTestCase {
     private WorkbookProcessor workbookProcessor;
 
     @Autowired
-    private DatabaseCleaner databaseCleaner;
+    private DatabaseUtils databaseUtils;
 
     @Test
     public void testLoadMapping() throws Exception {
@@ -129,7 +122,7 @@ public class TransformDriverTest extends ApplicationContextTestCase {
     @Test
     @Transactional
     public void testTransactions() throws Exception {
-        databaseCleaner.cleanRecords();
+        databaseUtils.cleanRecords();
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xls");
         dataInstance.setUrl("http://example.me");
@@ -182,7 +175,7 @@ public class TransformDriverTest extends ApplicationContextTestCase {
     @Test
     @Transactional
     public void testRollback() throws Exception {
-        databaseCleaner.cleanRecords();
+        databaseUtils.cleanRecords();
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xls");
         dataInstance.setUrl("http://example.me");

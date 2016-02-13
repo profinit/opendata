@@ -55,6 +55,10 @@
     <property name="parentRecord" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.mfcr.ContractParentSetter">
         <sourceFileColumn originalName="Typ_smlouvy" argumentName="type"/>
     </property>
+    
+    <property name="invoiceId" onlyNewRecords="false" converter="eu.profinit.opendata.transform.convert.mfcr.ContractAndInvoiceCorrelator">
+        <sourceFileColumn originalName="Číslo_faktury" argumentName="invoiceId"/>
+    </property>
 
     <property name="masterId" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.RandomMasterIdSetter">
 

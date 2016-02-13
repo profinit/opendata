@@ -14,9 +14,14 @@ import java.util.Objects;
 @javax.persistence.Entity
 @Table(name = "record", schema = "public", catalog = "opendata")
 @SequenceGenerator(name = "seq_pk", sequenceName = "record_record_id_seq", allocationSize = 1)
-@NamedQuery(name = "findByAuthorityIdAndEntity",
+@NamedQueries({
+        @NamedQuery(name = "findByAuthorityIdAndEntity",
         query = "SELECT OBJECT(r) FROM Record r WHERE r.authorityIdentifier = :authorityIdentifier " +
-                "AND r.authority = :authority")
+                "AND r.authority = :authority"),
+        @NamedQuery(name = "findByUnresolvedRelationship",
+        query = "SELECT OBJECT(r) FROM Record r WHERE r.authorityIdentifier = :authorityIdentifier " +
+                "AND r.authority = :authority AND r.recordType = :recordType")
+})
 public class Record {
     private Double amountCzkWithVat;
 
@@ -292,6 +297,17 @@ public class Record {
 
     public void setChildRecords(Collection<Record> childRecords) {
         this.childRecords = childRecords;
+    }
+
+    private Collection<UnresolvedRelationship> unresolvedRelationships;
+
+    @OneToMany(mappedBy = "savedRecord", cascade = CascadeType.PERSIST)
+    public Collection<UnresolvedRelationship> getUnresolvedRelationships() {
+        return unresolvedRelationships;
+    }
+
+    public void setUnresolvedRelationships(Collection<UnresolvedRelationship> unresolvedRelationships) {
+        this.unresolvedRelationships = unresolvedRelationships;
     }
 
     @Override
