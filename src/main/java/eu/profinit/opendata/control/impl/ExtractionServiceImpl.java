@@ -2,6 +2,7 @@ package eu.profinit.opendata.control.impl;
 
 import eu.profinit.opendata.control.ExtractionService;
 import eu.profinit.opendata.control.DataSourceHandlerFactory;
+import eu.profinit.opendata.control.RelationshipResolver;
 import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.DataSourceHandler;
 import org.apache.logging.log4j.LogManager;
@@ -25,6 +26,9 @@ public class ExtractionServiceImpl implements ExtractionService {
 
     @Autowired
     private DataSourceHandlerFactory dataSourceHandlerFactory;
+
+    @Autowired
+    private RelationshipResolver relationshipResolver;
 
     private Logger log = LogManager.getLogger(ExtractionServiceImpl.class);
 
@@ -52,6 +56,9 @@ public class ExtractionServiceImpl implements ExtractionService {
         }
 
         log.info("All active data sources have been processed");
+
+        log.info("Invoking relationship resolver");
+        relationshipResolver.resolveRecordParentRelationships();
     }
 
     private List<DataSource> getActiveDatasources() {

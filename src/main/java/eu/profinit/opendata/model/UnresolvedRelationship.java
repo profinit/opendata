@@ -1,5 +1,7 @@
 package eu.profinit.opendata.model;
 
+import eu.profinit.opendata.model.util.RecordTypeConverter;
+
 import javax.persistence.*;
 
 /**
@@ -13,6 +15,7 @@ public class UnresolvedRelationship {
     private Long unresolvedRelationshipId;
     private Record savedRecord;
     private String boundAuthorityIdentifier;
+    private Boolean savedRecordIsParent;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_pk")
@@ -45,13 +48,36 @@ public class UnresolvedRelationship {
         this.boundAuthorityIdentifier = boundAuthorityIdentifier;
     }
 
+    @Basic
+    @Column(name = "saved_record_is_parent")
+    public Boolean getSavedRecordIsParent() {
+        return savedRecordIsParent;
+    }
+
+    public void setSavedRecordIsParent(Boolean savedRecordIsParent) {
+        this.savedRecordIsParent = savedRecordIsParent;
+    }
+
+    private RecordType recordType;
+
+    @Convert(converter = RecordTypeConverter.class)
+    @Column(name = "record_type")
+    public RecordType getRecordType() {
+        return recordType;
+    }
+
+    public void setRecordType(RecordType recordType) {
+        this.recordType = recordType;
+    }
+
     @Override
     public int hashCode() {
         int result = 0;
         result += 31 * result + (savedRecord != null ? savedRecord.hashCode() : 0);
         result += 31 * result + (boundAuthorityIdentifier != null ? boundAuthorityIdentifier.hashCode() : 0);
         result += 31 * result + (unresolvedRelationshipId != null ? unresolvedRelationshipId : 0);
-
+        result += 31 * result + (savedRecordIsParent != null? savedRecordIsParent.hashCode() : 0);
+        result += 31 * result + (recordType != null? recordType.hashCode() : 0);
         return result;
     }
 
@@ -64,6 +90,8 @@ public class UnresolvedRelationship {
         if(!other.getSavedRecord().equals(getSavedRecord())) return false;
         if(!other.getBoundAuthorityIdentifier().equals(getBoundAuthorityIdentifier())) return false;
         if(!other.getUnresolvedRelationshipId().equals(getUnresolvedRelationshipId())) return false;
+        if(!other.getSavedRecordIsParent().equals(getSavedRecordIsParent())) return false;
+        if(!other.getRecordType().equals(getRecordType())) return false;
 
         return true;
     }

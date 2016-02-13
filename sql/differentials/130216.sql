@@ -20,7 +20,9 @@ CREATE TABLE "unresolved_relationship"
 (
 	"bound_authority_identifier" varchar(50)	 NOT NULL,
 	"saved_record_id" integer NOT NULL,
-	"unresolved_relationship_id" integer NOT NULL DEFAULT nextval(('"unresolved_relationship_unresolved_relationship_id_seq"'::text)::regclass)
+	"unresolved_relationship_id" integer NOT NULL DEFAULT nextval(('"unresolved_relationship_unresolved_relationship_id_seq"'::text)::regclass),
+	"saved_record_is_parent" boolean NOT NULL,
+	"record_type" varchar(50) NULL
 )
 ;
 
@@ -39,4 +41,8 @@ ALTER TABLE "unresolved_relationship" ADD CONSTRAINT "PK_unresolved_relationship
 
 ALTER TABLE "unresolved_relationship" ADD CONSTRAINT "FK_unresolved_relationship_record"
 	FOREIGN KEY ("saved_record_id") REFERENCES "record" ("record_id") ON DELETE No Action ON UPDATE No Action
+;
+
+ALTER TABLE "unresolved_relationship" ADD CONSTRAINT "FK_unresolved_relationship_record_type"
+	FOREIGN KEY ("record_type") REFERENCES "record_type" ("record_type") ON DELETE No Action ON UPDATE No Action
 ;
