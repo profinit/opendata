@@ -184,7 +184,7 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
 
         List<Entity> entityList = em.createQuery("Select e FROM Entity e WHERE e.public = false", Entity.class)
                 .getResultList();
-        assertEquals(16, entityList.size());
+        assertEquals(15, entityList.size());
 
         for(Record record : recordList) {
             assertNotNull(record.getPartner());

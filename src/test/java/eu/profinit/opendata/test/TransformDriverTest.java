@@ -144,7 +144,7 @@ public class TransformDriverTest extends ApplicationContextTestCase {
                 .getResultList();
         assertEquals(26, recordList.size());
 
-        assertEquals(27, retrieval.getNumRecordsInserted());
+        assertEquals(26, retrieval.getNumRecordsInserted());
         assertEquals(2, retrieval.getNumBadRecords()); //Two bad rows in the test DI
         assertEquals(30, dataInstance.getLastProcessedRow().intValue());
 
