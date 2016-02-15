@@ -72,8 +72,8 @@ public class PartnerQueryService {
 
         if(found == null) {
             found = new Entity();
-            found.setName(name);
-            found.setEntityType(EntityType.COMPANY); // TODO: Automatická detekce toho, co je to za EntityType?
+            found.setName(normalizeEntityName(name));
+            found.setEntityType(EntityType.COMPANY);
             found.setDic(dic);
             found.setIco(ico);
             found.setPublic(false);
@@ -112,7 +112,7 @@ public class PartnerQueryService {
         // Pokud mame jenom jmeno nebo jsme jeste nenasli,
         // hledame podle jmena
         if(candidates.isEmpty()) {
-            Entity fromName = findMatchingEntityByName(name);
+            Entity fromName = findMatchingEntityByName(normalizeEntityName(name));
             if(fromName != null) {
                 candidates.add(fromName);
             }
@@ -131,7 +131,7 @@ public class PartnerQueryService {
         // co deduplikovala na co a na jake zaznamy se to vztahuje
         // Pokud mame vic kandidatu, vezmeme zatim prvniho
 
-        String query = name.toLowerCase().trim();
+        String query = normalizeEntityName(name);
         List<Entity> candidates = em.createNamedQuery("findByName", Entity.class)
                 .setParameter("name", "%" + query + "%").getResultList();
 
@@ -140,6 +140,46 @@ public class PartnerQueryService {
         }
 
         return null;
+    }
+
+    public String normalizeEntityName(String name) {
+
+        name = name.toUpperCase();
+        name = name.replaceAll("\\W+V LIKVIDACI\\W+", "");
+        String[] abbreviations = {"SRO", "AS", "VOS", "SP", "VVI", "KS"};
+        for(String abbr : abbreviations) {
+            name = normalizeAbbreviation(name, abbr);
+        }
+        name = name.replaceAll("kom( )?\\.( )?spol( )?\\.", ", K. S.");
+        //TODO: Akademicke tituly?
+        name = name.replaceAll("^\\d{2,}\\w", "");
+        name = name.replaceAll("\\s+", " ");
+        name = name.trim();
+
+        return name;
+    }
+
+    private String normalizeAbbreviation(String name, String abbr) {
+        String regex = createRegexForAbbreviation(abbr);
+        String replaceBy = ", ";
+        for(int i = 0; i < abbr.length(); i++) {
+            replaceBy += abbr.charAt(i) + ".";
+            if(i < abbr.length() - 1) {
+                replaceBy += " ";
+            }
+        }
+        name = name.replaceAll(regex, replaceBy);
+        return name;
+    }
+
+    private String createRegexForAbbreviation(String abbreviation) {
+        String result = "(,)?( )?(SPOL\\.)?( )?";
+        for(int i = 0; i < abbreviation.length(); i++) {
+            result += abbreviation.charAt(i);
+            result += "(\\. |\\.| | \\.)";
+        }
+        result += "?";
+        return result;
     }
 
 }
