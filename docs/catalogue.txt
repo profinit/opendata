@@ -1,0 +1,77 @@
+# Ministerstvo financí ČR
+
+Datové instance MFČR se updatují automaticky z JSON API na data.mfcr.cz. Pokud se nezmení formát, není potřeba je přidávat ručně.
+
+## Objednávky
+Stahují se v souhrnném dokumentu obsahujícím všechno od roku 2007.
+
+Pro jednu objednávku může existovat více záznamů: 
+* Pokud objednávka patří do více rozpočtových kategorií, pak je uvedena pro každou zvlášť. 
+* Oproti smlouvám a fakturám jsou ale na každém řádku objednávány často úplně jiné věci, proto je aplikace nespojuje.
+* Záznamy patřící pod stejnou objednávku mají stejný authorityIdentifier a masterId
+
+Vyplněná pole (hvězdička znamená, že je pole v drtivé většině případů nenulové):
++ recordType*, vždy ORDER
++ subject* ve formátu Předmět: předmět_řádku
++ dateCreated*, ze sloupce "Datum_vystavení"
++ currency*
++ originalCurrencyAmount* ze sloupce "Částka_v_měně"
++ amountCzkWith(out)VAT - chybí, pokud se částka neliší od originalCurrencyAmount a měna není CZK. Vychází ze sloupců "Částka za řádek".
++ partner* - může chybět v ojedinělých případech
++ authorityIdentifier*, ze sloupce "Číslo_objednávky"
++ masterId* - náhodně vygenerované UUID, stejné přes objednávky sdílející authorityIdentifier
+ 
+## Faktury 2010 - 2014
+Každý rok má vlastní dokument, roky < 2015 mají jiný formát. Záznamy rozpadlé přes několik řádků aplikace spojuje do jednoho.
+
+Dokumenty neobsahují IČO partnera, pouze jméno. Proto se před zpracováním každý měsíc stahuje ještě seznam partnerů, který má vlastní DataInstanci, ale té je zabráněno automatické zpracování. Stahuje a zpracovává ji rovnou MFCRHandler. Během zpracování dokumentu se pouze vytváří UnresolvedRelationships, partneři se naváží až po běhu RelationshipResolveru.
+
+Vyplněná pole (hvězdička znamená, že je pole v drtivé většině případů nenulové):
++ recordType*, vždy INVOICE
++ subject ze sloupce "Předmět"
++ dateCreated*, ze sloupce "Datum přijetí"
++ dueDate*, ze sloupce "Datum splatnosti"
++ dateOfPayment, ze sloupce "Datum úhrady"
++ currency*
++ originalCurrencyAmount* ze sloupce "Úhrada cizí měna"
++ amountCzkWithVAT - chybí, pokud se částka neliší od originalCurrencyAmount a měna není CZK. Vychází ze sloupce "Částka".
++ partner - pouze pokud je už partner s daným kódem v databázi.
++ authorityIdentifier*, ze sloupce "Číslo_faktury"
++ masterId* - náhodně vygenerované UUID
+
+
+## Faktury 2015 - ?
+Dokument pro rok 2016 zatím není zveřejněn. Nový formát dokumentu obsahue i "Ostatní platby" kromě faktur, proto může být typ záznamu různý. Partneři se nastavují přímo, záznamy nejsou nikdy rozpadlé.
+
+Vyplněná pole (hvězdička znamená, že je pole v drtivé většině případů nenulové):
++ recordType*, INVOICE nebo PAYMENT, podle sloupce [ROZLISENI]
++ subject ze sloupce "[UCELPLATBY]"
++ budgetCategory ze sloupce "[NAZEVPOLOZKYROZPOCTU]"
++ dateCreated*, ze sloupce "[DATUMPRIJETI]"
++ dueDate*, ze sloupce "[DATUMSPLATNOSTI]"
++ dateOfPayment, ze sloupce "[DATUMUHRADY]"
++ currency*
++ originalCurrencyAmount* ze sloupce "[CELKOVACASTKACIZIMENA]"
++ amountCzkWith(Out)VAT - chybí, pokud se částka neliší od originalCurrencyAmount a měna není CZK. Vychází ze sloupců "[CELKOVACASTKA(BEZDPH)]".
++ partner*
++ authorityIdentifier*, ze sloupce "[CISLO]"
++ masterId* - náhodně vygenerované UUID
+
+
+## Smlouvy
+Všechny smlouvy jsou v jediném dokumentu, který obsahuje jak platné, tak neplatné smlouvy. Jednotlivé smlouvy nejsou rozpadlé na více záznamů, ale dodatek ke smlouvě má vlastní a je spojen s rodičem přes parentRecord. Toto je jediný dokument, který obsahuje vazby na jiné (na faktury), takže při zpracování jsou vytvářeny UnresolvedRelationships.
+
++ recordType*, vždy CONTRACT,
++ authorityRole*, ze sloupce "Povaha_smlouvy"
++ subject* ve formátu "Popis_smluvního_typu": "Předmět"
++ dateCreated*, ze sloupce "Platnost_od"
++ dateOfExpiry*, ze sloupce "Platnost_do"
++ currency*
++ originalCurrencyAmount* je kombinací sloupců "Částka", který se váže ke smlouvě, a "Částka", který se váže k faktuře. Často mají smlouvy vyplněný jenom jeden z nich. Částky jednotlivých faktur se posčítají přes jednotlivé řádky u stejné smlouvy, částka za celou smlouvu je všude stejná.
++ partner*
++ authorityIdentifier*, ze sloupce "Číslo_smlouvy"
++ parentRecord v případě, že jde o dodatek
++ masterId* - náhodně vygenerované UUID
+
+
+
