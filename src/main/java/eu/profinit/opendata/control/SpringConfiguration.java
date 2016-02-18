@@ -7,7 +7,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 /**
- * Created by dm on 12/6/15.
+ * Spring configuration class
  */
 @Configuration
 @PropertySource("classpath:application.properties")

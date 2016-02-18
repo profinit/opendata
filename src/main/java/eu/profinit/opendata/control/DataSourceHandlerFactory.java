@@ -3,8 +3,14 @@ package eu.profinit.opendata.control;
 import eu.profinit.opendata.model.DataSourceHandler;
 
 /**
- * Created by dm on 12/19/15.
+ * A component that can instantiate <code>DataSourceHandler</code> objects.
  */
 public interface DataSourceHandlerFactory {
+    /**
+     * Retrieves a DataSourceHandler of the specified type. It may or may not be newly instantiated.
+     * @param clazz The desired return type
+     * @param <T> The desired return type
+     * @return A DataSourceHandler
+     */
     <T extends DataSourceHandler> T getHandlerFromClass(Class<T> clazz);
 }
