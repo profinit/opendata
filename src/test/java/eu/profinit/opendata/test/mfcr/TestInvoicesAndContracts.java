@@ -92,7 +92,7 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xlsx");
         dataInstance.setUrl("http://example.me");
-        InputStream inputStream = new ClassPathResource("test-invoices.xlsx").getInputStream();
+        InputStream inputStream = new ClassPathResource("mfcr/test-invoices.xlsx").getInputStream();
 
         Entity entity = DataGenerator.getTestMinistry();
         em.persist(entity);
@@ -120,7 +120,7 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xls");
         dataInstance.setUrl("http://example.me");
-        InputStream inputStream = new ClassPathResource("test-contracts.xls").getInputStream();
+        InputStream inputStream = new ClassPathResource("mfcr/test-contracts.xls").getInputStream();
 
         Entity entity = DataGenerator.getTestMinistry();
         em.persist(entity);
@@ -160,7 +160,7 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
         DataInstance dataInstance = new DataInstance();
         dataInstance.setFormat("xlsx");
         dataInstance.setUrl("http://example.me");
-        InputStream inputStream = new ClassPathResource("test-old-invoices.xlsx").getInputStream();
+        InputStream inputStream = new ClassPathResource("mfcr/test-old-invoices.xlsx").getInputStream();
 
         Entity entity = em.createQuery("Select e from Entity e where e.ico = '00006947'", Entity.class)
                 .getSingleResult();
@@ -170,7 +170,7 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
         dataInstance.setDataSource(ds);
         em.persist(dataInstance);
 
-        InputStream partnerInputStream = new ClassPathResource("test-partners.xlsx").getInputStream();
+        InputStream partnerInputStream = new ClassPathResource("mfcr/test-partners.xlsx").getInputStream();
         partnerListProcessor.processListOfPartners(ds, partnerInputStream);
 
         Retrieval retrieval = transformDriver.doRetrieval(dataInstance, "mappings/mfcr/mapping-old-invoices.xml", inputStream);

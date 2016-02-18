@@ -22,7 +22,7 @@ import eu.profinit.opendata.model.util.EntityTypeConverter;
         @NamedQuery(name = "findByICOAndDIC",
                     query = "SELECT OBJECT(e) FROM Entity e WHERE e.ico = :ico AND e.dic = :dic"),
         @NamedQuery(name = "findByName",
-        query = "SELECT OBJECT(e) FROM Entity e WHERE lower(e.name) LIKE :name")
+        query = "SELECT OBJECT(e) FROM Entity e WHERE e.name = :name")
 })
 public class Entity {
     private String dic;

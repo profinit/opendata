@@ -1,5 +1,6 @@
 package eu.profinit.opendata.transform.convert;
 
+import eu.profinit.opendata.common.Util;
 import eu.profinit.opendata.model.Entity;
 import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.query.PartnerQueryService;
@@ -33,9 +34,11 @@ public class PartnerSetter implements RecordPropertyConverter {
         String name = null;
 
         if(sourceValues.containsKey("ico") && sourceValues.get("ico") != null) {
-            sourceValues.get("ico").setCellType(Cell.CELL_TYPE_STRING);
-            if(!isNullOrEmpty(sourceValues.get("ico").getStringCellValue())) {
-                ico = sourceValues.get("ico").getStringCellValue();
+            Cell icoCell = sourceValues.get("ico");
+            icoCell.setCellType(Cell.CELL_TYPE_STRING);
+
+            if(canBeValidICO(icoCell)) {
+                ico = icoCell.getStringCellValue();
                 if (ico.length() < 8) {
                     ico = String.format("%08d", Integer.parseInt(ico));
                 }
@@ -78,7 +81,9 @@ public class PartnerSetter implements RecordPropertyConverter {
         }
     }
 
-
+    private boolean canBeValidICO(Cell cell) {
+        return !Util.isNullOrEmpty(cell.getStringCellValue()) && cell.getStringCellValue().length() > 1;
+    }
 
 
 }

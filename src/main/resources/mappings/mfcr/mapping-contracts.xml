@@ -40,7 +40,7 @@
         <sourceFileColumn originalName="Částka01" argumentName="invoiceAmount"/>
     </property>
 
-    <property name="inEffect" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.mfcr.ContractValiditySetter">
+    <property name="inEffect" onlyNewRecords="false" converter="eu.profinit.opendata.transform.convert.mfcr.ContractValiditySetter">
         <sourceFileColumn originalName="Kód_stavu" argumentName="validity"/>
     </property>
 
@@ -48,7 +48,7 @@
         <sourceFileColumn originalName="Platnost_od" argumentName="inputDateString"/>
     </property>
     
-    <property name="dateOfExpiry" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
+    <property name="dateOfExpiry" onlyNewRecords="false" converter="eu.profinit.opendata.transform.convert.DateSetter">
         <sourceFileColumn originalName="Platnost_do" argumentName="inputDateString"/>
     </property>
 

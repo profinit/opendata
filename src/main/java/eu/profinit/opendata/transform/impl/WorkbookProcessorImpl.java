@@ -111,7 +111,9 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
                 } else if(record.getRecordId() != null) {
                     em.merge(record);
                 }
-                retrieval.getDataInstance().setLastProcessedRow(i);
+                if(retrieval.getDataInstance().isIncremental()) {
+                    retrieval.getDataInstance().setLastProcessedRow(i);
+                }
             }
             catch (TransformException ex) {
                 if(ex.getSeverity().equals(TransformException.Severity.FATAL)) {

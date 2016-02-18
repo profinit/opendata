@@ -28,6 +28,7 @@ public class DataInstance {
     private String authorityId;
     private String description;
     private String mappingFile;
+    private Boolean incremental = true;
 
     @Basic
     @Column(name = "format")
@@ -130,6 +131,16 @@ public class DataInstance {
         this.dataInstanceId = dataInstanceId;
     }
 
+    @Basic
+    @Column(name="incremental")
+    public boolean isIncremental() {
+        return incremental;
+    }
+
+    public void setIncremental(boolean incremental) {
+        this.incremental = incremental;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -143,6 +154,7 @@ public class DataInstance {
                 !lastProcessedDate.equals(that.lastProcessedDate) : that.lastProcessedDate != null) return false;
         if (format != null ? !format.equals(that.format) : that.format != null) return false;
         if (url != null ? !url.equals(that.url) : that.url != null) return false;
+        if (incremental != ((DataInstance) o).isIncremental()) return false;
 
         return true;
     }
@@ -154,6 +166,7 @@ public class DataInstance {
         result = 31 * result + dataInstanceId.intValue();
         result = 31 * result + periodicity.hashCode();
         result = 31 * result + lastProcessedDate.hashCode();
+        result = 31 * result + (incremental ? 1 : 0);
         return result;
     }
 

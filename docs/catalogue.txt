@@ -59,7 +59,7 @@ Vyplněná pole (hvězdička znamená, že je pole v drtivé většině případ
 
 
 ## Smlouvy
-Všechny smlouvy jsou v jediném dokumentu, který obsahuje jak platné, tak neplatné smlouvy. Jednotlivé smlouvy nejsou rozpadlé na více záznamů, ale dodatek ke smlouvě má vlastní a je spojen s rodičem přes parentRecord. Toto je jediný dokument, který obsahuje vazby na jiné (na faktury), takže při zpracování jsou vytvářeny UnresolvedRelationships.
+Všechny smlouvy jsou v jediném dokumentu, který obsahuje jak platné, tak neplatné smlouvy. Jednotlivé smlouvy nejsou rozpadlé na více záznamů, ale dodatek ke smlouvě má vlastní a je spojen s rodičem přes parentRecord. Toto je jediný dokument, který obsahuje vazby na jiné (na faktury), takže při zpracování jsou vytvářeny UnresolvedRelationships. Datová instance smluv není inkrementální, takže se při každém stažení zpracovává celá, nejen od posledního zpracovaného řádku. Není totiž záruka, že se nové záznamy vloží na konec dokumentu a je možné, že bude nějaká starší smlouva zveřejněna a zařazena mezi smlouvy ze stejné doby.
 
 + recordType*, vždy CONTRACT,
 + authorityRole*, ze sloupce "Povaha_smlouvy"
@@ -72,6 +72,10 @@ Všechny smlouvy jsou v jediném dokumentu, který obsahuje jak platné, tak nep
 + authorityIdentifier*, ze sloupce "Číslo_smlouvy"
 + parentRecord v případě, že jde o dodatek
 + masterId* - náhodně vygenerované UUID
+
+# Ministerstvo spravedlnosti ČR
+
+
 
 
 

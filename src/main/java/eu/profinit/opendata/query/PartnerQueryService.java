@@ -125,15 +125,9 @@ public class PartnerQueryService {
     }
 
     private Entity findMatchingEntityByName(String name) {
-        // TODO: Tady je potreba brat v potaz mozne preklepy, substringy, zkratky apod.
-        // Vyber z vice kandidatu a tak
-        // Muzeme pak nejak zajistit deduplikaci? Treba v nejakem GUI - databaze si ale pak musi pamatovat,
-        // co deduplikovala na co a na jake zaznamy se to vztahuje
-        // Pokud mame vic kandidatu, vezmeme zatim prvniho
-
         String query = normalizeEntityName(name);
         List<Entity> candidates = em.createNamedQuery("findByName", Entity.class)
-                .setParameter("name", "%" + query + "%").getResultList();
+                .setParameter("name", query).getResultList();
 
         if(!candidates.isEmpty()) {
             return  candidates.get(0);

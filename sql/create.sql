@@ -160,7 +160,8 @@ CREATE TABLE "data_instance"
 	"last_processed_row" integer NULL,
 	"authority_id" varchar(255) NULL,
 	"description" varchar(255) NULL,
-	"mapping_file" varchar(255) NULL
+	"mapping_file" varchar(255) NULL,
+	"incremental" boolean NOT NULL DEFAULT true
 )
 ;
 

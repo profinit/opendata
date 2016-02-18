@@ -21,6 +21,8 @@ public class ContractAmountSetter implements RecordPropertyConverter {
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger)
             throws TransformException {
 
+        if(record.getRecordId() != null) return; // We don't want to change amounts for records that aren't new
+
         if(record.getOriginalCurrencyAmount() == null) {
             record.setOriginalCurrencyAmount(0.);
         }

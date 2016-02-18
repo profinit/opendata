@@ -135,6 +135,10 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
                     di.setDescription(resource.getName());
                     di.setMappingFile(mappingFile);
 
+                    if(identifier.equals(contracts_identifier)) {
+                        di.setIncremental(false);
+                    }
+
                     ds.getDataInstances().add(di);
                     log.trace("Persisting new DataInstance");
                     em.persist(di);

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="../../xsd/datasource_mapping.xsd">
+
+    <headerRow>0</headerRow>
+
+    <retriever className="eu.profinit.opendata.transform.convert.PropertyBasedRecordRetriever">
+        <sourceFileColumn originalName="Číslo smlouvy" argumentName="authorityIdentifier"/>
+    </retriever>
+
+    <property name="recordType" value="CONTRACT" onlyNewRecords="true"/>
+
+    <property name="authorityIdentifier" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
+        <sourceFileColumn originalName="Číslo smlouvy" argumentName="inputString"/>
+    </property>
+
+    <property name="authorityRole" value="CUSTOMER" onlyNewRecords="true"/> <!-- This needs a converter -->
+
+    <property name="partner" onlyNewRecords="true"
+              converter="eu.profinit.opendata.transform.convert.PartnerSetter">
+        <sourceFileColumn originalName="IČO" argumentName="ico"/>
+        <sourceFileColumn originalName="Název smluvního partnera" argumentName="name"/>
+    </property>
+
+    <property name="subject" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
+        <sourceFileColumn originalName="Stručný předmět smlouvy" argumentName="inputString"/>
+    </property>
+
+
+    <property name="allAmounts" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.justice.ContractAllAmountSetter">
+        <sourceFileColumn originalName="Částka vč. DPH" argumentName="inputAmount"/>
+    </property>
+
+    <property name="inEffect" onlyNewRecords="false" value="true"/>
+
+    <property name="dateCreated" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.justice.ContractDateCreatedSetter">
+        <sourceFileColumn originalName="Číslo smlouvy" argumentName="authorityIdentifier"/>
+    </property>
+
+    <property name="dateOfExpiry" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.justice.ContractExpiryDateSetter">
+        <sourceFileColumn originalName="Platnost" argumentName="inputDate"/>
+    </property>
+
+    <property name="masterId" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.RandomMasterIdSetter">
+
+    </property>
+</mapping>
