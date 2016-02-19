@@ -30,6 +30,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -207,12 +210,22 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
                 }
 
                 // Get the year the data instance is holding data from - if in the past and has already been processed
-                // after its year has ended, expire it
-                Integer currentYear = new GregorianCalendar().get(Calendar.YEAR);
-                Timestamp lpd = dataInstance.getLastProcessedDate();
-                if(currentYear > year && lpd != null
-                        && lpd.after(new GregorianCalendar(currentYear, Calendar.JANUARY, 1).getTime())) {
-                    dataInstance.expire();
+                // after its last modification that occurred after the year's end, expire it
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+                try {
+                    java.util.Date lastModifiedDate = dateFormat.parse(resource.getLast_modified());
+                    Timestamp lmd = new Timestamp(lastModifiedDate.getTime());
+
+                    Integer currentYear = new GregorianCalendar().get(Calendar.YEAR);
+                    Timestamp lpd = dataInstance.getLastProcessedDate();
+                    Timestamp firstJanuary = new Timestamp(
+                            new GregorianCalendar(currentYear, Calendar.JANUARY, 1).getTimeInMillis());
+
+                    if(currentYear > year && lpd != null && lpd.after(lmd) && lmd.after(firstJanuary)) {
+                        dataInstance.expire();
+                    }
+                } catch (ParseException e) {
+                    log.warn("Couldn't parse the last modified date of a resource", e);
                 }
 
                 // Merge/persist the DataInstance

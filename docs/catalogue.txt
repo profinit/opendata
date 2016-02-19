@@ -40,8 +40,8 @@ Vyplněná pole (hvězdička znamená, že je pole v drtivé většině případ
 + masterId* - náhodně vygenerované UUID
 
 
-## Faktury 2015 - ?
-Dokument pro rok 2016 zatím není zveřejněn. Nový formát dokumentu obsahue i "Ostatní platby" kromě faktur, proto může být typ záznamu různý. Partneři se nastavují přímo, záznamy nejsou nikdy rozpadlé.
+## Faktury od 2015
+Nový formát dokumentu (opět co dokument, to rok) obsahue i "Ostatní platby" kromě faktur, proto může být typ záznamu různý. Partneři se nastavují přímo, záznamy nejsou nikdy rozpadlé.
 
 Vyplněná pole (hvězdička znamená, že je pole v drtivé většině případů nenulové):
 + recordType*, INVOICE nebo PAYMENT, podle sloupce [ROZLISENI]
@@ -56,6 +56,7 @@ Vyplněná pole (hvězdička znamená, že je pole v drtivé většině případ
 + partner*
 + authorityIdentifier*, ze sloupce "[CISLO]"
 + masterId* - náhodně vygenerované UUID
++ parentRecord - po spojení se smlouvami
 
 
 ## Smlouvy
