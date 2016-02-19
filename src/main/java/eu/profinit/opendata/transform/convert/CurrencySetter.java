@@ -39,7 +39,7 @@ public class CurrencySetter implements RecordPropertyConverter{
             "GBP", "DZD", "CHF", "RUB", "UAH", "ARS", "SAR", "EGP", "INR", "PYG",
             "TWD", "TRY", "BAM", "OMR", "SGD", "MAD", "BYR", "NIO", "HKD", "LTL",
             "SKK", "GTQ", "BRL", "EUR", "HUF", "IQD", "CRC", "PHP", "SVC", "PLN",
-            "USD", "MOP");
+            "USD", "MOP", "XEU");
 
     @Override
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger) throws TransformException {
@@ -47,7 +47,8 @@ public class CurrencySetter implements RecordPropertyConverter{
         if(iso4217Currencies.contains(sourceCurrencyString)) {
             record.setCurrency(sourceCurrencyString);
         }
-        else if(Util.isNullOrEmpty(sourceCurrencyString) || sourceCurrencyString.toUpperCase().equals("KČ")) {
+        else if(Util.isNullOrEmpty(sourceCurrencyString) || sourceCurrencyString.toUpperCase().equals("KČ")
+                || sourceCurrencyString.toUpperCase().equals("KC")) {
             record.setCurrency("CZK");
         }
         else {

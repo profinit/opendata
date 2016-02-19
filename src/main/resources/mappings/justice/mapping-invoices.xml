@@ -6,7 +6,9 @@
 
     <retriever className="eu.profinit.opendata.transform.convert.justice.JusticeInvoiceRecordRetriever">
         <sourceFileColumn originalName="Dokladová řada" argumentName="categoryCode"/>
+        <sourceFileColumn originalName="Dokladová řáda" argumentName="categoryCode"/>
         <sourceFileColumn originalName="Číslo dokladu" argumentName="serialNumber"/>
+        <sourceFileColumn originalName="Číslo dokadu" argumentName="serialNumber"/>
     </retriever>
 
     <property name="recordType" value="INVOICE" onlyNewRecords="true"/>
