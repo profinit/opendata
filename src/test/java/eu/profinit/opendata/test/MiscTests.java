@@ -1,5 +1,6 @@
 package eu.profinit.opendata.test;
 
+import eu.profinit.opendata.common.Util;
 import eu.profinit.opendata.query.PartnerQueryService;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -25,5 +26,16 @@ public class MiscTests extends TestCase {
             String result = partnerQueryService.normalizeEntityName(key);
             assertEquals(expectations.get(key), result);
         }
+    }
+
+    @Test
+    public void testCheckForXLSFileAtURL() {
+        boolean res = Util.isXLSFileAtURL("http://nothing.here.com");
+        assertFalse(res);
+        res = Util.isXLSFileAtURL("http://data.justice.cz/Faktury%20Ministerstva%20spravedlnosti/Faktury%20MSp%202013.xls");
+        assertTrue(res);
+        res = Util.isXLSFileAtURL("http://google.com");
+        assertFalse(res);
+
     }
 }

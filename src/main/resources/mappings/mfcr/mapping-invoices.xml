@@ -47,15 +47,15 @@
     </property>
 
     <property name="dateCreated" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
-        <sourceFileColumn originalName="[DATUMPRIJETI]" argumentName="inputDateString"/>
+        <sourceFileColumn originalName="[DATUMPRIJETI]" argumentName="inputDate"/>
     </property>
 
     <property name="dueDate" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
-        <sourceFileColumn originalName="[DATUMSPLATNOSTI]" argumentName="inputDateString"/>
+        <sourceFileColumn originalName="[DATUMSPLATNOSTI]" argumentName="inputDate"/>
     </property>
 
     <property name="dateOfPayment" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
-        <sourceFileColumn originalName="[DATUMUHRADY]" argumentName="inputDateString"/>
+        <sourceFileColumn originalName="[DATUMUHRADY]" argumentName="inputDate"/>
     </property>
 
     <!-- Kazdy zaznam je nezavisly, dostane nove masterID -->

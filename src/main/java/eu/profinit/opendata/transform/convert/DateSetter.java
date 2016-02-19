@@ -29,7 +29,7 @@ public class DateSetter implements RecordPropertyConverter {
             }
             field.setAccessible(true);
 
-            Date inputDate = sourceValues.get("inputDateString").getDateCellValue();
+            Date inputDate = sourceValues.get("inputDate").getDateCellValue();
             if(inputDate == null) {
                 logger.trace("Couldn't set Date - input String is null");
                 return;

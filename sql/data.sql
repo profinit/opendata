@@ -22,6 +22,13 @@ dsid AS (
   (SELECT entity_id FROM msp),
   'contract', 'aperiodic', 'eu.profinit.opendata.institution.justice.JusticeHandler', TRUE, 'Smlouvy MSp')
   RETURNING data_source_id
+),
+
+dsid2 AS (
+    INSERT INTO data_source (entity_id, record_type, periodicity, handling_class, active, description) VALUES (
+    (SELECT entity_id FROM msp),
+    'invoice', 'quarterly', 'eu.profinit.opendata.institution.justice.JusticeHandler', TRUE, 'Faktury MSp')
+    RETURNING data_source_id
 )
 
 INSERT INTO data_instance(data_source_id, url, format, periodicity, description, mapping_file, incremental) VALUES (

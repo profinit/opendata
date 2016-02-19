@@ -12,7 +12,7 @@
     </property>
 
     <property name="dateCreated" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
-        <sourceFileColumn originalName="Datum_vystavení" argumentName="inputDateString"/>
+        <sourceFileColumn originalName="Datum_vystavení" argumentName="inputDate"/>
     </property>
 
     <property name="currency" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CurrencySetter">

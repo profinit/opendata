@@ -75,6 +75,13 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
         log.trace("Mapping column names to their indexes");
         Map<String, Integer> columnNames = new HashMap<>();
         Row headerRow = sheet.getRow(mapping.getHeaderRow().intValue());
+        for(int i = 1; Util.isRowEmpty(headerRow); i++) {
+            headerRow = sheet.getRow(mapping.getHeaderRow().intValue() + i);
+            if(retrieval.getDataInstance().getLastProcessedRow() == null) {
+                start_row_num++;
+            }
+        }
+
         Iterator<Cell> cellIterator = headerRow.cellIterator();
         while(cellIterator.hasNext()) {
             Cell cell = cellIterator.next();
@@ -284,8 +291,8 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
         for(SourceColumn sourceColumn : sourceColumns) {
             Integer columnIndex = columnNames.get(sourceColumn.getOriginalName());
             if(columnIndex == null) {
-                throw new TransformException("Cannot find source column with name " + sourceColumn.getOriginalName(),
-                        TransformException.Severity.FATAL);
+                log.trace("Couldn't find source coulumn with name " + sourceColumn.getOriginalName());
+                continue;
             }
             argumentMap.put(sourceColumn.getArgumentName(), row.getCell(columnIndex));
         }

@@ -47,7 +47,7 @@ public class CurrencySetter implements RecordPropertyConverter{
         if(iso4217Currencies.contains(sourceCurrencyString)) {
             record.setCurrency(sourceCurrencyString);
         }
-        else if(Util.isNullOrEmpty(sourceCurrencyString)) {
+        else if(Util.isNullOrEmpty(sourceCurrencyString) || sourceCurrencyString.toUpperCase().equals("KČ")) {
             record.setCurrency("CZK");
         }
         else {

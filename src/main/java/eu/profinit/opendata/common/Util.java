@@ -3,6 +3,8 @@ package eu.profinit.opendata.common;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.time.Duration;
 
@@ -45,5 +47,25 @@ public class Util {
                 .minus(Duration.ofMillis(from.getTime()));
 
         return elapsed.compareTo(targetDuration.dividedBy(2)) > 0;
+    }
+
+    /**
+     * Checks whether an XLS(X) file resides at the specified address. Uses a HEAD request so may not work for all hosts.
+     * @param url The URL to check
+     * @return True if a publicly accessible Excel spreadsheet can be downloaded at the given address.
+     */
+    public static boolean isXLSFileAtURL(String url) {
+        try {
+            HttpURLConnection.setFollowRedirects(false);
+            HttpURLConnection con =
+                    (HttpURLConnection) new URL(url).openConnection();
+            con.setRequestMethod("HEAD");
+            return (con.getResponseCode() == HttpURLConnection.HTTP_OK
+                    && (con.getHeaderField("Content-Type").toLowerCase().contains("xls")
+                        || con.getHeaderField("Content-Type").toLowerCase().contains("excel")));
+        }
+        catch (Exception e) {
+            return false;
+        }
     }
 }

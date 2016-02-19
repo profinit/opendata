@@ -1,5 +1,6 @@
 package eu.profinit.opendata.test.justice;
 
+import eu.profinit.opendata.institution.justice.JusticeHandler;
 import eu.profinit.opendata.model.*;
 import eu.profinit.opendata.test.ApplicationContextTestCase;
 import eu.profinit.opendata.test.DataGenerator;
@@ -13,8 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * Created by dm on 2/18/16.
@@ -29,6 +34,9 @@ public class JusticeTest extends ApplicationContextTestCase {
 
     @Autowired
     private TransformDriver transformDriver;
+
+    @Autowired
+    private JusticeHandler justiceHandler;
 
     @Test
     @Transactional
@@ -56,6 +64,22 @@ public class JusticeTest extends ApplicationContextTestCase {
                 .setParameter("retr", retrieval)
                 .getResultList();
         assertEquals(14, recordList.size());
+
+    }
+
+    @Test
+    public void testGetInvoiceDataInstances() throws Exception {
+
+        DataSource ds = new DataSource();
+        ds.setDataInstances(new ArrayList<>());
+        ds.setRecordType(RecordType.INVOICE);
+
+        EntityManager mockEm = mock(EntityManager.class);
+        justiceHandler.setEm(mockEm);
+
+        justiceHandler.updateDataInstances(ds);
+        Collection<DataInstance> dataInstanceList = ds.getDataInstances();
+        assertTrue(6 < dataInstanceList.size());
 
     }
 }

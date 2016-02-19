@@ -76,7 +76,38 @@ Všechny smlouvy jsou v jediném dokumentu, který obsahuje jak platné, tak nep
 
 # Ministerstvo spravedlnosti ČR
 
+## Smlouvy
 
+MSp publikuje všechny aktuálně platné smlouvy v jednom dokumentu (naposledy byl ale aktualizován v červnu 2015). Datová instance je do databáze vložená manuálně a není inkrementální, tedy zpracovává se vždy celá. Zneplatnění uložených, které v dokumentu nejsou, zatím není implementováno. Mezi fakturami a smlouvami neprobíhá žádné spojování.
+
++ authorityIdentifier*, ze sloupce "Číslo smlouvy"
++ recordType, vždy CONTRACT
++ partner*
++ subject*, ze sloupce "Stručný předmět smlouvy"
++ currency*
++ originalCurrencyAmount*, pokud je měna CZK, pak i amountCZKWithVAT (DPH není ve zdroji rozlišeno)
++ masterId* - náhodně vygenerované UUID
++ inEffect* - vždy true (prozatím)
++ dateCreated* - zdrojový dokument neobsahuje datum uzavření, pouze rok jako součást čísla smlouvy. Proto je datum vždy 1. 1. daného roku.
++ dateOfExpiry, ze sloupce "Platnost". Pokud je platnost na dobu neurčitou, hodnota je null.
+
+## Faktury
+
+Faktury se publikují od roku 2009 v odděleném dokumentu pro každý rok. Jejich formát se od sebe drobně liší (překlepy ve sloupcích, IČ místo IČO apod.), proto jsou argumenty v mapování často přetížené. Informace jsou ale ve všech stejné. Instance nejsou inkrementální - zpracování probíhá vždy od prvního řádku, protože záznamy nejsou seřazené podle času. Duplicitní záznamy by se ale neměly objevovat díky Retrieveru. Mezi fakturami a smlouvami neprobíhá žádné spojování.
+
+Aktuálně nejnovější dokument je za rok 2015, který je aktuální k 30. 9. 2015. 
+
++ authorityIdentifier*, spojení sloupců "Dokladová řada" a "Číslo dokladu"
++ recordType, vždy INVOICE
++ authorityRole, vždy CUSTOMER
++ partner*
++ subject*, ze sloupce "Důvod úhrady, nebo PARAMETR4 (faktury 2012)"
++ currency*
++ originalCurrencyAmount*, pokud je měna CZK, pak i amountCZKWithVAT (DPH není ve zdroji rozlišeno)
++ masterId* - náhodně vygenerované UUID
++ dateCreated*, ze sloupce "Datum zápisu"
++ dueDate, ze sloupce "Splatnost dne"
++ dateOfPayment, ze sloupce "Posl. úhr. dne"
 
 
 
