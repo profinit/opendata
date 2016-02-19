@@ -19,7 +19,8 @@ import java.util.GregorianCalendar;
 import java.util.Optional;
 
 /**
- * Created by dm on 2/17/16.
+ * The handler for MSp. Only generates data instances for invoices according to a pre-determined URL scheme. Otherwise,
+ * behavior is the same as for any other generic handler.
  */
 @Component
 public class JusticeHandler extends GenericDataSourceHandler {
@@ -41,6 +42,12 @@ public class JusticeHandler extends GenericDataSourceHandler {
         }
     }
 
+    /**
+     * Tries to create invoice data instances for all years from the present going back to 2009. If the data instances
+     * are already present but aren't at least a year old, does nothing. If they are older and have already been
+     * processed, they are expired.
+     * @param ds The MSp invoice data source
+     */
     private void updateInvoicesDataInstance(DataSource ds) {
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
         for(Integer i = currentYear; i >= 2009; i--) {

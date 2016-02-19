@@ -40,7 +40,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by dm on 11/28/15.
+ * Implementation of the MF handler. Uses the ministry's REST API to keep track of DataInstances. Nothing needs to be
+ * done manually for this ministry, unless file formats change.
  */
 @Component
 public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHandler {
@@ -93,9 +94,12 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
     }
 
     /**
-     * Updates the data intances associated with the specified ORDERS data source.
-     * Assumes that the JSON API only returns a single xls(x) resource (true as of Nov 2015)
-     * @param ds An ORDERS DataSource
+     * Updates the data intances associated with the MF orders or contracts data source.
+     * Assumes that the JSON API only returns a single xls(x) resource. If the URL changes, a new DataInstance is
+     * created and old ones are expired.
+     * @param ds The MF orders or contracts DataSource
+     * @param identifier The JSON API package identifier (for orders or contracts)
+     * @param mappingFile The path to the mapping file that should be used for newly created DataInstances
      */
     public void updateOrdersOrContractsDataInstance(DataSource ds, String identifier, String mappingFile) {
         log.info("Updating information about data instances containing orders");
@@ -154,6 +158,13 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
         }
     }
 
+    /**
+     * Updates the invoice DataInstances from the JSON API. There should be one for every year since 2010, with files
+     * from 2015 onwards having a different format (and a different mapping file). Also finds the partner list used
+     * to extract entities for the older format and initiates its processing. Old files that have been updated and
+     * processed after their year has ended are expired.
+     * @param ds The MF invoices DataSources
+     */
     public void updateInvoicesDataInstance(DataSource ds) {
         log.info("Updating information about data instances containing invoices");
 
@@ -235,6 +246,14 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
 
     }
 
+    /**
+     * Downloads the MF list of partners. A new DataInstance is created for it but is set to APERIODIC to make sure it's
+     * never processed by other parts of the application. Once downloaded, the file is passed to a PartnerListProcessor
+     * for Entity extraction.
+     * @param ds The MF invoices DataSource
+     * @param resource The JSON API resource pointing to the MF list of partners.
+     * @see PartnerListProcessor
+     */
     public void processPartnerListDataInstance(DataSource ds, JSONPackageListResource resource) {
         log.info("Will download and process list of partners. This will take a few minutes.");
         Optional<DataInstance> oldPartnerInstance = ds.getDataInstances().stream()

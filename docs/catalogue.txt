@@ -93,7 +93,9 @@ MSp publikuje všechny aktuálně platné smlouvy v jednom dokumentu (naposledy 
 
 ## Faktury
 
-Faktury se publikují od roku 2009 v odděleném dokumentu pro každý rok. Jejich formát se od sebe drobně liší (překlepy ve sloupcích, IČ místo IČO apod.), proto jsou argumenty v mapování často přetížené. Informace jsou ale ve všech stejné. Instance nejsou inkrementální - zpracování probíhá vždy od prvního řádku, protože záznamy nejsou seřazené podle času. Duplicitní záznamy by se ale neměly objevovat díky Retrieveru. Mezi fakturami a smlouvami neprobíhá žádné spojování.
+Faktury se publikují od roku 2009 v odděleném dokumentu pro každý rok. DataInstance jsou generovány automaticky, v URL se liší jenom rokem.
+
+Formát dokumentů se od sebe drobně liší (překlepy ve sloupcích, IČ místo IČO apod.), proto jsou argumenty v mapování často přetížené. Informace jsou ale ve všech stejné. Instance nejsou inkrementální - zpracování probíhá vždy od prvního řádku, protože záznamy nejsou seřazené podle času. Duplicitní záznamy by se ale neměly objevovat díky Retrieveru. Mezi fakturami a smlouvami neprobíhá žádné spojování.
 
 Aktuálně nejnovější dokument je za rok 2015, který je aktuální k 30. 9. 2015. 
 

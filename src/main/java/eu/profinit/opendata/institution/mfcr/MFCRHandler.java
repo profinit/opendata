@@ -8,11 +8,25 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by dm on 12/19/15.
+ * Interface for the MF handler. See implementation class for behavior details.
+ * @see eu.profinit.opendata.institution.mfcr.impl.MFCRHandlerImpl
  */
 public interface MFCRHandler extends DataSourceHandler {
-    //Test
+    /**
+     * Used for mocking
+     * @param em
+     */
     void setEm(EntityManager em);
+
+    /**
+     * Internal method, exposed for testing purposes. Not to be called directly.
+     * @param ds
+     */
     void updateDataInstances(DataSource ds);
+
+    /**
+     * Used for mocking
+     * @param plp
+     */
     void setPartnerListProcessor(PartnerListProcessor plp);
 }
