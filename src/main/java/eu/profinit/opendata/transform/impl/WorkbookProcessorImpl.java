@@ -85,7 +85,7 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
         Iterator<Cell> cellIterator = headerRow.cellIterator();
         while(cellIterator.hasNext()) {
             Cell cell = cellIterator.next();
-            String columnName = cell.getStringCellValue();
+            String columnName = cell.getStringCellValue().trim();
             int i = 1;
             while(columnNames.containsKey(columnName)) {
                 columnName += String.format("%02d", i);

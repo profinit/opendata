@@ -9,6 +9,7 @@ INSERT INTO record_type (record_type) VALUES ('order');
 INSERT INTO record_type (record_type) VALUES ('payment');
 
 INSERT INTO periodicity (periodicity) VALUES ('daily');
+INSERT INTO periodicity (periodicity) VALUES ('weekly');
 INSERT INTO periodicity (periodicity) VALUES ('yearly');
 INSERT INTO periodicity (periodicity) VALUES ('monthly');
 INSERT INTO periodicity (periodicity) VALUES ('quarterly');
