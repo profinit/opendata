@@ -32,6 +32,7 @@ public class RelationshipResolverImpl implements RelationshipResolver {
                 UnresolvedRelationship.class).getResultList();
 
         logger.info("Got list of " + unresolvedRelationships.size() + " unresolved relationships");
+        int resolved = 0;
         for(UnresolvedRelationship u : unresolvedRelationships) {
             List<Record> candidates = em.createNamedQuery("findByUnresolvedRelationship", Record.class)
                     .setParameter("authorityIdentifier", u.getBoundAuthorityIdentifier())
@@ -45,7 +46,7 @@ public class RelationshipResolverImpl implements RelationshipResolver {
                         u.getSavedRecord().getRecordId() + " and identifier " + u.getBoundAuthorityIdentifier());
                 }
                 Record toJoin = candidates.get(0);
-                logger.debug("Linking records " + u.getSavedRecord().getRecordId() + " and " + toJoin.getRecordId());
+                logger.trace("Linking records " + u.getSavedRecord().getRecordId() + " and " + toJoin.getRecordId());
                 if(u.getSavedRecordIsParent()) {
                     toJoin.setParentRecord(u.getSavedRecord());
                     em.merge(toJoin);
@@ -54,9 +55,10 @@ public class RelationshipResolverImpl implements RelationshipResolver {
                     u.getSavedRecord().setParentRecord(toJoin);
                     em.merge(u.getSavedRecord());
                 }
+                resolved++;
                 em.remove(u);
             }
         }
-        logger.info("Finished resolving relationships");
+        logger.info("Finished resolving relationships, linked " + resolved + " pairs of records.");
     }
 }

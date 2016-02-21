@@ -148,3 +148,18 @@ Dokument obsahuje pouze aktuálně platné smlouvy.
 + authorityIdentifier*, ze sloupce "Číslo smlouvy"
 + masterId* - náhodně vygenerované UUID
 
+## Faktury
+
+Dokument obsahuje vazbu na smlouvy, takže se při zpracování vytvářejí UnresolvedRelationships
+
++ recordType*, vždy INVOICE,
++ authorityRole*, vždy CUSTOMER
++ subject*, ze sloupce "Popis"
++ dateCreated*, ze sloupce "Datum platby"
++ currency*, vždy CZK
++ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Celková částka"
++ partner* - tento dokument IČO obsahuje.
++ authorityIdentifier*, ze sloupce "Číslo faktury"
++ masterId* - náhodně vygenerované UUID
++ parentRecord - po spojení se smlouvami
+
