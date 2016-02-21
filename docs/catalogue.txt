@@ -111,5 +111,23 @@ Aktuálně nejnovější dokument je za rok 2015, který je aktuální k 30. 9. 
 + dueDate, ze sloupce "Splatnost dne"
 + dateOfPayment, ze sloupce "Posl. úhr. dne"
 
+# Ministerstvo životního prostředí ČR
 
+MŽP publikuje faktury, smlouvy i objednávky v HTML tabulce s odkazem pro vygenerování souhrnného XLS dokumentu. Aplikace volá přímo tuto URL pro všechny tři datové zdroje. Odpovídající datové instance jsou do databáze vloženy ručně. Záznamy jsou seřazené od nejnovějšího, proto instance nejsou inkrementální a zpracovávají se celé.
+
+Generování XLS dokumentů trvá webu MŽP poměrně dlouho, u faktur jsou to desítky sekund.
+
+## Objednávky
+
+Objednávky jsou sice na webu MŽP zveřejněné, ale z nějakého důvodu pouze 1000 záznamů končících v květnu 2015. I tak je ale aplikace zpracuje.
+
++ recordType*, vždy ORDER
++ authorityRole*, vždy CUSTOMER
++ subject* ve formátu Předmět: předmět_řádku
++ dateCreated*, ze sloupce "Datum objednání"
++ currency*, vždy CZK
++ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Celková částka"
++ partner* - dokument neobsahuje IČO, takže pouze podle jména a tím pádem se mohou snadněji vyskytnout duplicitní partneři.
++ authorityIdentifier*, ze sloupce "Číslo objednávky"
++ masterId* - náhodně vygenerované UUID
 
