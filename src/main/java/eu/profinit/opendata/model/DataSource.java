@@ -10,7 +10,12 @@ import java.util.Collection;
 import java.util.Objects;
 
 /**
- * Created by DM on 8. 11. 2015.
+ * Represents source of data for the application. Essentially a connector between a public Entity and a record type
+ * since physical data files are modeled as DataInstances. The invocation of a DataSource's handler provides an entry
+ * point for the retrieval process. Each time the application is run, each active DataSource's handler is called exactly
+ * once.
+ * @see DataSourceHandler
+ * @see DataInstance
  */
 @javax.persistence.Entity
 @SequenceGenerator(name = "seq_pk", sequenceName = "data_source_data_source_id_seq", allocationSize = 1)
@@ -20,14 +25,35 @@ import java.util.Objects;
         query="SELECT OBJECT(ds) FROM DataSource ds WHERE ds.active = true"
 )
 public class DataSource {
+    /** The time this data source was last processed. This may or may not have involved retrievals (both successful
+     * and unsuccessful) */
     private Timestamp lastProcessedDate;
+
+    /** The application identifier of this DataSource */
     private Long dataSourceId;
+
+    /** The type of record one can expect to get from this DataSource. This does not mean data files can't contain any
+     * others - this field is used to specify the main type. */
     private RecordType recordType;
+
+    /** Specifies how often <em>new</em> DataInstances should be generated for this DataSource. Should be APERIODIC
+     * unless the DataSource's handler can generate new instances automatically. */
     private Periodicity periodicity;
+
+    /** The physical data files available for this DataSource */
     private Collection<DataInstance> dataInstances;
+
+    /** The public Entity that is publishing this DataSource */
     private Entity entity;
+
+    /** A description of this DataSource */
     private String description;
+
+    /** Indicates whether this DataSource should be processed when the application runs. */
     private boolean active;
+
+    /** The DataSourceHandler that should be invoked when processing this DataSource. Must be a Spring component
+     * accessible from inside the application's ApplicationContext. */
     private Class<? extends DataSourceHandler> handlingClass;
 
     @Basic

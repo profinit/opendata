@@ -1,8 +1,9 @@
 package eu.profinit.opendata.model;
 
 /**
- * Created by DM on 19. 11. 2015.
+ * A component capable of processing a DataSource.
+ * @see DataSource
  */
 public interface DataSourceHandler {
-    public void processDataSource(DataSource ds);
+    void processDataSource(DataSource ds);
 }

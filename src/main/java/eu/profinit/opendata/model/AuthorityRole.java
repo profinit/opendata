@@ -1,15 +1,12 @@
 package eu.profinit.opendata.model;
 
-import javax.persistence.AttributeConverter;
-
 /**
- * Created by DM on 9. 11. 2015.
+ * Enum containing possible values for the AuthorityRole of a Record. This represents whether an authority that has
+ * published the record is the supplier or the customer in the given transaction.
  */
 public enum AuthorityRole {
     SUPPLIER,
     CUSTOMER;
-
-
 }
 
 
