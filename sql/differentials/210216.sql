@@ -39,3 +39,9 @@ INSERT INTO data_instance(data_source_id, url, format, periodicity, description,
   (SELECT  data_source_id FROM invoices_ds), 'http://www.mzp.cz/AIS/smlouvy-web.nsf/exportInvoicesAsXLSX.xsp',
   'xlsx', 'weekly', 'Průběžné faktury MŽP', 'mappings/mzp/mapping-invoices.xml', FALSE
 );
+
+ALTER TABLE record ADD periodicity VARCHAR(50) NULL;
+
+ALTER TABLE record ADD CONSTRAINT "FK_record_periodicity"
+FOREIGN KEY ("periodicity") REFERENCES "periodicity" ("periodicity") ON DELETE No Action ON UPDATE No Action
+;

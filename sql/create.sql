@@ -108,7 +108,8 @@ CREATE TABLE "record"
 	"retrieval_id" integer NULL,
 	"record_type" varchar(50)	 NOT NULL,
 	"authority_role" varchar(50)	 NULL,
-	"budget_category" varchar(500) NULL
+	"budget_category" varchar(500) NULL,
+	"periodicity" VARCHAR(50) NULL
 )
 ;
 
@@ -332,4 +333,8 @@ FOREIGN KEY ("saved_record_id") REFERENCES "record" ("record_id") ON DELETE No A
 
 ALTER TABLE "unresolved_relationship" ADD CONSTRAINT "FK_unresolved_relationship_record_type"
 FOREIGN KEY ("record_type") REFERENCES "record_type" ("record_type") ON DELETE No Action ON UPDATE No Action
+;
+
+ALTER TABLE "record" ADD CONSTRAINT "FK_record_periodicity"
+FOREIGN KEY ("periodicity") REFERENCES "periodicity" ("periodicity") ON DELETE No Action ON UPDATE No Action
 ;

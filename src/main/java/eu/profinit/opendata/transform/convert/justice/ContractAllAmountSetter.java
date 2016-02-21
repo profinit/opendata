@@ -1,6 +1,7 @@
 package eu.profinit.opendata.transform.convert.justice;
 
 import eu.profinit.opendata.common.Util;
+import eu.profinit.opendata.model.Periodicity;
 import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.transform.RecordPropertyConverter;
 import eu.profinit.opendata.transform.TransformException;
@@ -26,7 +27,7 @@ public class ContractAllAmountSetter implements RecordPropertyConverter {
         String amountString = sourceValues.get("inputAmount").getStringCellValue();
 
         if(amountString.contains("/1 den")) {
-            record.setSubject(record.getSubject() + "; Částka je za 1 den");
+            record.setPeriodicity(Periodicity.DAILY);
         }
 
         amountString = amountString.replace("/1 den", "");

@@ -1,6 +1,7 @@
 package eu.profinit.opendata.model;
 
 import eu.profinit.opendata.model.util.AuthorityRoleConverter;
+import eu.profinit.opendata.model.util.PeriodicityConverter;
 import eu.profinit.opendata.model.util.RecordTypeConverter;
 
 import javax.persistence.*;
@@ -289,6 +290,18 @@ public class Record {
     }
 
     private Collection<Record> childRecords;
+
+    private Periodicity periodicity;
+
+    @Convert(converter = PeriodicityConverter.class)
+    @Column(name = "periodicity")
+    public Periodicity getPeriodicity() {
+        return periodicity;
+    }
+
+    public void setPeriodicity(Periodicity periodicity) {
+        this.periodicity = periodicity;
+    }
 
     @OneToMany(mappedBy = "parentRecord")
     public Collection<Record> getChildRecords() {
