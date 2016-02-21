@@ -222,7 +222,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
 
                 // Get the year the data instance is holding data from - if in the past and has already been processed
                 // after its last modification that occurred after the year's end, expire it
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
                 try {
                     java.util.Date lastModifiedDate = dateFormat.parse(resource.getLast_modified());
                     Timestamp lmd = new Timestamp(lastModifiedDate.getTime());
