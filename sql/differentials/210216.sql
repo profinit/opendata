@@ -45,3 +45,5 @@ ALTER TABLE record ADD periodicity VARCHAR(50) NULL;
 ALTER TABLE record ADD CONSTRAINT "FK_record_periodicity"
 FOREIGN KEY ("periodicity") REFERENCES "periodicity" ("periodicity") ON DELETE No Action ON UPDATE No Action
 ;
+
+ALTER TABLE entity ALTER COLUMN name TYPE VARCHAR(2000);

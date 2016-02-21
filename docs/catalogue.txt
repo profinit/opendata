@@ -132,3 +132,19 @@ Objednávky jsou sice na webu MŽP zveřejněné, ale z nějakého důvodu pouze
 + authorityIdentifier*, ze sloupce "Číslo objednávky"
 + masterId* - náhodně vygenerované UUID
 
+## Smlouvy
+
+Dokument obsahuje pouze aktuálně platné smlouvy.
+
++ recordType*, vždy CONTRACT,
++ authorityRole*, ze sloupce "Povaha smlouvy"
++ subject*, ze sloupce "Předmět smlouvy"
++ dateCreated*, ze sloupce "Datum podpisu"
++ dateOfExpiry*, ze sloupce "Datum ukončení smlouvy"
++ currency*, vždy CZK
++ periodicity, u některých záznamů MONTHLY (měsíční platba) nebo YEARLY (roční limit)
++ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Celková částka"
++ partner* - dokument neobsahuje IČO, takže pouze podle jména a tím pádem se mohou snadněji vyskytnout duplicitní partneři.
++ authorityIdentifier*, ze sloupce "Číslo smlouvy"
++ masterId* - náhodně vygenerované UUID
+

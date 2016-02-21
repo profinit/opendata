@@ -130,7 +130,7 @@ CREATE TABLE "entity"
 	"dic" varchar(50)	 NULL,
 	"ico" varchar(50)	 NULL,
 	"is_public" boolean NOT NULL,
-	"name" varchar(255)	 NOT NULL,
+	"name" varchar(2000)	 NOT NULL,
 	"entity_id" integer NOT NULL DEFAULT nextval(('"entity_entity_id_seq"'::text)::regclass),
 	"entity_type" varchar(50)	 NOT NULL
 )
