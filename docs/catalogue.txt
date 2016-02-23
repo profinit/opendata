@@ -170,7 +170,18 @@ Nejméně kvalitní ze všech datových zdrojů. Všechny dokumenty jsou jednor�
 
 ## Smlouvy
 
-Platné smlouvy nad 50 000 kč se publikují v jednom dokumentu, k lednu 2015 jich bylo pouze 41. Dokument se zpracovává vždy celý.
+Smlouvy nad 50 000 kč se publikují v jednom dokumentu, k lednu 2015 jich bylo pouze 41. Dokument se zpracovává vždy celý. Nejedná se nejspíš o aktuálně platné smlouvy, protože některé jsou už po datu vypršení.
+
++ recordType*, vždy CONTRACT,
++ authorityRole*, vždy CUSTOMER
++ subject*, ze sloupce "Předmět smlouvy"
++ dateCreated*, ze sloupce "Platnost od"
++ dateOfExpiry*, ze sloupce "Platnost do"
++ currency*, vždy CZK
++ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Celková částka"
++ partner* - dokument neobsahuje IČO, takže pouze podle jména a tím pádem se mohou snadněji vyskytnout duplicitní partneři.
++ authorityIdentifier, ze sloupce "Číslo smlouvy", u většiny smluv chybí
++ masterId* - náhodně vygenerované UUID
 
 ## Faktury
 
