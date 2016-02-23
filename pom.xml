@@ -142,6 +142,7 @@
                     <exclude>mfcr/test-old-invoices.xlsx</exclude>
                     <exclude>mfcr/test-partners.xlsx</exclude>
                     <exclude>justice/test-contracts.xlsx</exclude>
+                    <exclude>mk/test-contracts.xlsx</exclude>
                 </excludes>
             </testResource>
             <testResource>
@@ -153,6 +154,7 @@
                     <include>mfcr/test-partners.xlsx</include>
                     <include>mfcr/test-contracts.xls</include>
                     <include>justice/test-contracts.xlsx</include>
+                    <include>mk/test-contracts.xlsx</include>
                 </includes>
             </testResource>
         </testResources>

@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * A base implementation of a DataSourceHandler. All current DataSource implementations inherit from this class.
  */
-public abstract class GenericDataSourceHandler implements DataSourceHandler {
+public class GenericDataSourceHandler implements DataSourceHandler {
 
     @Autowired
     private TransformDriver transformDriver;
@@ -168,7 +168,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
      * Sometimes this is not possible and DataInstances need to be inserted into the database manually. See the data catalogue for details.
      * @param ds The currently processed DataSource
      */
-    protected abstract void updateDataInstances(DataSource ds);
+    protected void updateDataInstances(DataSource ds) {}
 
     public void setEm(EntityManager em) {
         this.em = em;

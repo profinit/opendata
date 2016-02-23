@@ -138,6 +138,7 @@ Dokument obsahuje pouze aktuálně platné smlouvy.
 
 + recordType*, vždy CONTRACT,
 + authorityRole*, ze sloupce "Povaha smlouvy"
++ inEffect*, vždy true
 + subject*, ze sloupce "Předmět smlouvy"
 + dateCreated*, ze sloupce "Datum podpisu"
 + dateOfExpiry*, ze sloupce "Datum ukončení smlouvy"
@@ -163,3 +164,14 @@ Dokument obsahuje vazbu na smlouvy, takže se při zpracování vytvářejí Unr
 + masterId* - náhodně vygenerované UUID
 + parentRecord - po spojení se smlouvami
 
+# Ministerstvo kultury ČR
+
+Nejméně kvalitní ze všech datových zdrojů. Všechny dokumenty jsou jednorázové (k určitému datu) a zdá se, že má každá aktualizace jinou URL. Je proto potřeba periodicky manuálně kontrolovat a přidávat datové instance, pokud nějaké přibudou. Poslední aktualizace je k lednu 2015.
+
+## Smlouvy
+
+Platné smlouvy nad 50 000 kč se publikují v jednom dokumentu, k lednu 2015 jich bylo pouze 41. Dokument se zpracovává vždy celý.
+
+## Faktury
+
+Faktury jsou publikovány podle měsíce proplacení, momentálně je k dispozici pouze dokument za leden 2015. Jakékoli nové je potřeba přidat ručně nebo zjistit nějaký rozumný URL pattern (s jedním dokumentem to nelze zjistit) a připsat handler, který je bude přidávat automaticky.
