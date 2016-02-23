@@ -14,10 +14,10 @@ import java.time.Duration;
 public class Util {
     /**
      * @param s A string
-     * @return True if the parameter is null or an empty string
+     * @return True if the parameter is null, an empty string or contains only whitespace characters
      */
     public static boolean isNullOrEmpty(String s) {
-        return s == null || s.isEmpty();
+        return s == null || s.isEmpty() || s.matches("^\\s+$");
     }
 
     /**

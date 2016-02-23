@@ -1,4 +1,4 @@
-UPDATE data_source SET handling_class = 'eu.profinit.opendata.control.GenericDataSourceHandler'
+UPDATE data_source SET handling_class = 'eu.profinit.opendata.control.BlankHandler'
   WHERE handling_class = 'eu.profinit.opendata.institution.mzp.MZPHandler';
 
 

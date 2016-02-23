@@ -44,21 +44,21 @@ WITH mzp AS (INSERT INTO entity(entity_type, name, ico, is_public) VALUES
     orders_ds AS (
     INSERT INTO data_source (entity_id, record_type, periodicity, handling_class, active, description) VALUES (
       (SELECT entity_id FROM mzp),
-      'order', 'aperiodic', 'eu.profinit.opendata.control.GenericDataSourceHandler', TRUE, 'Objednávky MŽP')
+      'order', 'aperiodic', 'eu.profinit.opendata.control.BlankHandler', TRUE, 'Objednávky MŽP')
     RETURNING data_source_id
   ),
 
     contracts_ds AS (
     INSERT INTO data_source (entity_id, record_type, periodicity, handling_class, active, description) VALUES (
       (SELECT entity_id FROM mzp),
-      'contract', 'aperiodic', 'eu.profinit.opendata.control.GenericDataSourceHandler', TRUE, 'Smlouvy MŽP')
+      'contract', 'aperiodic', 'eu.profinit.opendata.control.BlankHandler', TRUE, 'Smlouvy MŽP')
     RETURNING data_source_id
   ),
 
     invoices_ds AS (
     INSERT INTO data_source (entity_id, record_type, periodicity, handling_class, active, description) VALUES (
       (SELECT entity_id FROM mzp),
-      'invoice', 'aperiodic', 'eu.profinit.opendata.control.GenericDataSourceHandler', TRUE, 'Faktury MŽP')
+      'invoice', 'aperiodic', 'eu.profinit.opendata.control.BlankHandler', TRUE, 'Faktury MŽP')
     RETURNING data_source_id
   )
 
@@ -86,14 +86,14 @@ WITH mk AS (INSERT INTO entity(entity_type, name, ico, dic, is_public) VALUES
     contracts_ds AS (
     INSERT INTO data_source (entity_id, record_type, periodicity, handling_class, active, description) VALUES (
       (SELECT entity_id FROM mk),
-      'contract', 'aperiodic', 'eu.profinit.opendata.control.GenericDataSourceHandler', TRUE, 'Smlouvy MK')
+      'contract', 'aperiodic', 'eu.profinit.opendata.control.BlankHandler', TRUE, 'Smlouvy MK')
     RETURNING data_source_id
   ),
 
     invoices_ds AS (
     INSERT INTO data_source (entity_id, record_type, periodicity, handling_class, active, description) VALUES (
       (SELECT entity_id FROM mk),
-      'invoice', 'aperiodic', 'eu.profinit.opendata.control.GenericDataSourceHandler', TRUE, 'Faktury MK')
+      'invoice', 'aperiodic', 'eu.profinit.opendata.control.BlankHandler', TRUE, 'Faktury MK')
     RETURNING data_source_id
   )
 

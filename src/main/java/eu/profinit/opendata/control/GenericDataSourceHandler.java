@@ -6,6 +6,7 @@ import eu.profinit.opendata.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,7 @@ import java.util.List;
 /**
  * A base implementation of a DataSourceHandler. All current DataSource implementations inherit from this class.
  */
-public class GenericDataSourceHandler implements DataSourceHandler {
+public abstract class GenericDataSourceHandler implements DataSourceHandler {
 
     @Autowired
     private TransformDriver transformDriver;
@@ -168,7 +169,7 @@ public class GenericDataSourceHandler implements DataSourceHandler {
      * Sometimes this is not possible and DataInstances need to be inserted into the database manually. See the data catalogue for details.
      * @param ds The currently processed DataSource
      */
-    protected void updateDataInstances(DataSource ds) {}
+    protected abstract void updateDataInstances(DataSource ds);
 
     public void setEm(EntityManager em) {
         this.em = em;

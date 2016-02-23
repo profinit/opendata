@@ -12,7 +12,6 @@
     </retriever>
 
     <property name="recordType" value="CONTRACT" onlyNewRecords="true"/>
-    <property name="inEffect" value="true" onlyNewRecords="false"/>
 
     <property name="authorityRole" onlyNewRecords="true" value="CUSTOMER"/>
 

@@ -54,7 +54,7 @@ public class MKTest extends ApplicationContextTestCase {
                 "SELECT r FROM Record r WHERE r.retrieval = :retr", Record.class)
                 .setParameter("retr", retrieval)
                 .getResultList();
-        assertEquals(41, recordList.size());
+        assertEquals(40, recordList.size());
 
     }
 }
