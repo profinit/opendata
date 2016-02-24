@@ -4,10 +4,7 @@ import eu.profinit.opendata.common.Util;
 import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.model.Retrieval;
 import eu.profinit.opendata.transform.*;
-import eu.profinit.opendata.transform.jaxb.Mapping;
-import eu.profinit.opendata.transform.jaxb.RecordProperty;
-import eu.profinit.opendata.transform.jaxb.RowFilter;
-import eu.profinit.opendata.transform.jaxb.SourceColumn;
+import eu.profinit.opendata.transform.jaxb.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -26,6 +23,8 @@ import java.lang.reflect.Field;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Created by dm on 1/16/16.
@@ -55,94 +54,107 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW,
             rollbackFor = {TransformException.class, RuntimeException.class})
-    public void processWorkbook(Workbook workbook, Mapping mapping, Retrieval retrieval, Logger logger) throws TransformException {
+    public void processWorkbook(Workbook workbook, Mapping mapping, Retrieval retrieval, Logger logger)
+            throws TransformException {
 
         if(logger != null) {
             log = logger;
         }
 
         log.info("Started processing workbook");
-        Sheet sheet = workbook.getSheetAt(0);  //TODO: Mapping file should specify how to handle multiple sheets
 
-        int start_row_num = mapping.getHeaderRow().intValue() + 1;
-        if(retrieval.getDataInstance().getLastProcessedRow() != null) {
-            start_row_num = retrieval.getDataInstance().getLastProcessedRow() + 1;
-        }
-        log.info("First data row will be " + start_row_num);
+        for(MappedSheet mappingSheet : mapping.getMappedSheet()) {
 
-        // Create the column name mapping - if two or more columns share the same name, a numeric suffi
-        // is appended going from left to right. First occurrence gets no suffix, second gets 01, etc.
-        log.trace("Mapping column names to their indexes");
-        Map<String, Integer> columnNames = new HashMap<>();
-        Row headerRow = sheet.getRow(mapping.getHeaderRow().intValue());
-        for(int i = 1; Util.isRowEmpty(headerRow); i++) {
-            headerRow = sheet.getRow(mapping.getHeaderRow().intValue() + i);
-            if(retrieval.getDataInstance().getLastProcessedRow() == null) {
-                start_row_num++;
+            Sheet sheet = null;
+            if(mappingSheet.getName() != null) {
+                sheet = workbook.getSheet(mappingSheet.getName());
             }
-        }
-
-        Iterator<Cell> cellIterator = headerRow.cellIterator();
-        while(cellIterator.hasNext()) {
-            Cell cell = cellIterator.next();
-            String columnName = cell.getStringCellValue().trim();
-            int i = 1;
-            while(columnNames.containsKey(columnName)) {
-                columnName += String.format("%02d", i);
-                i++;
+            else {
+                sheet = workbook.getSheetAt(mappingSheet.getNumber().intValue());
             }
-            columnNames.put(columnName, cell.getColumnIndex());
-            log.trace("Name: " + cell.getStringCellValue() + ", Index: " + cell.getColumnIndex());
-        }
 
-        for(int i = start_row_num; i <= sheet.getLastRowNum(); i++) {
-            log.debug("Processing row " + i);
-            try {
-                if(Util.isRowEmpty(sheet.getRow(i))) {
-                    log.warn("Encountered empty row at index " + i + ", skipping");
-                    continue;
-                }
-                Record record = processRow(sheet.getRow(i), mapping, retrieval, columnNames);
-                if(record == null) {
-                    continue;
-                }
-
-                //A call to persist will throw a PersistenceException if all required attributes aren't filled
-                //Which means the whole transaction will blow up. We need to check manually
-                checkRecordIntegrity(record);
-
-                log.debug("Record finished, persisting");
-                if(retrieval.equals(record.getRetrieval()) && !retrieval.getRecords().contains(record)) {
-                    retrieval.getRecords().add(record);
-                    retrieval.setNumRecordsInserted(retrieval.getNumRecordsInserted() + 1);
-                } else if(record.getRecordId() != null) {
-                    em.merge(record);
-                }
-                if(retrieval.getDataInstance().isIncremental()) {
-                    retrieval.getDataInstance().setLastProcessedRow(i);
-                }
+            int start_row_num = mappingSheet.getHeaderRow().intValue() + 1;
+            if (retrieval.getDataInstance().getLastProcessedRow() != null) {
+                start_row_num = retrieval.getDataInstance().getLastProcessedRow() + 1;
             }
-            catch (TransformException ex) {
-                if(ex.getSeverity().equals(TransformException.Severity.FATAL)) {
-                    throw ex;
-                }
-                else {
-                    //Property local exceptions should get caught deeper down, these are record local
-                    //In case we are updating an old record, we should be fine, since we don't save or merge the record
-                    //The bad row will still count as a bad record though!
-                    log.warn("A record-local exception occurred, skipping row " + i + " as bad record", ex);
-                    retrieval.setNumBadRecords(retrieval.getNumBadRecords() + 1);
+            log.info("First data row will be " + start_row_num);
+
+            // Create the column name mapping - if two or more columns share the same name, a numeric suffi
+            // is appended going from left to right. First occurrence gets no suffix, second gets 01, etc.
+            log.trace("Mapping column names to their indexes");
+            Map<String, Integer> columnNames = new HashMap<>();
+            Row headerRow = sheet.getRow(mappingSheet.getHeaderRow().intValue());
+            for (int i = 1; Util.isRowEmpty(headerRow); i++) {
+                headerRow = sheet.getRow(mappingSheet.getHeaderRow().intValue() + i);
+                if (retrieval.getDataInstance().getLastProcessedRow() == null) {
+                    start_row_num++;
                 }
             }
 
+            Iterator<Cell> cellIterator = headerRow.cellIterator();
+            while (cellIterator.hasNext()) {
+                Cell cell = cellIterator.next();
+                String columnName = cell.getStringCellValue().trim();
+                int i = 1;
+                while (columnNames.containsKey(columnName)) {
+                    columnName += String.format("%02d", i);
+                    i++;
+                }
+                columnNames.put(columnName, cell.getColumnIndex());
+                log.trace("Name: " + cell.getStringCellValue() + ", Index: " + cell.getColumnIndex());
+            }
+
+            for (int i = start_row_num; i <= sheet.getLastRowNum(); i++) {
+                log.debug("Processing row " + i);
+                try {
+                    if (Util.isRowEmpty(sheet.getRow(i))) {
+                        log.warn("Encountered empty row at index " + i + ", skipping");
+                        continue;
+                    }
+
+                    Record record = processRow(
+                            sheet.getRow(i), mappingSheet, mapping.getPropertySet(), retrieval, columnNames);
+
+                    if (record == null) {
+                        continue;
+                    }
+
+                    //A call to persist will throw a PersistenceException if all required attributes aren't filled
+                    //Which means the whole transaction will blow up. We need to check manually
+                    checkRecordIntegrity(record);
+
+                    log.debug("Record finished, persisting");
+                    if (retrieval.equals(record.getRetrieval()) && !retrieval.getRecords().contains(record)) {
+                        retrieval.getRecords().add(record);
+                        retrieval.setNumRecordsInserted(retrieval.getNumRecordsInserted() + 1);
+                    } else if (record.getRecordId() != null) {
+                        em.merge(record);
+                    }
+                    if (retrieval.getDataInstance().isIncremental()) {
+                        retrieval.getDataInstance().setLastProcessedRow(i);
+                    }
+                } catch (TransformException ex) {
+                    if (ex.getSeverity().equals(TransformException.Severity.FATAL)) {
+                        throw ex;
+                    } else {
+                        //Property local exceptions should get caught deeper down, these are record local
+                        //In case we are updating an old record, we should be fine, since we don't save or merge the record
+                        //The bad row will still count as a bad record though!
+                        log.warn("A record-local exception occurred, skipping row " + i + " as bad record", ex);
+                        retrieval.setNumBadRecords(retrieval.getNumBadRecords() + 1);
+                    }
+                }
+            }
         }
     }
 
-    private Record processRow(Row row, Mapping mapping, Retrieval retrieval, Map<String, Integer> columnNames) throws TransformException {
+    private Record processRow(Row row, MappedSheet mapping, List<PropertySet> propertySets,
+                              Retrieval retrieval, Map<String, Integer> columnNames) throws TransformException {
 
         Record record = null;
         boolean newRecord;
 
+        // Apply a filter, if there is one in the mapping
         if(mapping.getFilter() != null && !mapping.getFilter().isEmpty()) {
             for(RowFilter rowFilter : mapping.getFilter()) {
                 log.trace("Mapping specifies a filter with class " + rowFilter.getClassName() + ", instantiating");
@@ -154,6 +166,7 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
             }
         }
 
+        // Invoke an old record retriever, if there is one in the mapping
         if(mapping.getRetriever() != null) {
             log.trace("Mapping specifies a retriever with class " + mapping.getRetriever().getClassName() + ", instantiating");
             RecordRetriever retriever = (RecordRetriever) instantiateComponent(mapping.getRetriever().getClassName());
@@ -174,27 +187,50 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
             newRecord = false;
         }
 
-        for(RecordProperty recordProperty : mapping.getProperty()) {
-            log.trace("Updating property " + recordProperty.getName());
+        for(Object recordPropertyOrSet : mapping.getPropertyOrPropertySet()) {
 
-            //In case we're updating a record that's already been inserted
-            if(!newRecord && recordProperty.isOnlyNewRecords()) {
-                log.trace("Skipping property as it can only be applied to new records");
-                continue;
-            }
+            if(recordPropertyOrSet instanceof PropertySetRef) {
+                String name = ((PropertySetRef) recordPropertyOrSet).getRef();
+                Optional<PropertySet> propertySet = propertySets.stream()
+                        .filter(i -> i.getName().equals(name)).findAny();
 
-            //For each property, either set the corresponding fixed value by resolving a string
-            if(recordProperty.getValue() != null) {
-                setFixedValue(record, recordProperty);
+                if(!propertySet.isPresent()) {
+                    throw new TransformException("PropertySet " + name + " is not present in the mapping",
+                            TransformException.Severity.FATAL);
+                }
+                for(RecordProperty recordProperty : propertySet.get().getProperty()) {
+                    setRecordProperty(record, recordProperty, newRecord, row, columnNames);
+                }
             }
             else {
-                //Or instantiate and call the corresponding converter with a hashmap of arguments
-                setProcessedValue(recordProperty, record, row, columnNames);
+                setRecordProperty(record, (RecordProperty) recordPropertyOrSet, newRecord, row, columnNames);
             }
+
         }
 
         log.debug("Finished processing row");
         return record;
+    }
+
+    private void setRecordProperty(Record record, RecordProperty recordProperty, boolean newRecord,
+                                   Row row, Map<String, Integer> columnNames) throws TransformException{
+
+        log.trace("Updating property " + recordProperty.getName());
+
+        //In case we're updating a record that's already been inserted
+        if(!newRecord && recordProperty.isOnlyNewRecords()) {
+            log.trace("Skipping property as it can only be applied to new records");
+            return;
+        }
+
+        //For each property, either set the corresponding fixed value by resolving a string
+        if(recordProperty.getValue() != null) {
+            setFixedValue(record, recordProperty);
+        }
+        else {
+            //Or instantiate and call the corresponding converter with a hashmap of arguments
+            setProcessedValue(recordProperty, record, row, columnNames);
+        }
     }
 
     private void setProcessedValue(RecordProperty recordProperty, Record record, Row row,

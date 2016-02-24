@@ -2,44 +2,46 @@
 <mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="../../main/resources/xsd/datasource_mapping.xsd" name="test-mapping">
 
-    <headerRow>1</headerRow>
+    <mappedSheet number="0">
+        <headerRow>1</headerRow>
 
-    <retriever className="eu.profinit.opendata.test.converter.RandomOldRecordRetriever">
-        <sourceFileColumn originalName="Číslo_objednávky" argumentName="orderNumber"/>
-    </retriever>
+        <retriever className="eu.profinit.opendata.test.converter.RandomOldRecordRetriever">
+            <sourceFileColumn originalName="Číslo_objednávky" argumentName="orderNumber"/>
+        </retriever>
 
-    <property name="recordType" onlyNewRecords="false" value="ORDER"/> <!-- No reason to change this on old records, for test purposes only -->
+        <property name="recordType" onlyNewRecords="false" value="ORDER"/> <!-- No reason to change this on old records, for test purposes only -->
 
-    <property name="subject" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
-        <sourceFileColumn originalName="Předmět" argumentName="inputString"/>
-    </property>
+        <property name="subject" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
+            <sourceFileColumn originalName="Předmět" argumentName="inputString"/>
+        </property>
 
-    <property name="currency" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CurrencySetter">
-        <sourceFileColumn originalName="Měna" argumentName="inputCurrencyCode"/>
-    </property>
+        <property name="currency" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CurrencySetter">
+            <sourceFileColumn originalName="Měna" argumentName="inputCurrencyCode"/>
+        </property>
 
-    <property name="dateCreated" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
-        <sourceFileColumn originalName="Datum_vystavení" argumentName="inputDate"/>
-    </property>
-    
-    <property name="originalCurrencyAmount" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectMoneySetter">
-        <sourceFileColumn originalName="Částka_řádku_v_měně" argumentName="inputAmount"/>
-    </property>
-    
-    <property name="amountCzkWithoutVat" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CZKAmountSetter">
-        <sourceFileColumn originalName="Částka_řádku_bez_DPH" argumentName="inputAmount"/>
-    </property>
-    
-    <property name="amountCzkWithVat" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CZKAmountSetter">
-        <sourceFileColumn originalName="Částka_řádku" argumentName="inputAmount"/>
-    </property>
+        <property name="dateCreated" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
+            <sourceFileColumn originalName="Datum_vystavení" argumentName="inputDate"/>
+        </property>
 
-    <property name="masterId" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.PropertyBasedMasterIdSetter">
-        <sourceFileColumn originalName="Číslo_objednávky" argumentName="authorityIdentifier"/>
-    </property>
+        <property name="originalCurrencyAmount" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectMoneySetter">
+            <sourceFileColumn originalName="Částka_řádku_v_měně" argumentName="inputAmount"/>
+        </property>
 
-    <property name="partner" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.PartnerSetter">
-        <sourceFileColumn originalName="Název_partnera" argumentName="name"/>
-        <sourceFileColumn originalName="IČO" argumentName="ico"/>
-    </property>
+        <property name="amountCzkWithoutVat" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CZKAmountSetter">
+            <sourceFileColumn originalName="Částka_řádku_bez_DPH" argumentName="inputAmount"/>
+        </property>
+
+        <property name="amountCzkWithVat" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CZKAmountSetter">
+            <sourceFileColumn originalName="Částka_řádku" argumentName="inputAmount"/>
+        </property>
+
+        <property name="masterId" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.PropertyBasedMasterIdSetter">
+            <sourceFileColumn originalName="Číslo_objednávky" argumentName="authorityIdentifier"/>
+        </property>
+
+        <property name="partner" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.PartnerSetter">
+            <sourceFileColumn originalName="Název_partnera" argumentName="name"/>
+            <sourceFileColumn originalName="IČO" argumentName="ico"/>
+        </property>
+    </mappedSheet>
 </mapping>

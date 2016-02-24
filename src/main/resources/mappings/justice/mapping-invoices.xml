@@ -2,60 +2,62 @@
 <mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="../../xsd/datasource_mapping.xsd">
 
-    <headerRow>1</headerRow>
+    <mappedSheet number="0">
+        <headerRow>1</headerRow>
 
-    <retriever className="eu.profinit.opendata.transform.convert.justice.JusticeInvoiceRecordRetriever">
-        <sourceFileColumn originalName="Dokladová řada" argumentName="categoryCode"/>
-        <sourceFileColumn originalName="Dokladová řáda" argumentName="categoryCode"/>
-        <sourceFileColumn originalName="Číslo dokladu" argumentName="serialNumber"/>
-        <sourceFileColumn originalName="Číslo dokadu" argumentName="serialNumber"/>
-    </retriever>
+        <retriever className="eu.profinit.opendata.transform.convert.justice.JusticeInvoiceRecordRetriever">
+            <sourceFileColumn originalName="Dokladová řada" argumentName="categoryCode"/>
+            <sourceFileColumn originalName="Dokladová řáda" argumentName="categoryCode"/>
+            <sourceFileColumn originalName="Číslo dokladu" argumentName="serialNumber"/>
+            <sourceFileColumn originalName="Číslo dokadu" argumentName="serialNumber"/>
+        </retriever>
 
-    <property name="recordType" value="INVOICE" onlyNewRecords="true"/>
+        <property name="recordType" value="INVOICE" onlyNewRecords="true"/>
 
-    <property name="authorityIdentifier" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.justice.JusticeInvoiceIdentifierSetter">
-        <sourceFileColumn originalName="Dokladová řada" argumentName="categoryCode"/>
-        <sourceFileColumn originalName="Dokladová řáda" argumentName="categoryCode"/>
-        <sourceFileColumn originalName="Číslo dokladu" argumentName="serialNumber"/>
-        <sourceFileColumn originalName="Číslo dokadu" argumentName="serialNumber"/>
-    </property>
+        <property name="authorityIdentifier" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.justice.JusticeInvoiceIdentifierSetter">
+            <sourceFileColumn originalName="Dokladová řada" argumentName="categoryCode"/>
+            <sourceFileColumn originalName="Dokladová řáda" argumentName="categoryCode"/>
+            <sourceFileColumn originalName="Číslo dokladu" argumentName="serialNumber"/>
+            <sourceFileColumn originalName="Číslo dokadu" argumentName="serialNumber"/>
+        </property>
 
-    <property name="authorityRole" value="CUSTOMER" onlyNewRecords="true"/>
+        <property name="authorityRole" value="CUSTOMER" onlyNewRecords="true"/>
 
-    <property name="partner" onlyNewRecords="true"
-              converter="eu.profinit.opendata.transform.convert.PartnerSetter">
-        <sourceFileColumn originalName="IČO" argumentName="ico"/>
-        <sourceFileColumn originalName="IČ" argumentName="ico"/>
-        <sourceFileColumn originalName="Osoba" argumentName="name"/>
-    </property>
+        <property name="partner" onlyNewRecords="true"
+                  converter="eu.profinit.opendata.transform.convert.PartnerSetter">
+            <sourceFileColumn originalName="IČO" argumentName="ico"/>
+            <sourceFileColumn originalName="IČ" argumentName="ico"/>
+            <sourceFileColumn originalName="Osoba" argumentName="name"/>
+        </property>
 
-    <property name="subject" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
-        <sourceFileColumn originalName="Důvod úhrady" argumentName="inputString"/>
-        <sourceFileColumn originalName="PARAMETR4" argumentName="inputString"/>
-    </property>
+        <property name="subject" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
+            <sourceFileColumn originalName="Důvod úhrady" argumentName="inputString"/>
+            <sourceFileColumn originalName="PARAMETR4" argumentName="inputString"/>
+        </property>
 
-    <property name="currency" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CurrencySetter">
-        <sourceFileColumn originalName="Měna" argumentName="inputCurrencyCode"/>
-    </property>
+        <property name="currency" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CurrencySetter">
+            <sourceFileColumn originalName="Měna" argumentName="inputCurrencyCode"/>
+        </property>
 
-    <property name="allAmounts" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.AllAmountSetter">
-        <sourceFileColumn originalName="Částka" argumentName="inputAmount"/>
-        <sourceFileColumn originalName="Částka předpis" argumentName="inputAmount"/>
-    </property>
+        <property name="allAmounts" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.AllAmountSetter">
+            <sourceFileColumn originalName="Částka" argumentName="inputAmount"/>
+            <sourceFileColumn originalName="Částka předpis" argumentName="inputAmount"/>
+        </property>
 
-    <property name="dateCreated" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
-        <sourceFileColumn originalName="Datum zápisu" argumentName="inputDate"/>
-    </property>
+        <property name="dateCreated" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
+            <sourceFileColumn originalName="Datum zápisu" argumentName="inputDate"/>
+        </property>
 
-    <property name="dueDate" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
-        <sourceFileColumn originalName="Splatnost dne" argumentName="inputDate"/>
-    </property>
+        <property name="dueDate" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
+            <sourceFileColumn originalName="Splatnost dne" argumentName="inputDate"/>
+        </property>
 
-    <property name="dateOfPayment" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
-        <sourceFileColumn originalName="Posl. úhr. dne" argumentName="inputDate"/>
-    </property>
+        <property name="dateOfPayment" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
+            <sourceFileColumn originalName="Posl. úhr. dne" argumentName="inputDate"/>
+        </property>
 
-    <property name="masterId" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.RandomMasterIdSetter">
+        <property name="masterId" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.RandomMasterIdSetter">
 
-    </property>
+        </property>
+    </mappedSheet>
 </mapping>

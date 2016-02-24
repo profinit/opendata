@@ -48,7 +48,7 @@ public class TransformDriverTest extends ApplicationContextTestCase {
     public void testLoadMapping() throws Exception {
         Mapping mapping = transformDriver.loadMapping("test-mapping.xml");
         assertNotNull(mapping);
-        assertEquals(1, mapping.getHeaderRow().intValue());
+        assertEquals(1, mapping.getMappedSheet().get(0).getHeaderRow().intValue());
         assertEquals("test-mapping", mapping.getName());
     }
 
