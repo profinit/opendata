@@ -57,4 +57,34 @@ public class MKTest extends ApplicationContextTestCase {
         assertEquals(40, recordList.size());
 
     }
+
+    @Test
+    @Transactional
+    public void testInvoiceMapping() throws Exception {
+        databaseUtils.cleanRecords();
+
+        DataInstance dataInstance = new DataInstance();
+        dataInstance.setFormat("xlsx");
+        dataInstance.setUrl("http://example.me");
+        InputStream inputStream = new ClassPathResource("mk/test-invoices.xlsx").getInputStream();
+
+        Entity entity = DataGenerator.getTestMinistry();
+        em.persist(entity);
+        DataSource ds = DataGenerator.getDataSource(entity);
+        ds.setRecordType(RecordType.INVOICE);
+        em.persist(ds);
+        dataInstance.setDataSource(ds);
+        dataInstance.setIncremental(false);
+        em.persist(dataInstance);
+
+        Retrieval retrieval = transformDriver.doRetrieval(dataInstance, "mappings/mk/mapping-invoices.xml", inputStream);
+        em.persist(retrieval);
+
+        List<Record> recordList = em.createQuery(
+                "SELECT r FROM Record r WHERE r.retrieval = :retr", Record.class)
+                .setParameter("retr", retrieval)
+                .getResultList();
+        assertEquals(103, recordList.size());
+
+    }
 }

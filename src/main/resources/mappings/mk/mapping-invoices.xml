@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="../../xsd/datasource_mapping.xsd">
+
+    <mappedSheet name="Zálohové faktury">
+        <headerRow>0</headerRow>
+        <retriever className="eu.profinit.opendata.transform.convert.mk.MKInvoiceRetriever">
+            <sourceFileColumn originalName="Název obchodního partnera" argumentName="partnerName"/>
+            <sourceFileColumn originalName="Variabilní  symbol" argumentName="variableSymbol"/>
+            <sourceFileColumn originalName="Datum přijetí" argumentName="dateCreated"/>
+        </retriever>
+        <property name="recordType" onlyNewRecords="true" value="INVOICE"/>
+        <propertySet ref="common"/>
+    </mappedSheet>
+
+    <mappedSheet name="Došlé faktury">
+        <headerRow>0</headerRow>
+        <retriever className="eu.profinit.opendata.transform.convert.mk.MKInvoiceRetriever">
+            <sourceFileColumn originalName="Název obchodního partnera" argumentName="partnerName"/>
+            <sourceFileColumn originalName="Variabilní  symbol" argumentName="variableSymbol"/>
+            <sourceFileColumn originalName="Datum přijetí" argumentName="dateCreated"/>
+        </retriever>
+        <property name="recordType" onlyNewRecords="true" value="INVOICE"/>
+        <propertySet ref="common"/>
+    </mappedSheet>
+
+    <mappedSheet name="Platební poukazy">
+        <headerRow>0</headerRow>
+        <retriever className="eu.profinit.opendata.transform.convert.mk.MKInvoiceRetriever">
+            <sourceFileColumn originalName="Název obchodního partnera" argumentName="partnerName"/>
+            <sourceFileColumn originalName="Variabilní  symbol" argumentName="variableSymbol"/>
+            <sourceFileColumn originalName="Datum přijetí" argumentName="dateCreated"/>
+        </retriever>
+        <property name="recordType" onlyNewRecords="true" value="PAYMENT"/>
+        <propertySet ref="common"/>
+    </mappedSheet>
+
+    <mappedSheet name="Dobropisy">
+        <headerRow>0</headerRow>
+        <retriever className="eu.profinit.opendata.transform.convert.mk.MKInvoiceRetriever">
+            <sourceFileColumn originalName="Název obchodního partnera" argumentName="partnerName"/>
+            <sourceFileColumn originalName="Variabilní symbol" argumentName="variableSymbol"/>
+            <sourceFileColumn originalName="Datum  přijetí" argumentName="dateCreated"/>
+        </retriever>
+        <property name="recordType" onlyNewRecords="true" value="PAYMENT"/>
+        <propertySet ref="common"/>
+    </mappedSheet>
+
+    <propertySet name="common">
+        <property name="authorityRole" onlyNewRecords="true" value="CUSTOMER"/>
+
+        <property name="authorityIdentifier" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
+            <sourceFileColumn originalName="Evidenční číslo" argumentName="inputString"/>
+            <sourceFileColumn originalName="Evidenční  číslo" argumentName="inputString"/>
+        </property>
+
+        <property name="variableSymbol" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
+            <sourceFileColumn originalName="Variabilní symbol" argumentName="inputString"/>
+            <sourceFileColumn originalName="Variabilní  symbol" argumentName="inputString"/>
+        </property>
+
+        <property name="partner" onlyNewRecords="true"
+                  converter="eu.profinit.opendata.transform.convert.PartnerSetter">
+            <sourceFileColumn originalName="Název obchodního partnera" argumentName="name"/>
+        </property>
+
+        <property name="subject" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
+            <sourceFileColumn number="4" argumentName="inputString"/>
+        </property>
+
+        <property name="currency" onlyNewRecords="true" value="CZK"/>
+
+        <property name="allAmounts" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.AllAmountSetter">
+            <sourceFileColumn originalName="Fakturováno Kč" argumentName="inputAmount"/>
+        </property>
+
+        <property name="dateCreated" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
+            <sourceFileColumn originalName="Datum přijetí" argumentName="inputDate"/>
+            <sourceFileColumn originalName="Datum  přijetí" argumentName="inputDate"/>
+        </property>
+
+        <property name="dueDate" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
+            <sourceFileColumn originalName="Datum splatnosti" argumentName="inputDate"/>
+            <sourceFileColumn originalName="Datum  splatnosti" argumentName="inputDate"/>
+        </property>
+
+        <property name="dateOfPayment" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
+            <sourceFileColumn originalName="Datum úhrady" argumentName="inputDate"/>
+            <sourceFileColumn originalName="Datum  úhrady" argumentName="inputDate"/>
+        </property>
+
+        <property name="masterId" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.RandomMasterIdSetter"/>
+
+    </propertySet>
+
+</mapping>

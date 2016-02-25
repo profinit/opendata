@@ -185,4 +185,26 @@ Smlouvy nad 50 000 kč se publikují v jednom dokumentu, k lednu 2015 jich bylo 
 
 ## Faktury
 
-Faktury jsou publikovány podle měsíce proplacení, momentálně je k dispozici pouze dokument za leden 2015. Jakékoli nové je potřeba přidat ručně nebo zjistit nějaký rozumný URL pattern (s jedním dokumentem to nelze zjistit) a připsat handler, který je bude přidávat automaticky.
+Faktury jsou publikovány podle měsíce proplacení, momentálně je k dispozici pouze dokument za leden 2015. Jakékoli nové je potřeba přidat ručně nebo zjistit nějaký rozumný URL pattern (s jedním dokumentem to nelze zjistit) a připsat handler, který je bude přidávat automaticky. Faktury nejsou nijak navázány na smlouvy.
+
+V dokumentu jsou celkem čtyři listy, které se liší jenom typem záznamu:
+
++ Zálohové faktury, typ INVOICE
++ Došlé faktury, typ INVOICE
++ Platební poukazy, typ PAYMENT
++ Dobropisy, typ PAYMENT
+
+Vyplněná pole jsou:
+
++ recordType*, viz. výše,
++ authorityRole*, vždy CUSTOMER
++ subject*, z bezejmenného sloupce s popisem
++ variableSymbol*, ze sloupce "Variabilní symbol"
++ dateCreated*, ze sloupce "Datum přijetí",
++ dueDate*, ze sloupce "Datum splatnosti",
++ dateOfPayment*, ze sloupce "Datum úhrady",
++ currency*, vždy CZK
++ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Celková částka"
++ partner* - dokument neobsahuje IČO, snadněji vznikají duplicitní partneři.
++ authorityIdentifier*, ze sloupce "Evidenční číslo"
++ masterId* - náhodně vygenerované UUID

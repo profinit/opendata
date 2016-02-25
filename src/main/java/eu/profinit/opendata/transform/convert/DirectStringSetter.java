@@ -26,6 +26,11 @@ public class DirectStringSetter implements RecordPropertyConverter {
                 throw new TransformException("Field " + fieldName + " doesn't have type String", TransformException.Severity.FATAL);
             }
             field.setAccessible(true);
+
+            if(sourceValues.get("inputString").getCellType() != Cell.CELL_TYPE_STRING) {
+                sourceValues.get("inputString").setCellType(Cell.CELL_TYPE_STRING);
+            }
+
             field.set(record, sourceValues.get("inputString").getStringCellValue());
         } catch (TransformException e) {
             throw e;

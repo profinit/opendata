@@ -4,17 +4,16 @@
 
     <mappedSheet number="0">
         <headerRow>0</headerRow>
-        <propertySet ref="all"/>
-    </mappedSheet>
-
-    <propertySet name="all">
         <retriever className="eu.profinit.opendata.transform.convert.mk.MKContractRetriever">
             <sourceFileColumn originalName="Číslo smlouvy" argumentName="authorityIdentifier"/>
             <sourceFileColumn originalName="Název partnera" argumentName="partnerName"/>
             <sourceFileColumn originalName="Předmět smlouvy" argumentName="subject"/>
             <sourceFileColumn originalName="Platnost od" argumentName="dateCreated"/>
         </retriever>
+        <propertySet ref="all"/>
+    </mappedSheet>
 
+    <propertySet name="all">
         <property name="recordType" value="CONTRACT" onlyNewRecords="true"/>
 
         <property name="authorityRole" onlyNewRecords="true" value="CUSTOMER"/>

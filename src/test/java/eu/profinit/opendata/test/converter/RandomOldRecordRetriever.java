@@ -6,6 +6,7 @@ import eu.profinit.opendata.model.Retrieval;
 import eu.profinit.opendata.test.DataGenerator;
 import eu.profinit.opendata.transform.RecordRetriever;
 import eu.profinit.opendata.transform.TransformException;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -27,7 +28,7 @@ public class RandomOldRecordRetriever implements RecordRetriever {
     private EntityManager em;
 
     @Override
-    public Record retrieveRecord(Retrieval currentRetrieval, Map<String, Cell> sourceValues) throws TransformException {
+    public Record retrieveRecord(Retrieval currentRetrieval, Map<String, Cell> sourceValues, Logger logger) throws TransformException {
         if(sourceValues.get("orderNumber").getStringCellValue().equals("1403000370")) {
             Record record = new Record();
             record.setRecordId(-666L);

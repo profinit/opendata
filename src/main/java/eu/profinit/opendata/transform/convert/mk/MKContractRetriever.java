@@ -2,10 +2,12 @@ package eu.profinit.opendata.transform.convert.mk;
 
 import eu.profinit.opendata.common.Util;
 import eu.profinit.opendata.model.Record;
+import eu.profinit.opendata.model.RecordType;
 import eu.profinit.opendata.model.Retrieval;
 import eu.profinit.opendata.query.PartnerQueryService;
 import eu.profinit.opendata.transform.RecordRetriever;
 import eu.profinit.opendata.transform.TransformException;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,7 +32,7 @@ public class MKContractRetriever implements RecordRetriever {
     private PartnerQueryService partnerQueryService;
 
     @Override
-    public Record retrieveRecord(Retrieval currentRetrieval, Map<String, Cell> sourceValues)
+    public Record retrieveRecord(Retrieval currentRetrieval, Map<String, Cell> sourceValues, Logger logger)
             throws TransformException {
 
         // Get filter values
@@ -46,8 +48,9 @@ public class MKContractRetriever implements RecordRetriever {
 
         // Get all MK contracts from the DB
         List<Record> allContracts = em.createQuery(
-                "Select r from Record r where r.authority = :authority", Record.class)
+                "Select r from Record r where r.authority = :authority and r.recordType = :contract", Record.class)
                 .setParameter("authority", currentRetrieval.getDataInstance().getDataSource().getEntity())
+                .setParameter("contract", RecordType.CONTRACT)
                 .getResultList();
 
         // Filter by authId, partner name, subject and date created

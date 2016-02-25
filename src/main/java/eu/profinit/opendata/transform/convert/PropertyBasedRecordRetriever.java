@@ -7,6 +7,7 @@ import eu.profinit.opendata.model.Retrieval;
 import eu.profinit.opendata.query.RecordQueryService;
 import eu.profinit.opendata.transform.RecordRetriever;
 import eu.profinit.opendata.transform.TransformException;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,7 +36,7 @@ public class PropertyBasedRecordRetriever implements RecordRetriever {
     private RecordQueryService recordQueryService;
 
     @Override
-    public Record retrieveRecord(Retrieval currentRetrieval, Map<String, Cell> sourceValues) throws TransformException {
+    public Record retrieveRecord(Retrieval currentRetrieval, Map<String, Cell> sourceValues, Logger logger) throws TransformException {
         HashMap<String, String> filters = new HashMap<>();
 
         for(String key : sourceValues.keySet()) {

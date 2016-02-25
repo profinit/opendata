@@ -68,9 +68,11 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
             Sheet sheet = null;
             if(mappingSheet.getName() != null) {
                 sheet = workbook.getSheet(mappingSheet.getName());
+                log.info("Processing sheet " + mappingSheet.getName());
             }
             else {
                 sheet = workbook.getSheetAt(mappingSheet.getNumber().intValue());
+                log.info("Processing sheet " + mappingSheet.getNumber());
             }
 
             int start_row_num = mappingSheet.getHeaderRow().intValue() + 1;
@@ -145,6 +147,7 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
                     }
                 }
             }
+            log.info("Sheet finished");
         }
     }
 
@@ -171,7 +174,7 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
             log.trace("Mapping specifies a retriever with class " + mapping.getRetriever().getClassName() + ", instantiating");
             RecordRetriever retriever = (RecordRetriever) instantiateComponent(mapping.getRetriever().getClassName());
             record = retriever.retrieveRecord(retrieval,
-                    getCellMapForArguments(row, mapping.getRetriever().getSourceFileColumn(), columnNames));
+                    getCellMapForArguments(row, mapping.getRetriever().getSourceFileColumn(), columnNames), log);
         }
 
         //Create the Record
@@ -327,8 +330,13 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
         for(SourceColumn sourceColumn : sourceColumns) {
             Integer columnIndex = columnNames.get(sourceColumn.getOriginalName());
             if(columnIndex == null) {
-                log.trace("Couldn't find source coulumn with name " + sourceColumn.getOriginalName());
-                continue;
+                if(sourceColumn.getNumber() != null) {
+                    columnIndex = sourceColumn.getNumber();
+                }
+                else {
+                    log.trace("Couldn't find source coulumn with name " + sourceColumn.getOriginalName());
+                    continue;
+                }
             }
             argumentMap.put(sourceColumn.getArgumentName(), row.getCell(columnIndex));
         }
