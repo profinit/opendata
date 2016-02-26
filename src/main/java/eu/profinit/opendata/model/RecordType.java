@@ -1,7 +1,7 @@
 package eu.profinit.opendata.model;
 
 /**
- * Created by DM on 13. 11. 2015.
+ * Represents the type of a Record.
  */
 public enum RecordType {
     ORDER,

@@ -7,19 +7,35 @@ import java.util.Collection;
 import java.util.Objects;
 
 /**
- * Created by DM on 8. 11. 2015.
+ * Represents a single attempt to process a data file. Contains metadata about the outcome of the attempt and all
+ * Records inserted during the retrieval hold a reference to it.
  */
 @Entity
 @Table(name = "retrieval", schema = "public", catalog = "opendata")
 @SequenceGenerator(name = "seq_pk", sequenceName = "retrieval_retrieval_id_seq", allocationSize = 1)
 public class Retrieval {
+    /** The time the retrieval was started */
     private Timestamp date;
+
+    /** The reason for a total failure, if there was one. */
     private String failureReason;
+
+    /** The number of records that haven't been inserted due to a non-fatal error during processing. */
     private int numBadRecords;
+
+    /** The number of records successfully inserted during processing. */
     private int numRecordsInserted;
+
+    /** Indicates whether this Retrieval has finished successfully. */
     private boolean success;
+
+    /** The appplication's primary key */
     private Long retrievalId;
+
+    /** The data instance on which the Retrieval was attempted. */
     private DataInstance dataInstance;
+
+    /** The Records inserted as a result of this Retrieval. */
     private Collection<Record> records;
 
     @Basic

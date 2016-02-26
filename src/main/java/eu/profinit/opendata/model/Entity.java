@@ -9,7 +9,8 @@ import java.util.Set;
 import eu.profinit.opendata.model.util.EntityTypeConverter;
 
 /**
- * Created by DM on 8. 11. 2015.
+ * Represents an entity taking part in a transaction (a Record). Can be a public institution (ministry), company, an
+ * individual contractor, or even just an employee.
  */
 @javax.persistence.Entity
 @SequenceGenerator(name = "seq_pk", sequenceName = "entity_entity_id_seq", allocationSize = 1)
@@ -25,16 +26,37 @@ import eu.profinit.opendata.model.util.EntityTypeConverter;
         query = "SELECT OBJECT(e) FROM Entity e WHERE e.name = :name")
 })
 public class Entity {
+
+    /** The tax identification number. Mostly unused. */
     private String dic;
+
+    /** The taxpayer identification number. The primary attribute used to avoid duplicitous entities. */
     private String ico;
-    private String authorityIdentifier;
+
+    /** Indicates that this institution is a public institution that publishes data, as opposed to an entity created
+     * during processing.
+     */
     private boolean isPublic;
 
+    /** The normalized entity name. Some institutions only publish a partner's name and every effort is made to avoid
+     * duplicitous entries, but this is a lot less reliable than the identification number.
+     * @see eu.profinit.opendata.query.PartnerQueryService#normalizeEntityName(String)
+     */
     private String name;
+
+    /** The database primary key */
     private Long entityId;
+
+    /** The nature of this entity. This attribute is not used correctly at the moment. */
     private EntityType entityType;
+
+    /** DataSources that this Entity publishes. Only applicable if this Entity is public. */
     private Collection<DataSource> dataSources;
+
+    /** Records where this Entity is the publishing authority. */
     private Collection<Record> recordsAsAuthority;
+
+    /** Records where this Entity is the partner. */
     private Collection<Record> recordsAsPartner;
 
     @Basic

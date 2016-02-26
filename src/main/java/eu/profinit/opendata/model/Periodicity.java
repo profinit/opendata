@@ -3,7 +3,8 @@ package eu.profinit.opendata.model;
 import java.time.Duration;
 
 /**
- * Created by DM on 13. 11. 2015.
+ * Represents a single set duration. This is used in many different areas by the application, usually to refer to how
+ * often a data file is published or a data source updated.
  */
 public enum Periodicity {
     DAILY(Duration.ofDays(1)),
@@ -13,6 +14,7 @@ public enum Periodicity {
     APERIODIC(Duration.ZERO),
     QUARTERLY(Duration.ofDays(90));
 
+    /** The exact duration this Periodicity represents. */
     private Duration duration;
 
     Periodicity(Duration duration) {

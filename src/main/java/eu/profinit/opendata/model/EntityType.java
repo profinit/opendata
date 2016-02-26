@@ -3,7 +3,8 @@ package eu.profinit.opendata.model;
 import javax.persistence.AttributeConverter;
 
 /**
- * Created by DM on 11. 11. 2015.
+ * The possible types of an Entity. Currently, only MINISTRY and COMPANY are used and no effort is made to automatically
+ * sort Entities into categories.
  */
 public enum EntityType {
     MINISTRY,

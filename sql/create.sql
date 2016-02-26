@@ -98,7 +98,6 @@ CREATE TABLE "record"
 	"in_effect" boolean NULL,
 	"master_id" varchar(50)	 NOT NULL,
 	"original_currency_amount" double precision NULL,
-	"partner_code" varchar(50) NULL,
 	"subject" varchar(5000)	 NULL,
 	"variable_symbol" varchar(50)	 NULL,
 	"record_id" integer NOT NULL DEFAULT nextval(('"record_record_id_seq"'::text)::regclass),

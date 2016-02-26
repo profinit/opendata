@@ -5,16 +5,30 @@ import eu.profinit.opendata.model.util.RecordTypeConverter;
 import javax.persistence.*;
 
 /**
- * Created by dm on 2/13/16.
+ * A placeholder entry for a parent-child relationship between two Records where one of the sides is not yet present in
+ * the database. Used for all documents that contain parent or child record identifiers because the order of processing
+ * of data instances cannot be guaranteed. One of the records may not even have been published at all at the time of
+ * processing.
+ *
+ * Resolving relationships is not part of the extraction logic, a special service is run at the end of each DataSource
+ * processing cycle.
+ * @see eu.profinit.opendata.control.RelationshipResolver
  */
 @javax.persistence.Entity
 @Table(name = "unresolved_relationship", schema = "public", catalog = "opendata")
 @SequenceGenerator(name = "seq_pk", sequenceName = "unresolved_relationship_unresolved_relationship_id_seq", allocationSize = 1)
 public class UnresolvedRelationship {
 
+    /** The application's primary key */
     private Long unresolvedRelationshipId;
+
+    /** The side of the relationship that is saved in the database */
     private Record savedRecord;
+
+    /** The authority identifier of the record that is to be the other side of the relationship. */
     private String boundAuthorityIdentifier;
+
+    /** Indicates which side of the relationship is the parent record. */
     private Boolean savedRecordIsParent;
 
     @Id

@@ -10,7 +10,14 @@ import java.util.Collection;
 import java.util.Objects;
 
 /**
- * Created by DM on 8. 11. 2015.
+ * Represents a single published record. This can be an order, invoice, contract or some other form of payment. For each
+ * record type, only some attributes are relevant. In addition, most institutions only publish a small subset of
+ * information that a Record instance can hold. Refer to the data catalogue for specifics.
+ *
+ * A Record can be joined to another via a parent-child relationship. Such a relationship between two records of the
+ * same type indicates that the child is only an addendum to the parent, while a relationship between two records of
+ * different types means a logical link (such as between an invoice and a contract). Most institutions don't link their
+ * published records, though.
  */
 @javax.persistence.Entity
 @Table(name = "record", schema = "public", catalog = "opendata")
@@ -24,6 +31,10 @@ import java.util.Objects;
                 "AND r.authority = :authority AND r.recordType = :recordType")
 })
 public class Record {
+
+    /** The amount in CZK. Only present when the currency is CZK or a converted amount is available in the source
+     * document.
+     */
     private Double amountCzkWithVat;
 
     @Basic
@@ -36,6 +47,9 @@ public class Record {
         this.amountCzkWithVat = amountCzkWithVat;
     }
 
+    /** The amount in CZK. Only present when the currency is CZK or a converted amount is available in the source
+     * document.
+     */
     private Double amountCzkWithoutVat;
 
     @Basic
@@ -48,6 +62,8 @@ public class Record {
         this.amountCzkWithoutVat = amountCzkWithoutVat;
     }
 
+    /** The identifier that the <em>publishing authority</em> has given to this record. May not be unique even among
+     * records from the same authority. */
     private String authorityIdentifier;
 
     @Basic
@@ -60,6 +76,7 @@ public class Record {
         this.authorityIdentifier = authorityIdentifier;
     }
 
+    /** When there is no indication in the published document, CZK is assumed by default. */
     private String currency;
 
     @Basic
@@ -72,6 +89,10 @@ public class Record {
         this.currency = currency;
     }
 
+    /** The main reference date for records and the only one guaranteed to be non-null. For invoices, it's usually the
+     * date the invoice was received. For orders, the day the order was placed. For contracts, the day the contract
+     * came into effect.
+     */
     private Date dateCreated;
 
     @Basic
@@ -84,6 +105,7 @@ public class Record {
         this.dateCreated = dateCreated;
     }
 
+    /** Only applicable to contracts. The date when the contract expires. */
     private Date dateOfExpiry;
 
     @Basic
@@ -96,6 +118,7 @@ public class Record {
         this.dateOfExpiry = dateOfExpiry;
     }
 
+    /** Only applicable to invoices. The date the invoice was physically paid. */
     private Date dateOfPayment;
 
     @Basic
@@ -108,6 +131,7 @@ public class Record {
         this.dateOfPayment = dateOfPayment;
     }
 
+    /** Only applicable to invoices. The due date for payment of the invoice */
     private Date dueDate;
 
     @Basic
@@ -120,6 +144,9 @@ public class Record {
         this.dueDate = dueDate;
     }
 
+    /** Only applicable to contracts. Indicates whether the contract was in effect as of the last processing of the
+     * authority's published data source.
+      */
     private Boolean inEffect;
 
     @Basic
@@ -132,6 +159,10 @@ public class Record {
         this.inEffect = inEffect;
     }
 
+    /** An application-specific global identifier. Used to correlate records that represent the same transaction but
+     * published by two different entities (currently not implemented) or to correlate parts of a record that has been
+     * broken down into parts, for example to fit into different budget categories (currently only MF orders).
+     */
     private String masterId;
 
     @Basic
@@ -144,6 +175,7 @@ public class Record {
         this.masterId = masterId;
     }
 
+    /** The amount in the currency of the transaction (includes CZK). Should be non-null, except for some contracts. */
     private Double originalCurrencyAmount;
 
     @Basic
@@ -156,18 +188,7 @@ public class Record {
         this.originalCurrencyAmount = originalCurrencyAmount;
     }
 
-    private String partnerCode;
-
-    @Basic
-    @Column(name = "partner_code")
-    public String getPartnerCode() {
-        return partnerCode;
-    }
-
-    public void setPartnerCode(String partnerCode) {
-        this.partnerCode = partnerCode;
-    }
-
+    /** A more general description of the subject or a specific budget category, if published. */
     private String budgetCategory;
 
     @Basic
@@ -180,6 +201,7 @@ public class Record {
         this.budgetCategory = budgetCategory;
     }
 
+    /** A description of the record, as published by the authority. */
     private String subject;
 
     @Basic
@@ -192,6 +214,7 @@ public class Record {
         this.subject = subject;
     }
 
+    /** The variable symbol used for an invoice or order payment. */
     private String variableSymbol;
 
     @Basic
@@ -204,6 +227,7 @@ public class Record {
         this.variableSymbol = variableSymbol;
     }
 
+    /** The application's primary key */
     private Long recordId;
 
     @Id
@@ -217,6 +241,7 @@ public class Record {
         this.recordId = recordId;
     }
 
+    /** The record type. One of INVOICE, ORDER, CONTRACT, PAYMENT. */
     private RecordType recordType;
 
     @Convert(converter = RecordTypeConverter.class)
@@ -229,6 +254,7 @@ public class Record {
         this.recordType = recordType;
     }
 
+    /** The role the publishing authority plays in the transaction (customer or supplier). */
     private AuthorityRole authorityRole;
 
     @Convert(converter = AuthorityRoleConverter.class)
@@ -241,6 +267,7 @@ public class Record {
         this.authorityRole = authorityRole;
     }
 
+    /** The Retrieval during which this Record was inserted. */
     private Retrieval retrieval;
 
     @ManyToOne
@@ -253,6 +280,7 @@ public class Record {
         this.retrieval = retrieval;
     }
 
+    /** The publishing authority */
     private Entity authority;
 
     @ManyToOne
@@ -265,6 +293,9 @@ public class Record {
         this.authority = authority;
     }
 
+    /** The partner in this transaction (other side of the transaction from the publishing authority). Three or more way
+     * transactions are not supported.
+     */
     private Entity partner;
 
     @ManyToOne
@@ -291,6 +322,9 @@ public class Record {
 
     private Collection<Record> childRecords;
 
+    /** If present, indicates that a contract's amount represents a recurring payment. This attribute specifies the
+     * periodicity of the payment. Only applicable to contracts.
+     */
     private Periodicity periodicity;
 
     @Convert(converter = PeriodicityConverter.class)
@@ -312,6 +346,9 @@ public class Record {
         this.childRecords = childRecords;
     }
 
+    /** Any unresolved relationships to other Records.
+     * @see eu.profinit.opendata.control.RelationshipResolver
+     */
     private Collection<UnresolvedRelationship> unresolvedRelationships;
 
     @OneToMany(mappedBy = "savedRecord", cascade = CascadeType.PERSIST)
@@ -350,7 +387,6 @@ public class Record {
         if (masterId != null ? !masterId.equals(record.masterId) : record.masterId != null) return false;
         if (originalCurrencyAmount != null ? !originalCurrencyAmount.equals(record.originalCurrencyAmount) : record.originalCurrencyAmount != null)
             return false;
-        if (partnerCode != null ? !partnerCode.equals(record.partnerCode) : record.partnerCode != null) return false;
         if (recordType != null ? !recordType.equals(record.recordType) : record.recordType != null) return false;
         if (subject != null ? !subject.equals(record.subject) : record.subject != null) return false;
         if (variableSymbol != null ? !variableSymbol.equals(record.variableSymbol) : record.variableSymbol != null)
@@ -376,7 +412,6 @@ public class Record {
         result = 31 * result + (inEffect != null ? inEffect.hashCode() : 0);
         result = 31 * result + (masterId != null ? masterId.hashCode() : 0);
         result = 31 * result + (originalCurrencyAmount != null ? originalCurrencyAmount.hashCode() : 0);
-        result = 31 * result + (partnerCode != null ? partnerCode.hashCode() : 0);
         result = 31 * result + (subject != null ? subject.hashCode() : 0);
         result = 31 * result + (variableSymbol != null ? variableSymbol.hashCode() : 0);
         result = 31 * result + recordId.intValue();

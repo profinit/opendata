@@ -1,9 +1,16 @@
 package eu.profinit.opendata.model;
 
+import eu.profinit.opendata.institution.mfcr.rest.JSONPackageListResource;
+
 import javax.persistence.*;
 
 /**
- * Created by dm on 2/11/16.
+ * Represents the assignment of an identification code to a partner made by a publishing institution, where documents
+ * containing records may only specify this identification code instead of other details about the partner.
+ * This is the scheme currently used by MF invoices from 2010 to 2014. First, only the partner list is downloaded and
+ * PartnerListEntries are saved. When processing documents containing the invoices, partners are searched for by their
+ * PartnerListEntry codes.
+ * @see eu.profinit.opendata.institution.mfcr.impl.MFCRHandlerImpl#processPartnerListDataInstance(DataSource, JSONPackageListResource)
  */
 @javax.persistence.Entity
 @Table(name = "partner_list_entry", schema = "public", catalog = "opendata")
@@ -16,9 +23,16 @@ import javax.persistence.*;
 })
 public class PartnerListEntry {
 
+    /** The authority that has published information about the partner */
     private Entity authority;
+
+    /** The partner that is published by the authority under an identification code. */
     private Entity partner;
+
+    /** The identification code used by the authority to refer to the partner. */
     private String code;
+
+    /** The database primary key. */
     private Long partnerListEntryId;
 
     @ManyToOne
