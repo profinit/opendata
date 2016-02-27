@@ -6,6 +6,7 @@ import eu.profinit.opendata.model.Retrieval;
 import eu.profinit.opendata.transform.RecordRetriever;
 import eu.profinit.opendata.transform.TransformException;
 import eu.profinit.opendata.transform.convert.PropertyBasedRecordRetriever;
+import eu.profinit.opendata.transform.convert.SplitIdentifierSetter;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,12 @@ public class JusticeInvoiceRecordRetriever implements RecordRetriever {
     private PropertyBasedRecordRetriever propertyBasedRecordRetriever;
 
     @Autowired
-    private JusticeInvoiceIdentifierSetter justiceInvoiceIdentifierSetter;
+    private SplitIdentifierSetter splitIdentifierSetter;
 
     @Override
     public Record retrieveRecord(Retrieval currentRetrieval, Map<String, Cell> sourceValues, Logger logger) throws TransformException {
 
-        String identifier = justiceInvoiceIdentifierSetter.getIdentifierFromSourceValues(sourceValues);
+        String identifier = splitIdentifierSetter.getIdentifierFromSourceValues(sourceValues);
         Map<String, String> stringFilters = new HashMap<>();
         stringFilters.put("authorityIdentifier", identifier);
         return propertyBasedRecordRetriever.retrieveRecordByStrings(currentRetrieval, stringFilters, RecordType.INVOICE);

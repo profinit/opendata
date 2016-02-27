@@ -1,4 +1,4 @@
-package eu.profinit.opendata.transform.convert.justice;
+package eu.profinit.opendata.transform.convert;
 
 import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.transform.RecordPropertyConverter;
@@ -13,7 +13,7 @@ import java.util.Map;
  * Created by dm on 2/19/16.
  */
 @Component
-public class JusticeInvoiceIdentifierSetter implements RecordPropertyConverter{
+public class SplitIdentifierSetter implements RecordPropertyConverter{
     @Override
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger)
             throws TransformException {

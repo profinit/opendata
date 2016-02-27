@@ -14,7 +14,7 @@
 
         <property name="recordType" value="INVOICE" onlyNewRecords="true"/>
 
-        <property name="authorityIdentifier" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.justice.JusticeInvoiceIdentifierSetter">
+        <property name="authorityIdentifier" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.SplitIdentifierSetter">
             <sourceFileColumn originalName="Dokladová řada" argumentName="categoryCode"/>
             <sourceFileColumn originalName="Dokladová řáda" argumentName="categoryCode"/>
             <sourceFileColumn originalName="Číslo dokladu" argumentName="serialNumber"/>
