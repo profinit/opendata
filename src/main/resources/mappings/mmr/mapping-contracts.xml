@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="../../xsd/datasource_mapping.xsd">
+
+    <mappedSheet number="0">
+        <headerRow>0</headerRow>
+        <retriever className="eu.profinit.opendata.transform.convert.PropertyBasedRecordRetriever">
+            <sourceFileColumn originalName="Číslo smlouvy" argumentName="authorityIdentifier"/>
+        </retriever>
+        <propertySet ref="all"/>
+    </mappedSheet>
+
+    <propertySet name="all">
+        <property name="recordType" value="CONTRACT" onlyNewRecords="true"/>
+
+        <property name="authorityRole" onlyNewRecords="true" value="CUSTOMER"/>
+
+        <property name="authorityIdentifier" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
+            <sourceFileColumn originalName="Číslo smlouvy" argumentName="inputString"/>
+        </property>
+
+        <property name="partner" onlyNewRecords="true"
+                  converter="eu.profinit.opendata.transform.convert.PartnerSetter">
+            <sourceFileColumn originalName="Název/příjmení" argumentName="name"/>
+            <sourceFileColumn originalName="IČ" argumentName="ico"/>
+        </property>
+
+        <property name="subject" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
+            <sourceFileColumn originalName="Popis" argumentName="inputString"/>
+        </property>
+
+        <property name="currency" onlyNewRecords="true" value="CZK"/>
+
+        <property name="allAmounts" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.AllAmountSetter">
+            <sourceFileColumn originalName="Částka v Kč" argumentName="inputAmount"/>
+        </property>
+
+        <property name="dateCreated" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DateSetter">
+            <sourceFileColumn originalName="Datum uzavření" argumentName="inputDate"/>
+        </property>
+
+        <property name="masterId" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.RandomMasterIdSetter">
+
+        </property>
+    </propertySet>
+
+</mapping>

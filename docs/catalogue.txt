@@ -5,8 +5,8 @@ Datové instance MFČR se updatují automaticky z JSON API na data.mfcr.cz. Poku
 ## Objednávky
 Stahují se v souhrnném dokumentu obsahujícím všechno od roku 2007.
 
-Pro jednu objednávku může existovat více záznamů: 
-* Pokud objednávka patří do více rozpočtových kategorií, pak je uvedena pro každou zvlášť. 
+Pro jednu objednávku může existovat více záznamů:
+* Pokud objednávka patří do více rozpočtových kategorií, pak je uvedena pro každou zvlášť.
 * Oproti smlouvám a fakturám jsou ale na každém řádku objednávány často úplně jiné věci, proto je aplikace nespojuje.
 * Záznamy patřící pod stejnou objednávku mají stejný authorityIdentifier a masterId
 
@@ -20,7 +20,7 @@ Vyplněná pole (hvězdička znamená, že je pole v drtivé většině případ
 + partner* - může chybět v ojedinělých případech
 + authorityIdentifier*, ze sloupce "Číslo_objednávky"
 + masterId* - náhodně vygenerované UUID, stejné přes objednávky sdílející authorityIdentifier
- 
+
 ## Faktury 2010 - 2014
 Každý rok má vlastní dokument, roky < 2015 mají jiný formát. Záznamy rozpadlé přes několik řádků aplikace spojuje do jednoho.
 
@@ -98,7 +98,7 @@ Faktury se publikují od roku 2009 v odděleném dokumentu pro každý rok. Data
 
 Formát dokumentů se od sebe drobně liší (překlepy ve sloupcích, IČ místo IČO apod.), proto jsou argumenty v mapování často přetížené. Informace jsou ale ve všech stejné. Instance nejsou inkrementální - zpracování probíhá vždy od prvního řádku, protože záznamy nejsou seřazené podle času. Duplicitní záznamy by se ale neměly objevovat díky Retrieveru. Mezi fakturami a smlouvami neprobíhá žádné spojování.
 
-Aktuálně nejnovější dokument je za rok 2015, který je aktuální k 30. 9. 2015. 
+Aktuálně nejnovější dokument je za rok 2015, který je aktuální k 30. 9. 2015.
 
 + authorityIdentifier*, spojení sloupců "Dokladová řada" a "Číslo dokladu"
 + recordType, vždy INVOICE
@@ -208,3 +208,25 @@ Vyplněná pole jsou:
 + partner* - dokument neobsahuje IČO, snadněji vznikají duplicitní partneři.
 + authorityIdentifier*, ze sloupce "Evidenční číslo"
 + masterId* - náhodně vygenerované UUID
+
+# Ministerstvo pro místní rozvoj
+
+Stejně jako u Ministerstva kultury, datové instance se musí přidávat ručně. Teoreticky by šlo odkazy na XLS soubory získávat z HTML kódu webu, ale k tomu je napřed potřeba zjistit, jak probíhá aktualizace - jestli se mění URL apod. Do té doby jsou přidány pouze tři datové instance (zda jsou periodické, je taky potřeba zjistit - zatím je jejich periodicita nastavena na měsíční aktualizaci, ale je dost nepravděpodobné, že adresy zůstanou stejné).
+
+## Smlouvy
+
+V jednom dokumentu jsou publikovány smlouvy uzavřené od 1. 1. 2015, poslední aktualizace proběhla 1. 1. 2016. Dokument obsahuje celkem pouze 51 záznamů. Hodně smluv je periodických, částka je za nějaké období. Bohužel tato informace se nachází v popisu a bez pokročilého textového rozpoznávání je neextrahovatelná.
+
++ recordType*, vždy CONTRACT,
++ authorityRole*, vždy CUSTOMER
++ subject*, ze sloupce "Popis"
++ dateCreated*, ze sloupce "Datum uzavření"
++ currency*, vždy CZK
++ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Celková částka"
++ partner - dokument obsahuje IČO, ale u některých smluv partner úplně chybí. Název se bere ze sloupce "Název/příjmení".
++ authorityIdentifier*, ze sloupce "Číslo smlouvy.
++ masterId* - náhodně vygenerované UUID
+
+## Faktury
+
+## Objednávky
