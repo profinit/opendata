@@ -244,3 +244,15 @@ V jednom dokumentu jsou publikovány faktury od 1. 1. 2015, dokument je aktuáln
 
 
 ## Objednávky
+
+V jednom dokumentu jsou publikovány objednávky od 1. 1. 2015, dokument je aktuální k 1. 12. 2015.
+
++ recordType*, vždy ORDER,
++ authorityRole*, vždy CUSTOMER
++ subject, ze sloupce "Popis"
++ dateCreated*, ze sloupce "Datum objednání"
++ currency*, vždy CZK
++ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Částka v Kč"
++ partner* - včetně IČO, název se bere ze sloupce "Název/příjmení"
++ authorityIdentifier*, ze sloupce "Číslo objednávky"
++ masterId* - náhodně vygenerované UUID

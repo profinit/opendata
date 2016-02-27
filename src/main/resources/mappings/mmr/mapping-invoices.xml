@@ -48,8 +48,5 @@
 
         <property name="masterId" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.RandomMasterIdSetter"/>
 
-        <property name="contractId" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.mzp.MZPCorrelator">
-            <sourceFileColumn originalName="Číslo smlouvy" argumentName="contractId"/>
-        </property>
     </mappedSheet>
 </mapping>
