@@ -229,4 +229,18 @@ V jednom dokumentu jsou publikovány smlouvy uzavřené od 1. 1. 2015, poslední
 
 ## Faktury
 
+V jednom dokumentu jsou publikovány faktury od 1. 1. 2015, dokument je aktuální k 1. 12. 2015.
+
++ recordType*, vždy INVOICE,
++ authorityRole*, vždy CUSTOMER
++ subject*, ze sloupce "Předmět fakturace"
++ dateCreated*, ze sloupce "Datum příchodu"
++ dateOfPayment*, ze sloupce "Datum úhrady"
++ currency*, ze sloupce "Měna"
++ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Částka"
++ partner* - včetně IČO
++ authorityIdentifier*, ve formátu "Dokladová řada"-"Číslo"
++ masterId* - náhodně vygenerované UUID
+
+
 ## Objednávky
