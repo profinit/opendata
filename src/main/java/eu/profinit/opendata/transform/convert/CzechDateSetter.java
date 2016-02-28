@@ -42,6 +42,9 @@ public class CzechDateSetter implements RecordPropertyConverter {
         } catch (ParseException e) {
             throw new TransformException("Couldn't set date value because of a parse error", e,
                     TransformException.Severity.PROPERTY_LOCAL);
+        } catch (Exception e) {
+            throw new TransformException("Couldn't set date value because of an unknown error", e,
+                    TransformException.Severity.PROPERTY_LOCAL);
         }
 
     }

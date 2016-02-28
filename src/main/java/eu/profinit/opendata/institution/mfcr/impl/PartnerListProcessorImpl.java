@@ -59,7 +59,6 @@ public class PartnerListProcessorImpl implements PartnerListProcessor {
             String ico = row.getCell(1).getStringCellValue();
             String name = row.getCell(2).getStringCellValue();
 
-            log.trace("Processing entity " + name);
             Entity partner = partnerQueryService.findOrCreateEntity(name, ico, null);
             partnerQueryService.findOrCreatePartnerListEntry(ds.getEntity(), partner, partnerCode);
         }

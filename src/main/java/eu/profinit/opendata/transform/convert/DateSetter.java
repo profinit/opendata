@@ -23,12 +23,20 @@ public class DateSetter implements RecordPropertyConverter {
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger)
             throws TransformException {
 
-        Date inputDate = sourceValues.get("inputDate").getDateCellValue();
-        setField(record, inputDate, fieldName, logger);
+        try{
+            Date inputDate = sourceValues.get("inputDate").getDateCellValue();
+            setField(record, inputDate, fieldName, logger);
+        } catch (IllegalStateException ex) {
+            throw new TransformException("Couldn't set date property - bad cell format", ex,
+                    TransformException.Severity.PROPERTY_LOCAL);
+        } catch (Exception e) {
+            String message = "Couldn't set java.sql.Date value for field " + fieldName;
+            throw new TransformException(message, e, TransformException.Severity.PROPERTY_LOCAL);
+        }
 
     }
 
-    public void setField(Record record, Date date, String fieldName, Logger logger) throws TransformException {
+    public void setField(Record record, Date date, String fieldName, Logger logger) throws Exception {
         try {
             Field field = Record.class.getDeclaredField(fieldName);
             Class<?> fieldType = field.getType();
@@ -44,11 +52,8 @@ public class DateSetter implements RecordPropertyConverter {
             java.sql.Date dateToSet = new java.sql.Date(date.getTime());
 
             field.set(record, dateToSet);
-        } catch (TransformException e) {
-            throw e;
         } catch (Exception e) {
-            String message = "Couldn't set java.sql.Date value for field " + fieldName;
-            throw new TransformException(message, e, TransformException.Severity.PROPERTY_LOCAL);
+            throw e;
         }
     }
 }

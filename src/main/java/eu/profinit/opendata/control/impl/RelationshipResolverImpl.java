@@ -46,7 +46,6 @@ public class RelationshipResolverImpl implements RelationshipResolver {
                         u.getSavedRecord().getRecordId() + " and identifier " + u.getBoundAuthorityIdentifier());
                 }
                 Record toJoin = candidates.get(0);
-                logger.trace("Linking records " + u.getSavedRecord().getRecordId() + " and " + toJoin.getRecordId());
                 if(u.getSavedRecordIsParent()) {
                     toJoin.setParentRecord(u.getSavedRecord());
                     em.merge(toJoin);
