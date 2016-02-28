@@ -18,7 +18,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Created by dm on 1/31/16.
+ * A service for querying records in the database. Isn't designed as a single access point to Records and
+ * other components may query the database directly. The queries are run on the database, but also on Records
+ * saved in a current Retrieval and not yet persisted.
  */
 @Component
 public class RecordQueryService {
@@ -26,6 +28,13 @@ public class RecordQueryService {
     @PersistenceContext
     private EntityManager em;
 
+    /**
+     * Finds records in the database and/or in the specified Retrieval. Currently only supports querying by the
+     * "authorityIdentifier" field.
+     * @param filter A map of attribute-value pairs to be used as filters.
+     * @param currentRetrieval The Retrieval to be searched in along with the database.
+     * @return A list of found records.
+     */
     public List<Record> findRecordsByFilter(Map<String, String> filter, Retrieval currentRetrieval) {
         // Look in the retrieval first
         Collection<Record> finishedRecords = currentRetrieval.getRecords();
@@ -44,6 +53,11 @@ public class RecordQueryService {
 
     }
 
+    /**
+     * Finds records in the database. Supports querying by any String attribute.
+     * @param filter A map of attribute-value pairs to be used as filters.
+     * @return A list of found records.
+     */
     public List<Record> findRecordsByFilter(Map<String, String> filter) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Record> qr = cb.createQuery(Record.class);

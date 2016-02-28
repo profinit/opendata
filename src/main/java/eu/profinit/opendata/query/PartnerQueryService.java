@@ -15,7 +15,7 @@ import java.util.List;
 import static eu.profinit.opendata.common.Util.isNullOrEmpty;
 
 /**
- * Created by dm on 12/16/15.
+ * A service that provides a single access point for querying and inserting partner Entities.
  */
 @Component
 public class PartnerQueryService {
@@ -25,6 +25,14 @@ public class PartnerQueryService {
 
     private Logger logger = LogManager.getLogger(PartnerQueryService.class);
 
+    /**
+     * Creates a PartnerListEntry for a specified authority and partner under the specified code. If an identical
+     * entry is already present in the database, it is returned and nothing is inserted.
+     * @param authority
+     * @param partner
+     * @param code
+     * @return The inserted PartnerListEntry, or an identical one already in the database.
+     */
     public PartnerListEntry findOrCreatePartnerListEntry(Entity authority, Entity partner, String code) {
         List<PartnerListEntry> found = em.createNamedQuery("findByAuthorityAndCode", PartnerListEntry.class)
                                                 .setParameter("authority", authority)
@@ -42,6 +50,12 @@ public class PartnerQueryService {
         else return found.get(0);
     }
 
+    /**
+     * Retrieves a partner Entity by a reference code saved as a PartnerListEntry.
+     * @param authority The authority that has published information about the partner under the specified code.
+     * @param code The code associated with the searched partner.
+     * @return An Entity, if one is found, or null.
+     */
     public Entity findFromPartnerList(Entity authority, String code) {
         List<PartnerListEntry> found = em.createNamedQuery("findByAuthorityAndCode", PartnerListEntry.class)
                 .setParameter("authority", authority)
@@ -54,10 +68,18 @@ public class PartnerQueryService {
         return null;
     }
 
+    /**
+     * Attempts to find an Entity saved in the database with attributes equal to the parameters. The
+     * parameters can be null, though not all at the same time. If no Entity is found, a new one is
+     * inserted into the database.
+     * @param name The name of the entity. It is normalized before being applied as a filter.
+     * @param ico The tax identification number of the entity. Must already be in the correct 8-digit format.
+     * @param dic
+     * @return A retrieved or newly created Entity with the specified atttributes. If more than one Entity is
+     * found, only the first result is returned.
+     */
     public Entity findOrCreateEntity(String name, String ico, String dic) {
-        //logger.trace("Calling findEntity");
         Entity found = findEntity(name, ico, dic);
-        // Pokud nemame ani jednoho kandidata, musime vytvorit noveho
 
         // Pokud vracime kandidata, ktery ma neco nevyplnene, doplnime a zmergujeme
         if(found != null) {
@@ -83,6 +105,15 @@ public class PartnerQueryService {
         return found;
     }
 
+    /**
+     * Attempts to find an Entity saved in the database with attributes equal to the parameters. The
+     * parameters can be null, though not all at the same time.
+     * @param name The name of the entity. It is normalized before being applied as a filter.
+     * @param ico The tax identification number of the entity. Must already be in the correct 8-digit format.
+     * @param dic
+     * @return A retrieved Entity with the specified atttributes, or null if none is found. If more than
+     * one Entity is found, the first result is returned.
+     */
     public Entity findEntity(String name, String ico, String dic) {
         List<Entity> candidates = new ArrayList<>();
         // Pokud mame ico a dic, zkusime napred podle obou
@@ -107,7 +138,6 @@ public class PartnerQueryService {
                     .setParameter("dic", ico)
                     .getResultList();
         }
-        //logger.trace("Entity query completed with " + candidates.size() + " candidates.");
 
         // Pokud mame jenom jmeno nebo jsme jeste nenasli,
         // hledame podle jmena
@@ -124,6 +154,13 @@ public class PartnerQueryService {
         return null;
     }
 
+    /**
+     * Attempts to find a saved in the database by name only. This method will normalize the name to avoid
+     * false negatives as much as possible.
+     * @param name The name of the entity. It is normalized before being applied as a filter.
+     * @return An Entity, if one is found, or null. If more than one Entity is found, only the first result
+     * is returned.
+     */
     private Entity findMatchingEntityByName(String name) {
         String query = normalizeEntityName(name);
         List<Entity> candidates = em.createNamedQuery("findByName", Entity.class)
@@ -136,6 +173,13 @@ public class PartnerQueryService {
         return null;
     }
 
+    /**
+     * Normalizes an Entity name to a common format. The method is designed for company names, academic
+     * titles are not taken into account. The name is converted to uppercase, cleaned of extraneous
+     * whitespace, and abbreviations are converted to a single format.
+     * @param name The name to be normalized.
+     * @return The normalized name, suitable for insertion into the database.
+     */
     public String normalizeEntityName(String name) {
 
         name = name.toUpperCase();
