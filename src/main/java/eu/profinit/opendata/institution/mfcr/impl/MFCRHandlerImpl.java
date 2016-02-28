@@ -240,7 +240,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
                 }
 
                 // Merge/persist the DataInstance
-                em.persist(dataInstance);
+                em.merge(dataInstance);
             }
         }
 
