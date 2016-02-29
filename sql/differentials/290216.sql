@@ -1,0 +1,1 @@
+CREATE INDEX auth_id_idx ON record USING hash(authority_identifier);

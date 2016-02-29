@@ -337,3 +337,7 @@ FOREIGN KEY ("record_type") REFERENCES "record_type" ("record_type") ON DELETE N
 ALTER TABLE "record" ADD CONSTRAINT "FK_record_periodicity"
 FOREIGN KEY ("periodicity") REFERENCES "periodicity" ("periodicity") ON DELETE No Action ON UPDATE No Action
 ;
+
+-- Indexes
+
+CREATE INDEX auth_id_idx ON record USING hash(authority_identifier);
