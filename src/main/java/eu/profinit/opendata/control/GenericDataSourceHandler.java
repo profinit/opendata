@@ -64,8 +64,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
             runExtractionOnDataInstance(dataInstance);
         }
 
-        log.trace("Merging DataSource object with new time of last processing");
-        ds.setLastProcessedDate(Timestamp.from(Instant.now()));
+        log.trace("Merging DataSource object");
         em.merge(ds);
 
     }
@@ -89,6 +88,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
                 Util.hasEnoughTimeElapsed(ds.getLastProcessedDate(), ds.getPeriodicity().getDuration())) {
 
             this.updateDataInstances(ds);
+            ds.setLastProcessedDate(Timestamp.from(Instant.now()));
         } else {
             log.info("Not enough time has elapsed since the last processing. Nothing to generate.");
         }
