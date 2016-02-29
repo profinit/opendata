@@ -49,7 +49,7 @@ public class TransformDriverImpl implements TransformDriver {
     private DownloadService downloadService;
 
     DateTimeFormatter formatter =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss.SSS").withZone(ZoneId.systemDefault());
+            DateTimeFormatter.ofPattern("yyyy-MM-dd__HH_mm_ss.SSS").withZone(ZoneId.systemDefault());
 
     // The default value is only used for testing, it's overwritten in doRetrieval
     private Logger log = LogManager.getLogger(TransformDriverImpl.class);
