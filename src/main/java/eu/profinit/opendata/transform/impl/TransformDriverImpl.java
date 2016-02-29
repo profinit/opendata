@@ -13,6 +13,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
@@ -36,6 +38,9 @@ public class TransformDriverImpl implements TransformDriver {
 
     @Autowired
     private WorkbookProcessor workbookProcessor;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     @PersistenceContext
     private EntityManager em;
@@ -108,10 +113,10 @@ public class TransformDriverImpl implements TransformDriver {
 
     @Override
     public Mapping loadMapping(String mappingFile) throws JAXBException, IOException {
-        ClassPathResource cpr = new ClassPathResource(mappingFile);
+        Resource resource = resourceLoader.getResource(mappingFile);
         JAXBContext jaxbContext = JAXBContext.newInstance(Mapping.class);
         Unmarshaller u = jaxbContext.createUnmarshaller();
-        return (Mapping) u.unmarshal(cpr.getFile());
+        return (Mapping) u.unmarshal(resource.getURL().openStream());
     }
 
     //Test
