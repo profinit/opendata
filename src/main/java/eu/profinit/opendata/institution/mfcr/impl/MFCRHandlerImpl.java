@@ -218,6 +218,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
                     dataInstance.setDescription(resource.getName());
                     dataInstance.setPeriodicity(Periodicity.MONTHLY);
                     ds.getDataInstances().add(dataInstance);
+                    em.persist(dataInstance);
                 }
 
                 // Get the year the data instance is holding data from - if in the past and has already been processed
@@ -239,7 +240,6 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
                     log.warn("Couldn't parse the last modified date of a resource", e);
                 }
 
-                // Merge/persist the DataInstance
                 em.merge(dataInstance);
             }
         }
