@@ -65,6 +65,7 @@ Všechny smlouvy jsou v jediném dokumentu, který obsahuje jak platné, tak nep
 + recordType*, vždy CONTRACT,
 + authorityRole*, ze sloupce "Povaha_smlouvy"
 + subject* ve formátu "Popis_smluvního_typu": "Předmět"
++ inEffect*, ze sloupce "Kód stavu"
 + dateCreated*, ze sloupce "Platnost_od"
 + dateOfExpiry*, ze sloupce "Platnost_do"
 + currency*
@@ -87,7 +88,6 @@ MSp publikuje všechny aktuálně platné smlouvy v jednom dokumentu (naposledy 
 + currency*
 + originalCurrencyAmount*, pokud je měna CZK, pak i amountCZKWithVAT (DPH není ve zdroji rozlišeno)
 + masterId* - náhodně vygenerované UUID
-+ inEffect* - vždy true (prozatím)
 + dateCreated* - zdrojový dokument neobsahuje datum uzavření, pouze rok jako součást čísla smlouvy. Proto je datum vždy 1. 1. daného roku.
 + dateOfExpiry, ze sloupce "Platnost". Pokud je platnost na dobu neurčitou, hodnota je null.
 + periodicity, u některých smluv DAILY
@@ -138,7 +138,6 @@ Dokument obsahuje pouze aktuálně platné smlouvy.
 
 + recordType*, vždy CONTRACT,
 + authorityRole*, ze sloupce "Povaha smlouvy"
-+ inEffect*, vždy true
 + subject*, ze sloupce "Předmět smlouvy"
 + dateCreated*, ze sloupce "Datum podpisu"
 + dateOfExpiry*, ze sloupce "Datum ukončení smlouvy"

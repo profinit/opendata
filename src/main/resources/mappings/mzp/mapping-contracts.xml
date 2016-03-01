@@ -10,7 +10,6 @@
         </retriever>
 
         <property name="recordType" value="CONTRACT" onlyNewRecords="true"/>
-        <property name="inEffect" value="true" onlyNewRecords="false"/>
 
         <property name="authorityRole" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.mzp.MZPRoleSetter">
             <sourceFileColumn originalName="Povaha smlouvy" argumentName="inputRole"/>
