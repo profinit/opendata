@@ -35,6 +35,11 @@
             <sourceFileColumn originalName="PARAMETR4" argumentName="inputString"/>
         </property>
 
+        <property name="variableSymbol" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
+            <sourceFileColumn originalName="Variabilní symbol" argumentName="inputString"/>
+        </property>
+
+
         <property name="currency" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CurrencySetter">
             <sourceFileColumn originalName="Měna" argumentName="inputCurrencyCode"/>
         </property>

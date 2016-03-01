@@ -29,6 +29,7 @@ Dokumenty neobsahují IČO partnera, pouze jméno. Proto se před zpracováním 
 Vyplněná pole (hvězdička znamená, že je pole v drtivé většině případů nenulové):
 + recordType*, vždy INVOICE
 + subject ze sloupce "Předmět"
++ variableSymbol ze sloupce "Variabilní symbol"
 + dateCreated*, ze sloupce "Datum přijetí"
 + dueDate*, ze sloupce "Datum splatnosti"
 + dateOfPayment, ze sloupce "Datum úhrady"
@@ -47,6 +48,7 @@ Vyplněná pole (hvězdička znamená, že je pole v drtivé většině případ
 + recordType*, INVOICE nebo PAYMENT, podle sloupce [ROZLISENI]
 + subject ze sloupce "[UCELPLATBY]"
 + budgetCategory ze sloupce "[NAZEVPOLOZKYROZPOCTU]"
++ variableSymbol ze sloucpe "[VARIABILNISYMBOL]"
 + dateCreated*, ze sloupce "[DATUMPRIJETI]"
 + dueDate*, ze sloupce "[DATUMSPLATNOSTI]"
 + dateOfPayment, ze sloupce "[DATUMUHRADY]"
@@ -105,6 +107,7 @@ Aktuálně nejnovější dokument je za rok 2015, který je aktuální k 30. 9. 
 + authorityRole, vždy CUSTOMER
 + partner*
 + subject*, ze sloupce "Důvod úhrady, nebo PARAMETR4 (faktury 2012)"
++ variableSymbol*, ze sloupce "Variabilní symbol"
 + currency*
 + originalCurrencyAmount*, pokud je měna CZK, pak i amountCZKWithVAT (DPH není ve zdroji rozlišeno)
 + masterId* - náhodně vygenerované UUID
