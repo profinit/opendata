@@ -190,8 +190,10 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
             newRecord = false;
         }
 
+        // For each element in the sheet mapping
         for(Object recordPropertyOrSet : mapping.getPropertyOrPropertySet()) {
 
+            // If the mapping specifies a PropertySet, retrieve it, unpack it and process each Property in turn
             if(recordPropertyOrSet instanceof PropertySetRef) {
                 String name = ((PropertySetRef) recordPropertyOrSet).getRef();
                 Optional<PropertySet> propertySet = propertySets.stream()
@@ -205,6 +207,7 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
                     setRecordProperty(record, recordProperty, newRecord, row, columnNames);
                 }
             }
+            // Otherwise just process the single Property
             else {
                 setRecordProperty(record, (RecordProperty) recordPropertyOrSet, newRecord, row, columnNames);
             }
@@ -236,6 +239,16 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
         }
     }
 
+    /**
+     * Instantiates a RecordPropertyConverter and invokes its updateRecordProperty method with arguments retrieved from
+     * the source workbook row being processed.
+     * @param recordProperty The RecordProperty defined in the mapping XML.
+     * @param record The currently processed Record.
+     * @param row The currently processed Row.
+     * @param columnNames The mapping of column names to column indices in the workbook
+     * @throws TransformException
+     * @see RecordPropertyConverter#updateRecordProperty(Record, Map, String, Logger)
+     */
     private void setProcessedValue(RecordProperty recordProperty, Record record, Row row,
                                    Map<String, Integer> columnNames) throws TransformException {
 
@@ -253,11 +266,19 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
         }
     }
 
+    /**
+     * Sets a fixed value for a Record property, as defined by the RecordProperty object in the mapping file. The method
+     * will automatically convert the value to the appropriate type based on the type of the field being set. This can
+     * be a primitive type, a String or an enum value.
+     * @param record The record on which to set the property.
+     * @param recordProperty The RecordProperty defined in the mapping XML.
+     * @throws TransformException In case the data type conversion fails.
+     */
     private void setFixedValue(Record record, RecordProperty recordProperty) throws TransformException {
         try {
             Field field = Record.class.getDeclaredField(recordProperty.getName());
             Class<?> fieldType = field.getType();
-            field.setAccessible(true); //TODO: This is disgusting
+            field.setAccessible(true);
             field.set(record, getValueFromString(recordProperty.getValue(), fieldType));
         }
         catch (IllegalAccessException | NoSuchFieldException | TransformException | RuntimeException e) {
@@ -324,6 +345,14 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
     }
 
 
+    /**
+     * Creates the mapping between arguments passed to TransformComponents and actual workbook cells.
+     * @param row The currently processed workbook row
+     * @param sourceColumns SourceColumns defined in the mapping for a single element
+     * @param columnNames The mapping of column names to column indices in the workbook
+     * @return A map of "argumentName: cell" retrieved from the workbook row
+     * @throws TransformException
+     */
     private Map<String, Cell> getCellMapForArguments(Row row, List<SourceColumn> sourceColumns,
                                                      Map<String, Integer> columnNames) throws TransformException {
         Map<String, Cell> argumentMap = new HashMap<>();
