@@ -1,7 +1,7 @@
 package eu.profinit.opendata.transform;
 
 /**
- * Created by dm on 12/4/15.
+ * Interface for components taking part in a Retrieval.
  */
 public interface TransformComponent {
 }
