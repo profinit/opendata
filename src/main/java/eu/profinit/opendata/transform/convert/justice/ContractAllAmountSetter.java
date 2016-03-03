@@ -53,7 +53,7 @@ public class ContractAllAmountSetter implements RecordPropertyConverter {
         Double totalAmount = Double.parseDouble(cleanAmount);
         record.setOriginalCurrencyAmount(totalAmount);
         if(record.getCurrency().equals("CZK")) {
-            record.setAmountCzkWithVat(totalAmount);
+            record.setAmountCzk(totalAmount);
         }
     }
 }

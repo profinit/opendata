@@ -61,7 +61,7 @@ public class DataGenerator {
         record.setCurrency("CZK");
         record.setDateCreated(new Date(System.currentTimeMillis()));
         record.setMasterId("abcdef");
-        record.setAmountCzkWithVat(1_350_000.0);
+        record.setAmountCzk(1_350_000.0);
         record.setRecordType(RecordType.INVOICE);
         record.setRetrieval(fromRetrieval);
         record.setAuthority(authority);
@@ -75,7 +75,7 @@ public class DataGenerator {
         record.setCurrency("CZK");
         record.setDateCreated(new Date(System.currentTimeMillis()));
         record.setMasterId("ghijklm");
-        record.setAmountCzkWithVat(1_000_000.0);
+        record.setAmountCzk(1_000_000.0);
         record.setRecordType(RecordType.CONTRACT);
         record.setRetrieval(fromRetrieval);
         record.setAuthority(authority);

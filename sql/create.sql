@@ -87,8 +87,7 @@ CREATE TABLE "record_type"
 
 CREATE TABLE "record"
 (
-	"amount_czk_with_vat" double precision NULL,
-	"amount_czk_without_vat" double precision NULL,
+	"amount_czk" double precision NULL,
 	"authority_identifier" varchar(50)	 NULL,
 	"currency" varchar(3)	 NOT NULL,
 	"date_created" date NOT NULL,

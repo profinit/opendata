@@ -23,7 +23,7 @@
             <sourceFileColumn originalName="Úhrada cizí měna" argumentName="inputAmount"/>
         </property>
 
-        <property name="amountCzkWithVat" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CZKAmountSetter">
+        <property name="amountCzk" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CZKAmountSetter">
             <sourceFileColumn originalName="Částka" argumentName="inputAmount"/>
         </property>
 

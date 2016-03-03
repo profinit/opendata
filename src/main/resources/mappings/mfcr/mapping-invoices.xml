@@ -31,11 +31,7 @@
             <sourceFileColumn originalName="[CELKOVACASTKACIZIMENA]" argumentName="inputAmount"/>
         </property>
 
-        <property name="amountCzkWithoutVat" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CZKAmountSetter">
-            <sourceFileColumn originalName="[CELKOVACASTKABEZDPH]" argumentName="inputAmount"/>
-        </property>
-
-        <property name="amountCzkWithVat" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CZKAmountSetter">
+        <property name="amountCzk" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.CZKAmountSetter">
             <sourceFileColumn originalName="[CELKOVACASTKA]" argumentName="inputAmount"/>
         </property>
 
