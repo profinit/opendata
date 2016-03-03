@@ -24,7 +24,9 @@ import java.util.stream.Collectors;
 import static eu.profinit.opendata.common.Util.isNullOrEmpty;
 
 /**
- * Created by dm on 12/16/15.
+ * Tries to find an existing Record with specified attribute values (contained in the sourceValues map). If one is
+ * found, it is returned.
+ * @see RecordQueryService#findRecordsByFilter(Map, Retrieval)
  */
 @Component
 public class PropertyBasedRecordRetriever implements RecordRetriever {

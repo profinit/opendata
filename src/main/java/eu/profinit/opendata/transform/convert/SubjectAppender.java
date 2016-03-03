@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * Created by dm on 12/16/15.
+ * Accepts two sourceValues: mainSubject and lineSubject. If the Record's subject property is empty, sets the mainSubject
+ * and appends the lineSubject. If it isn't, only appends the lineSubject.
+ * The fieldName attribute is ignored.
  */
 @Component
 public class SubjectAppender implements RecordPropertyConverter {

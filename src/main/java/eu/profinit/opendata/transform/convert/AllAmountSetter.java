@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * Created by dm on 2/19/16.
+ * Sets the originalCurrencyAmount. If the currency is currently set to "CZK", sets the same amount into the
+ * amountCzk property as well. Expects a non-null numeric cell with argument "inputAmount". Ignores the fieldName
+ * argument.
  */
 @Component
 public class AllAmountSetter implements RecordPropertyConverter {

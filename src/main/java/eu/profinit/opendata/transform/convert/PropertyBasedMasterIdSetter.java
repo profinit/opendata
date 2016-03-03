@@ -1,6 +1,7 @@
 package eu.profinit.opendata.transform.convert;
 
 import eu.profinit.opendata.model.Record;
+import eu.profinit.opendata.model.Retrieval;
 import eu.profinit.opendata.query.RecordQueryService;
 import eu.profinit.opendata.transform.RecordPropertyConverter;
 import eu.profinit.opendata.transform.TransformException;
@@ -16,7 +17,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by dm on 1/31/16.
+ * Sets the masterId property of a Record. Tries to find an existing Record with specified attribute values (contained
+ * in the sourceValues map). If one is found, sets the masterId of the new Record to the same masterId as the old Record.
+ * If none is found, invokes the RandomMasterIdSetter to set a newly generated masterId. The fieldName attribute is
+ * ignored.
+ * @see RecordQueryService#findRecordsByFilter(Map, Retrieval)
  */
 @Component
 public class PropertyBasedMasterIdSetter implements RecordPropertyConverter {

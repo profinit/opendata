@@ -3,7 +3,7 @@ package eu.profinit.opendata.transform.convert;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by dm on 12/17/15.
+ * Qualifier class for an unmodified MoneySetter. Spring can't handle a superclass name.
  */
 @Component
 public class DirectMoneySetter extends MoneySetter {}

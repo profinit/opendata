@@ -16,7 +16,8 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * Created by dm on 2/27/16.
+ * Sets a Date property from a string cell containing a date in the Czech format (dd.MM.yyyy). The fieldName attribute
+ * is used to specify which field should be set. Expects a string cell with argumentName "inputDateString".
  */
 @Component
 public class CzechDateSetter implements RecordPropertyConverter {
@@ -46,6 +47,5 @@ public class CzechDateSetter implements RecordPropertyConverter {
             throw new TransformException("Couldn't set date value because of an unknown error", e,
                     TransformException.Severity.PROPERTY_LOCAL);
         }
-
     }
 }

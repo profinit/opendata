@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * Created by dm on 12/16/15.
+ * Sets a double property specified by the fieldName. Expects a numeric cell with argumentName "inputAmount".
  */
 public abstract class MoneySetter implements RecordPropertyConverter {
     @Override

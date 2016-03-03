@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 /**
- * Created by dm on 12/11/15.
+ * Sets a string property specified by fieldName. Expects a string cell with argumentName "inputString".
  */
 @Component
 public class DirectStringSetter implements RecordPropertyConverter {

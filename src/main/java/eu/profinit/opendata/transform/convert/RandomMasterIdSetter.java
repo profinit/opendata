@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Created by dm on 12/13/15.
+ * Sets the masterId property of a Record to a randomly generated UUID. The fieldName attribute is ignored.
  */
 @Component
 public class RandomMasterIdSetter implements RecordPropertyConverter {
@@ -19,7 +19,6 @@ public class RandomMasterIdSetter implements RecordPropertyConverter {
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger)
             throws TransformException {
 
-        //TODO: Correlate with anything that might be already in the DB
         record.setMasterId(UUID.randomUUID().toString());
 
     }

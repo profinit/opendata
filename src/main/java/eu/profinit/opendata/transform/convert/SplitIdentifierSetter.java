@@ -10,7 +10,8 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * Created by dm on 2/19/16.
+ * Sets the "authorityIdentifier" of a Record to "categoryCode - serialNumber", where both are keys in the sourceValues
+ * map. The fieldName property is ignored.
  */
 @Component
 public class SplitIdentifierSetter implements RecordPropertyConverter{

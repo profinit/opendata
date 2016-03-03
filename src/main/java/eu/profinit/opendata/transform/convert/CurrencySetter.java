@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by dm on 12/14/15.
+ * Sets the currency property. Expects a string cell with argumentName "inputCurrencyCode". Ignores the fieldName
+ * attribute. Checks that the currency is a valid three-letter ISO4217 code.
  */
 @Component
 public class CurrencySetter implements RecordPropertyConverter{
     // Currencies shouldn't be removed, even if a currency disappears, because of historical records
-    // What about pre-2010 currencies?
     private static final List<String> iso4217Currencies = Arrays.asList(
             "SHP", "TTD", "UYI", "KGS", "DJF", "BTN", "XBA", "HTG", "BBD", "XAU",
             "FKP", "MWK", "PGK", "XCD", "COU", "RWF", "NGN", "BSD", "XTS", "TMT",

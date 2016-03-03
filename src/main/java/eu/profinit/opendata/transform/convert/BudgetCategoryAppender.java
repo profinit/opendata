@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * Created by dm on 2/10/16.
+ * Sets the budgetCategory property. Expects an input string cell with argumentName "category" which can be null.
+ * Ignores the fieldName argument.
  */
 @Component
 public class BudgetCategoryAppender implements RecordPropertyConverter {

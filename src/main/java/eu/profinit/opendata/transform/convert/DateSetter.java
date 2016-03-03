@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * Created by dm on 12/13/15.
+ * Sets a date field specified by the fieldName. Expects a date cell with argumentName "inputDate".
  */
 @Component
 public class DateSetter implements RecordPropertyConverter {

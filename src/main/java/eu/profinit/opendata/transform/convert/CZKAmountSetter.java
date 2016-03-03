@@ -9,7 +9,9 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * Created by dm on 12/16/15.
+ * Sets a double field specified by fieldName to an amount specified by the numeric cell with argumentName "inputAmount".
+ * Expect the "originalCurrencyAmount" property to be already set. Does nothing if both values are equal and currency
+ * is not CZK (no conversion).
  */
 @Component
 public class CZKAmountSetter extends MoneySetter {

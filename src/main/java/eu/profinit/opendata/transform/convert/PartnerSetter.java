@@ -17,7 +17,10 @@ import java.util.Map;
 import static eu.profinit.opendata.common.Util.isNullOrEmpty;
 
 /**
- * Created by dm on 12/16/15.
+ * Tries to find a partner Entity in the database based on passed arguments. Uses the PartnerQueryService for this
+ * purpose. If none is found, a new one is created. Expects string cells "ico", "dic" and "name", but they can be null
+ * (though not at the same). The found or created Entity is set into the field specified by fieldName.
+ * @see PartnerQueryService#findOrCreateEntity(String, String, String)
  */
 @Component
 public class PartnerSetter implements RecordPropertyConverter {
