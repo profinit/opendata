@@ -270,6 +270,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
             toProcess.setUrl(resource.getUrl());
             toProcess.setFormat("xlsx");
             toProcess.setPeriodicity(Periodicity.APERIODIC);
+            toProcess.setDescription("Seznam partnerů MFČR");
             ds.getDataInstances().add(toProcess);
             em.persist(toProcess);
         }
