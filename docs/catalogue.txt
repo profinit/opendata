@@ -29,6 +29,7 @@ Dokumenty neobsahují IČO partnera, pouze jméno. Proto se před zpracováním 
 Vyplněná pole (hvězdička znamená, že je pole v drtivé většině případů nenulové):
 + recordType*, vždy INVOICE
 + subject ze sloupce "Předmět"
++ variableSymbol ze sloupce "Variabilní symbol"
 + dateCreated*, ze sloupce "Datum přijetí"
 + dueDate*, ze sloupce "Datum splatnosti"
 + dateOfPayment, ze sloupce "Datum úhrady"
@@ -47,6 +48,7 @@ Vyplněná pole (hvězdička znamená, že je pole v drtivé většině případ
 + recordType*, INVOICE nebo PAYMENT, podle sloupce [ROZLISENI]
 + subject ze sloupce "[UCELPLATBY]"
 + budgetCategory ze sloupce "[NAZEVPOLOZKYROZPOCTU]"
++ variableSymbol ze sloucpe "[VARIABILNISYMBOL]"
 + dateCreated*, ze sloupce "[DATUMPRIJETI]"
 + dueDate*, ze sloupce "[DATUMSPLATNOSTI]"
 + dateOfPayment, ze sloupce "[DATUMUHRADY]"
@@ -65,6 +67,7 @@ Všechny smlouvy jsou v jediném dokumentu, který obsahuje jak platné, tak nep
 + recordType*, vždy CONTRACT,
 + authorityRole*, ze sloupce "Povaha_smlouvy"
 + subject* ve formátu "Popis_smluvního_typu": "Předmět"
++ inEffect*, ze sloupce "Kód stavu"
 + dateCreated*, ze sloupce "Platnost_od"
 + dateOfExpiry*, ze sloupce "Platnost_do"
 + currency*
@@ -87,7 +90,6 @@ MSp publikuje všechny aktuálně platné smlouvy v jednom dokumentu (naposledy 
 + currency*
 + originalCurrencyAmount*, pokud je měna CZK, pak i amountCZK
 + masterId* - náhodně vygenerované UUID
-+ inEffect* - vždy true (prozatím)
 + dateCreated* - zdrojový dokument neobsahuje datum uzavření, pouze rok jako součást čísla smlouvy. Proto je datum vždy 1. 1. daného roku.
 + dateOfExpiry, ze sloupce "Platnost". Pokud je platnost na dobu neurčitou, hodnota je null.
 + periodicity, u některých smluv DAILY
@@ -105,6 +107,7 @@ Aktuálně nejnovější dokument je za rok 2015, který je aktuální k 30. 9. 
 + authorityRole, vždy CUSTOMER
 + partner*
 + subject*, ze sloupce "Důvod úhrady, nebo PARAMETR4 (faktury 2012)"
++ variableSymbol*, ze sloupce "Variabilní symbol"
 + currency*
 + originalCurrencyAmount*, pokud je měna CZK, pak i amountCZK
 + masterId* - náhodně vygenerované UUID
@@ -138,7 +141,6 @@ Dokument obsahuje pouze aktuálně platné smlouvy.
 
 + recordType*, vždy CONTRACT,
 + authorityRole*, ze sloupce "Povaha smlouvy"
-+ inEffect*, vždy true
 + subject*, ze sloupce "Předmět smlouvy"
 + dateCreated*, ze sloupce "Datum podpisu"
 + dateOfExpiry*, ze sloupce "Datum ukončení smlouvy"

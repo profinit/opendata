@@ -32,8 +32,6 @@
             <sourceFileColumn originalName="Částka vč. DPH" argumentName="inputAmount"/>
         </property>
 
-        <property name="inEffect" onlyNewRecords="false" value="true"/>
-
         <property name="dateCreated" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.justice.ContractDateCreatedSetter">
             <sourceFileColumn originalName="Číslo smlouvy" argumentName="authorityIdentifier"/>
         </property>
