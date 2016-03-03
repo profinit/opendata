@@ -340,3 +340,73 @@ FOREIGN KEY ("periodicity") REFERENCES "periodicity" ("periodicity") ON DELETE N
 -- Indexes
 
 CREATE INDEX auth_id_idx ON record USING hash(authority_identifier);
+
+-- Comments
+
+COMMENT ON COLUMN retrieval.date IS 'The time the retrieval was started';
+COMMENT ON COLUMN retrieval.failure_reason IS 'The reason for a total failure, if there was one.';
+COMMENT ON COLUMN retrieval.num_bad_records IS 'The number of records that haven''t been inserted due to a non-fatal error during processing.';
+COMMENT ON COLUMN retrieval.num_records_inserted IS 'The number of records successfully inserted during processing.';
+COMMENT ON COLUMN retrieval.success IS 'Indicates whether this Retrieval has finished successfully.';
+COMMENT ON COLUMN retrieval.retrieval_id IS 'Primary key';
+COMMENT ON COLUMN retrieval.data_instance_id IS 'The data instance on which the Retrieval was attempted.';
+
+COMMENT ON COLUMN record.amount_czk IS 'The amount in CZK. Only present when the currency is CZK or a converted amount is available in the source document.';
+COMMENT ON COLUMN record.authority_identifier IS 'The identifier that the publishing authority has given to this record. May not be unique even among records from the same authority.';
+COMMENT ON COLUMN record.currency IS 'The transaction currency. When there is no indication in the published document, CZK is assumed by default.';
+COMMENT ON COLUMN record.date_created IS 'For invoices: usually the date the invoice was received. For orders: the day the order was placed. For contracts: the day the contract came into effect.';
+COMMENT ON COLUMN record.date_of_expiry IS 'Only applicable to contracts. The date when the contract expires.';
+COMMENT ON COLUMN record.date_of_payment IS 'Only applicable to invoices. The date the invoice was physically paid.';
+COMMENT ON COLUMN record.due_date IS 'Only applicable to invoices. The due date for payment of the invoice.';
+COMMENT ON COLUMN record.in_effect IS 'Only applicable to contracts. Indicates whether the contract was in effect as of the last processing of the published data source.';
+COMMENT ON COLUMN record.master_id IS 'Used to correlate records that represent the same transaction but published by two different entities or to correlate parts of a record that has been broken down into parts, for example to fit into different budget categories.';
+COMMENT ON COLUMN record.original_currency_amount IS 'The amount in the currency of the transaction (includes CZK).';
+COMMENT ON COLUMN record.budget_category IS 'A more general description of the subject or a specific budget category, if published.';
+COMMENT ON COLUMN record.subject IS 'A description of the record, as published by the authority.';
+COMMENT ON COLUMN record.variable_symbol IS 'The variable symbol used for an invoice or order payment.';
+COMMENT ON COLUMN record.record_id IS 'Primary key';
+COMMENT ON COLUMN record.record_type IS 'One of invoice, order, contract, payment.';
+COMMENT ON COLUMN record.authority_role IS 'Customer or supplier';
+COMMENT ON COLUMN record.retrieval_id IS 'The Retrieval during which this Record was inserted.';
+COMMENT ON COLUMN record.authority IS 'The publishing authority.';
+COMMENT ON COLUMN record.partner IS 'The partner in this transaction (other side of the transaction from the publishing authority).';
+COMMENT ON COLUMN record.periodicity IS 'Only applicable to recurring payments in a contract.';
+
+COMMENT ON COLUMN entity.dic IS 'The tax identification number. Mostly unused.';
+COMMENT ON COLUMN entity.ico IS 'The taxpayer identification number. The primary attribute used to avoid duplicitous entities.';
+COMMENT ON COLUMN entity.is_public IS 'Indicates that this institution is a public institution that publishes data';
+COMMENT ON COLUMN entity.name IS 'The normalized entity name.';
+COMMENT ON COLUMN entity.entity_id IS 'Primary key';
+COMMENT ON COLUMN entity.entity_type IS 'The nature of this entity.';
+
+COMMENT ON COLUMN data_source.last_processed_date IS 'The time this data source was last processed. This may or may not have involved retrievals.';
+COMMENT ON COLUMN data_source.data_source_id IS 'Primary key';
+COMMENT ON COLUMN data_source.record_type IS 'The type of record one can expect to get from this DataSource. This does not mean data files cannot contain any others.';
+COMMENT ON COLUMN data_source.periodicity IS 'Specifies how often new DataInstances should be generated for this DataSource.';
+COMMENT ON COLUMN data_source.entity_id IS 'The public Entity that is publishing this DataSource.';
+COMMENT ON COLUMN data_source.description IS 'A description of this DataSource.';
+COMMENT ON COLUMN data_source.active IS 'Indicates whether this DataSource should be processed when the application runs.';
+COMMENT ON COLUMN data_source.handling_class IS 'The DataSourceHandler that should be invoked when processing this DataSource.';
+
+COMMENT ON COLUMN data_instance.format IS 'XLS or XLSX';
+COMMENT ON COLUMN data_instance.last_processed_date IS 'The time of the last successful processing of this DataInstance';
+COMMENT ON COLUMN data_instance.url IS 'URL to be used to retrieve the actual XLS file';
+COMMENT ON COLUMN data_instance.data_instance_id IS 'Primary key';
+COMMENT ON COLUMN data_instance.data_source_id IS 'The parent DataSource';
+COMMENT ON COLUMN data_instance.periodicity IS 'How often this DataInstance can be expected to contain new data.';
+COMMENT ON COLUMN data_instance.expires IS 'The date after which this DataInstance should no longer be processed.';
+COMMENT ON COLUMN data_instance.incremental IS 'Indicates whether the rows that have already been processed previously can be skipped in any new retrieval.';
+COMMENT ON COLUMN data_instance.last_processed_row IS 'The row at which the last retrieval has ended. Only applicable if incremental is true.';
+COMMENT ON COLUMN data_instance.authority_id IS 'The authority''s own identifier for this DataInstance.';
+COMMENT ON COLUMN data_instance.description IS 'Description of the data file''s content';
+COMMENT ON COLUMN data_instance.mapping_file IS 'Path to the mapping file that should be used when processing this DataInstance.';
+
+COMMENT ON COLUMN partner_list_entry.authority_id IS 'The authority that has published information about the partner';
+COMMENT ON COLUMN partner_list_entry.partner_id IS 'The partner that is published by the authority under an identification code.';
+COMMENT ON COLUMN partner_list_entry.code IS 'The identification code used by the authority to refer to the partner.';
+COMMENT ON COLUMN partner_list_entry.partner_list_entry_id IS 'Primary key.';
+
+COMMENT ON COLUMN unresolved_relationship.unresolved_relationship_id IS 'Primary key';
+COMMENT ON COLUMN unresolved_relationship.saved_record_id IS 'The side of the relationship that is saved in the database.';
+COMMENT ON COLUMN unresolved_relationship.bound_authority_identifier IS 'The authority identifier of the record that is to be the other side of the relationship.';
+COMMENT ON COLUMN unresolved_relationship.saved_record_is_parent IS 'Indicates which side of the relationship is the parent record.';
