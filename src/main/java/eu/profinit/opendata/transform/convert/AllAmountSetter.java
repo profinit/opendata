@@ -23,7 +23,7 @@ public class AllAmountSetter implements RecordPropertyConverter {
         Double amount = sourceValues.get("inputAmount").getNumericCellValue();
         record.setOriginalCurrencyAmount(amount);
         if(record.getCurrency().equals("CZK")) {
-            record.setAmountCzkWithVat(amount);
+            record.setAmountCzk(amount);
         }
     }
 }

@@ -23,12 +23,9 @@ public class CZKAmountSetter extends MoneySetter {
             Double originalCurrencyAmount = record.getOriginalCurrencyAmount();
 
             // suspectAmount will hold the CZK amount that's already been set, or null
-            Double amountCzkWithoutVat = record.getAmountCzkWithoutVat();
-            Double amountCzkWithVat = record.getAmountCzkWithVat();
-            Double suspectAmount = amountCzkWithVat == null ? amountCzkWithoutVat : amountCzkWithVat;
-
+            Double amountCzk = record.getAmountCzk();
             if(originalCurrencyAmount != null && !"CZK".equals(record.getCurrency())
-                    && (originalCurrencyAmount.equals(inputAmount) || originalCurrencyAmount.equals(suspectAmount))) {
+                    && (originalCurrencyAmount.equals(inputAmount) || originalCurrencyAmount.equals(amountCzk))) {
 
                 // The currency is not CZK, but original and CZK amounts are the same, which means there has been
                 // no conversion. Skip the property.

@@ -16,7 +16,7 @@ Vyplněná pole (hvězdička znamená, že je pole v drtivé většině případ
 + dateCreated*, ze sloupce "Datum_vystavení"
 + currency*
 + originalCurrencyAmount* ze sloupce "Částka_v_měně"
-+ amountCzkWith(out)VAT - chybí, pokud se částka neliší od originalCurrencyAmount a měna není CZK. Vychází ze sloupců "Částka za řádek".
++ amountCzk - chybí, pokud se částka neliší od originalCurrencyAmount a měna není CZK. Vychází ze sloupce "Částka za řádek".
 + partner* - může chybět v ojedinělých případech
 + authorityIdentifier*, ze sloupce "Číslo_objednávky"
 + masterId* - náhodně vygenerované UUID, stejné přes objednávky sdílející authorityIdentifier
@@ -35,7 +35,7 @@ Vyplněná pole (hvězdička znamená, že je pole v drtivé většině případ
 + dateOfPayment, ze sloupce "Datum úhrady"
 + currency*
 + originalCurrencyAmount* ze sloupce "Úhrada cizí měna"
-+ amountCzkWithVAT - chybí, pokud se částka neliší od originalCurrencyAmount a měna není CZK. Vychází ze sloupce "Částka".
++ amountCzk - chybí, pokud se částka neliší od originalCurrencyAmount a měna není CZK. Vychází ze sloupce "Částka".
 + partner - pouze pokud je už partner s daným kódem v databázi.
 + authorityIdentifier*, ze sloupce "Číslo_faktury"
 + masterId* - náhodně vygenerované UUID
@@ -54,7 +54,7 @@ Vyplněná pole (hvězdička znamená, že je pole v drtivé většině případ
 + dateOfPayment, ze sloupce "[DATUMUHRADY]"
 + currency*
 + originalCurrencyAmount* ze sloupce "[CELKOVACASTKACIZIMENA]"
-+ amountCzkWith(Out)VAT - chybí, pokud se částka neliší od originalCurrencyAmount a měna není CZK. Vychází ze sloupců "[CELKOVACASTKA(BEZDPH)]".
++ amountCzk - chybí, pokud se částka neliší od originalCurrencyAmount a měna není CZK. Vychází ze sloupce "[CELKOVACASTKA]".
 + partner*
 + authorityIdentifier*, ze sloupce "[CISLO]"
 + masterId* - náhodně vygenerované UUID
@@ -88,7 +88,7 @@ MSp publikuje všechny aktuálně platné smlouvy v jednom dokumentu (naposledy 
 + partner*
 + subject*, ze sloupce "Stručný předmět smlouvy"
 + currency*
-+ originalCurrencyAmount*, pokud je měna CZK, pak i amountCZKWithVAT (DPH není ve zdroji rozlišeno)
++ originalCurrencyAmount*, pokud je měna CZK, pak i amountCZK
 + masterId* - náhodně vygenerované UUID
 + dateCreated* - zdrojový dokument neobsahuje datum uzavření, pouze rok jako součást čísla smlouvy. Proto je datum vždy 1. 1. daného roku.
 + dateOfExpiry, ze sloupce "Platnost". Pokud je platnost na dobu neurčitou, hodnota je null.
@@ -109,7 +109,7 @@ Aktuálně nejnovější dokument je za rok 2015, který je aktuální k 30. 9. 
 + subject*, ze sloupce "Důvod úhrady, nebo PARAMETR4 (faktury 2012)"
 + variableSymbol*, ze sloupce "Variabilní symbol"
 + currency*
-+ originalCurrencyAmount*, pokud je měna CZK, pak i amountCZKWithVAT (DPH není ve zdroji rozlišeno)
++ originalCurrencyAmount*, pokud je měna CZK, pak i amountCZK
 + masterId* - náhodně vygenerované UUID
 + dateCreated*, ze sloupce "Datum zápisu"
 + dueDate, ze sloupce "Splatnost dne"
@@ -130,7 +130,7 @@ Objednávky jsou sice na webu MŽP zveřejněné, ale z nějakého důvodu pouze
 + subject* ve formátu Předmět: předmět_řádku
 + dateCreated*, ze sloupce "Datum objednání"
 + currency*, vždy CZK
-+ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Celková částka"
++ originalCurrencyAmount* a amountCzk*, ze sloupce "Celková částka"
 + partner* - dokument neobsahuje IČO, takže pouze podle jména a tím pádem se mohou snadněji vyskytnout duplicitní partneři.
 + authorityIdentifier*, ze sloupce "Číslo objednávky"
 + masterId* - náhodně vygenerované UUID
@@ -146,7 +146,7 @@ Dokument obsahuje pouze aktuálně platné smlouvy.
 + dateOfExpiry*, ze sloupce "Datum ukončení smlouvy"
 + currency*, vždy CZK
 + periodicity, u některých záznamů MONTHLY (měsíční platba) nebo YEARLY (roční limit)
-+ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Celková částka"
++ originalCurrencyAmount* a amountCzk*, ze sloupce "Celková částka"
 + partner* - dokument neobsahuje IČO, takže pouze podle jména a tím pádem se mohou snadněji vyskytnout duplicitní partneři.
 + authorityIdentifier*, ze sloupce "Číslo smlouvy"
 + masterId* - náhodně vygenerované UUID
@@ -160,7 +160,7 @@ Dokument obsahuje vazbu na smlouvy, takže se při zpracování vytvářejí Unr
 + subject*, ze sloupce "Popis"
 + dateCreated*, ze sloupce "Datum platby"
 + currency*, vždy CZK
-+ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Celková částka"
++ originalCurrencyAmount* a amountCzk*, ze sloupce "Celková částka"
 + partner* - tento dokument IČO obsahuje.
 + authorityIdentifier*, ze sloupce "Číslo faktury"
 + masterId* - náhodně vygenerované UUID
@@ -180,7 +180,7 @@ Smlouvy nad 50 000 kč se publikují v jednom dokumentu, k lednu 2015 jich bylo 
 + dateCreated*, ze sloupce "Platnost od"
 + dateOfExpiry*, ze sloupce "Platnost do"
 + currency*, vždy CZK
-+ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Celková částka"
++ originalCurrencyAmount* a amountCzk*, ze sloupce "Celková částka"
 + partner* - dokument neobsahuje IČO, takže pouze podle jména a tím pádem se mohou snadněji vyskytnout duplicitní partneři.
 + authorityIdentifier, ze sloupce "Číslo smlouvy", u většiny smluv chybí
 + masterId* - náhodně vygenerované UUID
@@ -206,7 +206,7 @@ Vyplněná pole jsou:
 + dueDate*, ze sloupce "Datum splatnosti",
 + dateOfPayment*, ze sloupce "Datum úhrady",
 + currency*, vždy CZK
-+ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Celková částka"
++ originalCurrencyAmount* a amountCzk*, ze sloupce "Celková částka"
 + partner* - dokument neobsahuje IČO, snadněji vznikají duplicitní partneři.
 + authorityIdentifier*, ze sloupce "Evidenční číslo"
 + masterId* - náhodně vygenerované UUID
@@ -224,7 +224,7 @@ V jednom dokumentu jsou publikovány smlouvy uzavřené od 1. 1. 2015, poslední
 + subject*, ze sloupce "Popis"
 + dateCreated*, ze sloupce "Datum uzavření"
 + currency*, vždy CZK
-+ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Celková částka"
++ originalCurrencyAmount* a amountCzk*, ze sloupce "Celková částka"
 + partner - dokument obsahuje IČO, ale u některých smluv partner úplně chybí. Název se bere ze sloupce "Název/příjmení".
 + authorityIdentifier*, ze sloupce "Číslo smlouvy.
 + masterId* - náhodně vygenerované UUID
@@ -239,7 +239,7 @@ V jednom dokumentu jsou publikovány faktury od 1. 1. 2015, dokument je aktuáln
 + dateCreated*, ze sloupce "Datum příchodu"
 + dateOfPayment*, ze sloupce "Datum úhrady"
 + currency*, ze sloupce "Měna"
-+ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Částka"
++ originalCurrencyAmount* a amountCzk*, ze sloupce "Částka"
 + partner* - včetně IČO
 + authorityIdentifier*, ve formátu "Dokladová řada"-"Číslo"
 + masterId* - náhodně vygenerované UUID
@@ -254,7 +254,7 @@ V jednom dokumentu jsou publikovány objednávky od 1. 1. 2015, dokument je aktu
 + subject, ze sloupce "Popis"
 + dateCreated*, ze sloupce "Datum objednání"
 + currency*, vždy CZK
-+ originalCurrencyAmount* a amountCZKWithVAT*, ze sloupce "Částka v Kč"
++ originalCurrencyAmount* a amountCzk*, ze sloupce "Částka v Kč"
 + partner* - včetně IČO, název se bere ze sloupce "Název/příjmení"
 + authorityIdentifier*, ze sloupce "Číslo objednávky"
 + masterId* - náhodně vygenerované UUID

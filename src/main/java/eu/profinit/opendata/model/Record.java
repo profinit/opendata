@@ -35,31 +35,16 @@ public class Record {
     /** The amount in CZK. Only present when the currency is CZK or a converted amount is available in the source
      * document.
      */
-    private Double amountCzkWithVat;
+    private Double amountCzk;
 
     @Basic
-    @Column(name = "amount_czk_with_vat")
-    public Double getAmountCzkWithVat() {
-        return amountCzkWithVat;
+    @Column(name = "amount_czk")
+    public Double getAmountCzk() {
+        return amountCzk;
     }
 
-    public void setAmountCzkWithVat(Double amountCzkWithVat) {
-        this.amountCzkWithVat = amountCzkWithVat;
-    }
-
-    /** The amount in CZK. Only present when the currency is CZK or a converted amount is available in the source
-     * document.
-     */
-    private Double amountCzkWithoutVat;
-
-    @Basic
-    @Column(name = "amount_czk_without_vat")
-    public Double getAmountCzkWithoutVat() {
-        return amountCzkWithoutVat;
-    }
-
-    public void setAmountCzkWithoutVat(Double amountCzkWithoutVat) {
-        this.amountCzkWithoutVat = amountCzkWithoutVat;
+    public void setAmountCzk(Double amountCzk) {
+        this.amountCzk = amountCzk;
     }
 
     /** The identifier that the <em>publishing authority</em> has given to this record. May not be unique even among
@@ -368,9 +353,7 @@ public class Record {
         Record record = (Record) o;
 
         if (!Objects.equals(recordId, record.recordId)) return false;
-        if (amountCzkWithVat != null ? !amountCzkWithVat.equals(record.amountCzkWithVat) : record.amountCzkWithVat != null)
-            return false;
-        if (amountCzkWithoutVat != null ? !amountCzkWithoutVat.equals(record.amountCzkWithoutVat) : record.amountCzkWithoutVat != null)
+        if (amountCzk != null ? !amountCzk.equals(record.amountCzk) : record.amountCzk != null)
             return false;
         if (authorityIdentifier != null ? !authorityIdentifier.equals(record.authorityIdentifier) : record.authorityIdentifier != null)
             return false;
@@ -401,8 +384,7 @@ public class Record {
 
     @Override
     public int hashCode() {
-        int result = amountCzkWithVat != null ? amountCzkWithVat.hashCode() : 0;
-        result = 31 * result + (amountCzkWithoutVat != null ? amountCzkWithoutVat.hashCode() : 0);
+        int result = amountCzk != null ? amountCzk.hashCode() : 0;
         result = 31 * result + (authorityIdentifier != null ? authorityIdentifier.hashCode() : 0);
         result = 31 * result + (currency != null ? currency.hashCode() : 0);
         result = 31 * result + (dateCreated != null ? dateCreated.hashCode() : 0);

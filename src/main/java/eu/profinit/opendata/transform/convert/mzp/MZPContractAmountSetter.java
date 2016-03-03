@@ -40,7 +40,7 @@ public class MZPContractAmountSetter implements RecordPropertyConverter {
                 String amountString = matcher.group("amount").replace(" ", "");
                 Double amount = Double.parseDouble(amountString);
                 record.setOriginalCurrencyAmount(amount);
-                record.setAmountCzkWithVat(amount);
+                record.setAmountCzk(amount);
             }
             else {
                 throw new TransformException("Couldn't set amounts, the cell is non-numeric but doesn't match the string pattern",
@@ -50,7 +50,7 @@ public class MZPContractAmountSetter implements RecordPropertyConverter {
         else {
             Double amount = amountCell.getNumericCellValue();
             record.setOriginalCurrencyAmount(amount);
-            record.setAmountCzkWithVat(amount);
+            record.setAmountCzk(amount);
         }
     }
 }
