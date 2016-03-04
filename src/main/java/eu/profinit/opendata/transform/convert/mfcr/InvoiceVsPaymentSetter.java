@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * Created by dm on 2/10/16.
+ * Sets the type of a record extracted from a MFCR invoice document to either INVOICE or PAYMENT. Expects a source cell
+ * with argumentName = "inputType" and value either "Přijaté faktury" or "Ostatní platby". The fieldName argument is
+ * ignored.
  */
 @Component
 public class InvoiceVsPaymentSetter implements RecordPropertyConverter {

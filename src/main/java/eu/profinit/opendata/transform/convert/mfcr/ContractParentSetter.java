@@ -14,7 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by dm on 2/1/16.
+ * Tries to set the parent of a MFCR contract. Expects a source cell with argumentName = "type", which contains either
+ * "S" (for a standalone contract) or "D" (for an amendment). If the value is "D", uses the authority identifier prefix
+ * to find the parent contract to which the amendment is tied. The fieldName argument is ignored.
  */
 @Component
 public class ContractParentSetter implements RecordPropertyConverter {

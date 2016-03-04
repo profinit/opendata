@@ -16,7 +16,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by dm on 2/18/16.
+ * The date of MSp contracts is only available as a four-digit year at the end of the contract identifier. This
+ * converter takes a contract identifier string cell (argumentName = "authorityIdentifier") and sets the dateCreated of
+ * the Record to January 1 of the extracted year. The fieldName attribute is ignored.
  */
 @Component
 public class ContractDateCreatedSetter implements RecordPropertyConverter {

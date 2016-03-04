@@ -19,7 +19,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Created by dm on 2/27/16.
+ * Retrieves MMR invoices based on the partner name, subject and originalCurrencyAmount. Only an exact match in all
+ * considered attributes counts.
+ * Throws a FATAL exception if more than one candidate record is found.
  */
 @Component
 public class MMRInvoiceRetriever implements RecordRetriever {

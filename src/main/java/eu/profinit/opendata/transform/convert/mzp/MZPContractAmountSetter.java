@@ -13,7 +13,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by dm on 2/21/16.
+ * Sets MZP contract amounts. Expects a source cell with argumentName "inputAmount". It can be numeric or string typed
+ * and may contain a string with information about the periodicity. Sets both the originalCurrencyAmount and amountCzk.
+ * The fieldName argument is ignored.
  */
 @Component
 public class MZPContractAmountSetter implements RecordPropertyConverter {

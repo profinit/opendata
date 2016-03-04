@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * Created by dm on 2/1/16.
+ * Sets the authorityRole attribute of a MFCR contract. Expects a source cell with argumentName = "role" with value "D"
+ * or "O". Based on the value, sets the authority role to either CUSTOMER or SUPPLIER. The fieldName argument is
+ * ignored.
  */
 @Component
 public class ContractRoleConverter implements RecordPropertyConverter {

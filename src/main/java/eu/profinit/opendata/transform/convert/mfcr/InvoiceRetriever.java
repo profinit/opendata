@@ -15,7 +15,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by dm on 2/10/16.
+ * Retrieves old MFCR invoices (or payments, but both come from the same document) based on their authorityIdentifier
+ * and type. Expects two source cells, "inputType" with value either "Přijaté faktury" or "Ostatní platby" and
+ * "authorityIdentifier". The need for a separate retriever is due to the distinction between the two types.
+ * @see PropertyBasedRecordRetriever
  */
 @Component
 public class InvoiceRetriever implements RecordRetriever {

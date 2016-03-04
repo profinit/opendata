@@ -12,7 +12,9 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * Created by dm on 2/1/16.
+ * Sets a MFCR contract originalCurrencyAmount. The fieldName argument is ignored. If the "contractAmount" source value
+ * is present, the contract amount is set to that value. Otherwise, the current contract amount is incremented by the
+ * "invoiceAmount" source value.
  */
 @Component
 public class ContractAmountSetter implements RecordPropertyConverter {

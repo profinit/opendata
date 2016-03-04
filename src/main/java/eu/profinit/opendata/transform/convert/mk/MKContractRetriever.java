@@ -20,7 +20,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Created by dm on 2/23/16.
+ * Retrieves MK contracts based on their authorityIdentifier or, if it's null, the partner name, subject and
+ * dateCreated. Only an exact match in all considered attributes counts. If the authorityIdentifier is non-null, all
+ * the other attributes are ignored. If it is null, all other attributes must be non-null.
+ * Throws a FATAL exception if more than one candidate record is found.
  */
 @Component
 public class MKContractRetriever implements RecordRetriever {

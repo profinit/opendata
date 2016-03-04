@@ -14,7 +14,9 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 /**
- * Created by dm on 2/11/16.
+ * Sets the partner Entity for an old MFCR invoice extracted from a partner list. Expects a source cell with
+ * argumentName = "code" containing the partner code.
+ * @see PartnerQueryService#findFromPartnerList(Entity, String)
  */
 @Component
 public class PartnerByCodeSetter implements RecordPropertyConverter {

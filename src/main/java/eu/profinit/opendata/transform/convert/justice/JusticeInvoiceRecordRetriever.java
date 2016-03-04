@@ -16,7 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by dm on 2/19/16.
+ * Retrieves MSp in voices based on their authorityIdentifier, which is composed from two source cells.
+ * @see SplitIdentifierSetter
+ * @see PropertyBasedRecordRetriever
  */
 @Component
 public class JusticeInvoiceRecordRetriever implements RecordRetriever {

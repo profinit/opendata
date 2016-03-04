@@ -10,7 +10,8 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * Created by dm on 2/1/16.
+ * Sets the inEffect attribute of a MFCR contract. Expects a source cell with argumentName = "validity" with value "V"
+ * or "U". Based on the value, sets inEffect to either true or false. The fieldName argument is ignored.
  */
 @Component
 public class ContractValiditySetter implements RecordPropertyConverter {

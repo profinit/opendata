@@ -18,7 +18,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by dm on 2/13/16.
+ * Creates an UnresolvedRelationship from a contract (the record argument) to an invoice identified by its
+ * authorityIdentifier (argumentName = "invoiceId"). If the exact same unresolved relationship is already in the
+ * database, does nothing.
+ * @see UnresolvedRelationship
+ * @see eu.profinit.opendata.control.RelationshipResolver
  */
 @Component
 public class ContractAndInvoiceCorrelator implements RecordPropertyConverter {

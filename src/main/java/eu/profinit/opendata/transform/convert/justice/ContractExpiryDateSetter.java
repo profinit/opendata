@@ -14,7 +14,8 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * Created by dm on 2/18/16.
+ * Sets an MSp contract expiry date. Expects a string cell with argumentName "inputDate". The format is d.M.yyyy.
+ * If the cell contents don't match this format, the property isn't set. The fieldName argument is ignored.
  */
 @Component
 public class ContractExpiryDateSetter implements RecordPropertyConverter {

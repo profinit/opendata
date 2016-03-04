@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * Created by dm on 2/21/16.
+ * Sets the authorityRole attribute of an MZP record. Expects a source cell with argumentName = "inputRole" with value
+ * "Dodavatelská" or "Odběratelská". Based on the value, sets the authority role to either CUSTOMER or SUPPLIER.
+ * The fieldName argument is ignored.
  */
 @Component
 public class MZPRoleSetter implements RecordPropertyConverter {

@@ -17,7 +17,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by dm on 2/21/16.
+ * Sets a date for an MZP Record. Expects a string cell with argumentName = "inputDate". Searches for the date pattern
+ * as a regex (either dd.MM.yy or dd.MM.yyyy) and sets it into the attribute specified by fieldName. Throws a
+ * PROPERTY_LOCAL exception if one of these steps fails.
  */
 @Component
 public class MZPDateSetter implements RecordPropertyConverter{

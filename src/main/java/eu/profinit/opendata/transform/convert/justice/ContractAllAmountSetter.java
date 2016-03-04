@@ -14,7 +14,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by dm on 2/18/16.
+ * MSp contracts contain the currency and the amount in a single string cell. The format can change from cell to cell.
+ * This converter accepts a MSp contract cell (argumentName = "inputAmount") and sets the Record's currency,
+ * originalCurrencyAmount, amountCzk (if currency is CZK) and in some cases the periodicity as well. The fieldName
+ * attribute is ignored.
  */
 @Component
 public class ContractAllAmountSetter implements RecordPropertyConverter {
