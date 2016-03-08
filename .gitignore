@@ -1,0 +1,4 @@
+nbactions.xml
+/target/
+*.log
+*.log.gz
