@@ -1,5 +1,6 @@
-package eu.profinit.opendata.transform.convert;
+package eu.profinit.opendata.transform.convert.mdcr;
 
+import eu.profinit.opendata.transform.convert.*;
 import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.transform.RecordPropertyConverter;
 import eu.profinit.opendata.transform.TransformDriver;
@@ -18,7 +19,7 @@ import java.util.Map;
  * argumentName "inputDate".
  */
 @Component
-public class DateSetter implements RecordPropertyConverter {
+public class MDDateSetter implements RecordPropertyConverter {
 
     @Override
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger)
@@ -27,7 +28,11 @@ public class DateSetter implements RecordPropertyConverter {
         try {
             Date inputDate;
             if (sourceValues.get("inputDate") == null) {
-                inputDate = new java.sql.Date(1900, 1, 1);
+                inputDate = new Date(1900, 1, 1);
+            }else
+            //dirty fix for MD bad rows
+            if (sourceValues.get("inputDate").toString().equals("1.10.1015")) {
+                inputDate = new Date(2015, 10, 1);
             } else {
                 inputDate = sourceValues.get("inputDate").getDateCellValue();
             }
@@ -36,7 +41,7 @@ public class DateSetter implements RecordPropertyConverter {
             throw new TransformException("Couldn't set date property - bad cell format", ex,
                     TransformException.Severity.PROPERTY_LOCAL);
         } catch (Exception e) {
-            String message = "Couldn't set java.sql.Date value for field " + fieldName;
+            String message = "Couldn't set java.sql.Date value for field " + fieldName + " " + record.getAuthorityIdentifier();
             throw new TransformException(message, e, TransformException.Severity.PROPERTY_LOCAL);
         }
 

@@ -189,20 +189,61 @@ INSERT INTO data_instance(data_source_id, url, format, periodicity, description,
 
   (
     (SELECT  data_source_id FROM contracts_ds), 'http://www.mdcr.cz/NR/rdonlyres/8B067F15-9D7F-4307-9133-9A8EC47AD86F/0/smlouvy_md_2015.xls',
-    'xlsx', 'yearly', 'Smlouvy MDČR 2015', 'mappings/mdcr/mapping-contracts.xml', FALSE
+    'xls', 'yearly', 'Smlouvy MDČR 2015', 'mappings/mdcr/mapping-contracts.xml', FALSE
   ),
   
   (
     (SELECT  data_source_id FROM contracts_ds), 'http://www.mdcr.cz/NR/rdonlyres/F6485532-145E-4073-A399-9D633462265E/0/smlouvy_md_2016.xls',
-    'xlsx', 'yearly', 'Smlouvy MDČR 2015', 'mappings/mdcr/mapping-contracts.xml', FALSE
+    'xls', 'yearly', 'Smlouvy MDČR 2015', 'mappings/mdcr/mapping-contracts.xml', FALSE
   ),
   
   (
     (SELECT  data_source_id FROM invoices_ds), 'http://www.mdcr.cz/NR/rdonlyres/F8B84F41-9237-4049-9A53-CD373AC43F17/0/faktury_md_2015.xls',
-    'xlsx', 'yearly', 'Faktury MDČR 2015', 'mappings/mdcr/mapping-invoices.xml', FALSE
+    'xls', 'yearly', 'Faktury MDČR 2015', 'mappings/mdcr/mapping-invoices.xml', FALSE
   ),
   
   (
     (SELECT  data_source_id FROM invoices_ds), 'http://www.mdcr.cz/NR/rdonlyres/F6452068-EBB7-4338-BA49-43E563DD919A/0/faktury_md_2016.xls',
-    'xlsx', 'yearly', 'Faktury MDČR 2016', 'mappings/mdcr/mapping-invoices.xml', FALSE
+    'xls', 'yearly', 'Faktury MDČR 2016', 'mappings/mdcr/mapping-invoices.xml', FALSE
+  );
+  
+-- SFDI: Data instances are manual and experimentally periodic, but we don't know how updates are published. ----------------------------
+
+WITH mdcr AS (INSERT INTO entity(entity_type, name, ico, dic, is_public) VALUES
+  ('ministry', 'Státní fond dopravní indfrastruktury', '70856508', 'CZ70856508', TRUE) RETURNING entity_id),
+
+    contracts_ds AS (
+    INSERT INTO data_source (entity_id, record_type, periodicity, handling_class, active, description) VALUES (
+      (SELECT entity_id FROM mdcr),
+      'contract', 'aperiodic', 'eu.profinit.opendata.control.BlankHandler', TRUE, 'Smlouvy SFDI')
+    RETURNING data_source_id
+  ),
+
+    invoices_ds AS (
+    INSERT INTO data_source (entity_id, record_type, periodicity, handling_class, active, description) VALUES (
+      (SELECT entity_id FROM mdcr),
+      'invoice', 'aperiodic', 'eu.profinit.opendata.control.BlankHandler', TRUE, 'Faktury SFDI')
+    RETURNING data_source_id
+  )
+
+INSERT INTO data_instance(data_source_id, url, format, periodicity, description, mapping_file, incremental) VALUES
+
+  (
+    (SELECT  data_source_id FROM contracts_ds), 'http://www.mdcr.cz/NR/rdonlyres/4ECFE023-1B3C-4FC4-A62D-1A8D53D8E329/0/smlouvy_sfdi_2015.xls',
+    'xls', 'yearly', 'Smlouvy SFDI 2015', 'mappings/mdcr/mapping-contracts.xml', FALSE
+  ),
+  
+  (
+    (SELECT  data_source_id FROM contracts_ds), 'http://www.mdcr.cz/NR/rdonlyres/7C1A1916-6493-49B0-9E61-DBBEB0494A43/0/smlouvy_sfdi_2016.xls',
+    'xls', 'yearly', 'Smlouvy SFDI 2015', 'mappings/mdcr/mapping-contracts.xml', FALSE
+  ),
+  
+  (
+    (SELECT  data_source_id FROM invoices_ds), 'http://www.mdcr.cz/NR/rdonlyres/BA8ABCA2-D94D-4174-BD7F-046980CCA09A/0/faktury_sfdi_2015.xls',
+    'xls', 'yearly', 'Faktury SFDI 2015', 'mappings/mdcr/mapping-invoices.xml', FALSE
+  ),
+  
+  (
+    (SELECT  data_source_id FROM invoices_ds), 'http://www.mdcr.cz/NR/rdonlyres/FF12B875-1EC6-4C46-83C4-343257FA2D79/0/faktury_sfdi_2016.xls',
+    'xls', 'yearly', 'Faktury SFDI 2016', 'mappings/mdcr/mapping-invoices.xml', FALSE
   );
