@@ -24,7 +24,8 @@ public class AllAmountSetter implements RecordPropertyConverter {
 
         Double amount = null;
         //fix for excels without values
-        if (sourceValues.get("inputAmount") == null) {
+        if (sourceValues.get("inputAmount") == null ||
+                sourceValues.get("inputAmount").getCellType() != Cell.CELL_TYPE_NUMERIC) {
             amount = 0d;
         } else {
             amount = sourceValues.get("inputAmount").getNumericCellValue();

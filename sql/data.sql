@@ -189,22 +189,22 @@ INSERT INTO data_instance(data_source_id, url, format, periodicity, description,
 
   (
     (SELECT  data_source_id FROM contracts_ds), 'http://www.mdcr.cz/NR/rdonlyres/8B067F15-9D7F-4307-9133-9A8EC47AD86F/0/smlouvy_md_2015.xls',
-    'xls', 'yearly', 'Smlouvy MDČR 2015', 'mappings/mdcr/mapping-contracts.xml', FALSE
+    'xls', 'aperiodic', 'Smlouvy MDČR 2015', 'mappings/mdcr/mapping-contracts.xml', FALSE
   ),
   
   (
-    (SELECT  data_source_id FROM contracts_ds), 'http://www.mdcr.cz/NR/rdonlyres/F6485532-145E-4073-A399-9D633462265E/0/smlouvy_md_2016.xls',
-    'xls', 'yearly', 'Smlouvy MDČR 2015', 'mappings/mdcr/mapping-contracts.xml', FALSE
+    (SELECT  data_source_id FROM contracts_ds), 'http://www.mdcr.cz/NR/rdonlyres/6A0E7174-9D46-4756-B415-B57986B7333A/0/smlouvy_md_2016.xls',
+    'xls', 'monthly', 'Smlouvy MDČR 2016', 'mappings/mdcr/mapping-contracts.xml', FALSE
   ),
   
   (
     (SELECT  data_source_id FROM invoices_ds), 'http://www.mdcr.cz/NR/rdonlyres/F8B84F41-9237-4049-9A53-CD373AC43F17/0/faktury_md_2015.xls',
-    'xls', 'yearly', 'Faktury MDČR 2015', 'mappings/mdcr/mapping-invoices.xml', FALSE
+    'xls', 'aperiodic', 'Faktury MDČR 2015', 'mappings/mdcr/mapping-invoices.xml', FALSE
   ),
   
   (
     (SELECT  data_source_id FROM invoices_ds), 'http://www.mdcr.cz/NR/rdonlyres/F6452068-EBB7-4338-BA49-43E563DD919A/0/faktury_md_2016.xls',
-    'xls', 'yearly', 'Faktury MDČR 2016', 'mappings/mdcr/mapping-invoices.xml', FALSE
+    'xls', 'monthly', 'Faktury MDČR 2016', 'mappings/mdcr/mapping-invoices.xml', FALSE
   );
   
 -- SFDI: Data instances are manual and experimentally periodic, but we don't know how updates are published. ----------------------------
@@ -235,7 +235,7 @@ INSERT INTO data_instance(data_source_id, url, format, periodicity, description,
   
   (
     (SELECT  data_source_id FROM contracts_ds), 'http://www.mdcr.cz/NR/rdonlyres/7C1A1916-6493-49B0-9E61-DBBEB0494A43/0/smlouvy_sfdi_2016.xls',
-    'xls', 'yearly', 'Smlouvy SFDI 2015', 'mappings/mdcr/mapping-contracts.xml', FALSE
+    'xls', 'yearly', 'Smlouvy SFDI 2016', 'mappings/mdcr/mapping-contracts.xml', FALSE
   ),
   
   (
