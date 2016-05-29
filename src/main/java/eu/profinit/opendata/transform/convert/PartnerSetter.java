@@ -85,7 +85,8 @@ public class PartnerSetter implements RecordPropertyConverter {
     }
 
     private boolean canBeValidICO(Cell cell) {
-        return !Util.isNullOrEmpty(cell.getStringCellValue()) && cell.getStringCellValue().length() > 1;
+        return !Util.isNullOrEmpty(cell.getStringCellValue()) && cell.getStringCellValue().length() > 3
+                && !"99999999".equals(cell.getStringCellValue());
     }
 
 

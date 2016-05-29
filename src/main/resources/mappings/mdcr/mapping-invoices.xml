@@ -5,9 +5,10 @@
     <mappedSheet name="Seznam faktur">
         <headerRow>0</headerRow>
         <retriever className="eu.profinit.opendata.transform.convert.mdcr.MDInvoiceRetriever">
+            <sourceFileColumn originalName="CISLOFA" argumentName="authorityIdentifier"/>
+            <sourceFileColumn originalName="POLOZKA" argumentName="budgetCategory"/>
+            <sourceFileColumn originalName="UCELPLATBY" argumentName="subject"/>
             <sourceFileColumn originalName="DODAVATEL" argumentName="partnerName"/>
-            <sourceFileColumn originalName="CISLOFA" argumentName="variableSymbol"/>
-            <sourceFileColumn originalName="DATVYST" argumentName="dateCreated"/>
         </retriever>
         <property name="recordType" onlyNewRecords="true" value="INVOICE"/>
         <propertySet ref="common"/>
@@ -17,17 +18,17 @@
         <property name="authorityRole" onlyNewRecords="true" value="CUSTOMER"/>
 
         <property name="authorityIdentifier" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
-            <sourceFileColumn originalName="ICORG" argumentName="inputString"/>
+            <sourceFileColumn originalName="CISLOFA" argumentName="inputString"/>
         </property>
 
-        <property name="variableSymbol" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
-            <sourceFileColumn originalName="CISLOFA" argumentName="inputString"/>
+        <property name="budgetCategory" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
+            <sourceFileColumn originalName="POLOZKA" argumentName="inputString"/>
         </property>
 
         <property name="partner" onlyNewRecords="true"
                   converter="eu.profinit.opendata.transform.convert.PartnerSetter">
             <sourceFileColumn originalName="DODAVATEL" argumentName="name"/>
-            <!-- <sourceFileColumn originalName="ICDOD" argumentName="ico"/>-->
+            <sourceFileColumn originalName="ICDOD" argumentName="ico"/>
         </property>
 
         <property name="subject" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.DirectStringSetter">
@@ -36,7 +37,7 @@
 
         <property name="currency" onlyNewRecords="true" value="CZK"/>
 
-        <property name="allAmounts" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.AllAmountSetter">
+        <property name="allAmounts" onlyNewRecords="false" converter="eu.profinit.opendata.transform.convert.AllAmountSetter">
             <sourceFileColumn originalName="CASTKA" argumentName="inputAmount"/>
         </property>
 
@@ -48,7 +49,9 @@
             <sourceFileColumn originalName="DATSPLAT" argumentName="inputDate"/>
         </property>
 
-        <property name="masterId" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.RandomMasterIdSetter"/>
+        <property name="masterId" onlyNewRecords="true" converter="eu.profinit.opendata.transform.convert.PropertyBasedMasterIdSetter">
+            <sourceFileColumn originalName="CISLOFA" argumentName="authorityIdentifier"/>
+        </property>
 
     </propertySet>
 

@@ -84,10 +84,15 @@ public class RecordQueryService {
         @Override
         public boolean test(Record record) {
             switch(property) {
-                // TODO: There should be all the others here
                 case "authorityIdentifier":
                     return record.getAuthorityIdentifier() != null
                             && record.getAuthorityIdentifier().equals(value);
+                case "budgetCategory":
+                    return record.getBudgetCategory() != null
+                            && record.getBudgetCategory().equals(value);
+                case "subject":
+                    return record.getSubject() != null
+                            && record.getSubject().equals(value);
                 default:
                     return false;
             }

@@ -203,7 +203,7 @@ INSERT INTO data_instance(data_source_id, url, format, periodicity, description,
   ),
   
   (
-    (SELECT  data_source_id FROM invoices_ds), 'http://www.mdcr.cz/NR/rdonlyres/F6452068-EBB7-4338-BA49-43E563DD919A/0/faktury_md_2016.xls',
+    (SELECT  data_source_id FROM invoices_ds), 'http://www.mdcr.cz/NR/rdonlyres/DF289438-744E-4527-BD77-ABCEBE9F8906/0/faktury_md_2016.xls',
     'xls', 'monthly', 'Faktury MDČR 2016', 'mappings/mdcr/mapping-invoices.xml', FALSE
   );
   
