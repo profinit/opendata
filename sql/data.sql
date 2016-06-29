@@ -247,3 +247,16 @@ INSERT INTO data_instance(data_source_id, url, format, periodicity, description,
     (SELECT  data_source_id FROM invoices_ds), 'http://www.mdcr.cz/NR/rdonlyres/7D1D2014-58FA-470B-9DF7-79BD4D543F7C/0/faktury_sfdi_2016.xls',
     'xls', 'monthly', 'Faktury SFDI 2016', 'mappings/sfdi/mapping-invoices.xml', FALSE
   );
+
+
+--MOCR-------------------------------------------------------------------------
+WITH mocr as (INSERT INTO entity(entity_type, name, ico, is_public) VALUES
+  ('ministry', 'Ministerstvo obrany ČR', '60162694', TRUE) RETURNING entity_id)
+
+INSERT INTO data_source(entity_id, record_type, periodicity, handling_class, active, description) VALUES
+  (
+    (SELECT entity_id FROM mocr), 'invoice', 'daily', 'eu.profinit.opendata.institution.mocr.MOCRHandler', TRUE, 'Faktury MOČR'
+  ),
+  (
+  (SELECT entity_id FROM mocr), 'contract', 'daily', 'eu.profinit.opendata.institution.mfcr.MOCRHandler', TRUE, 'Smlouvy MOČR'
+  );

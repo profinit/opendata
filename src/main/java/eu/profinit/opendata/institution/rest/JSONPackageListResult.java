@@ -1,4 +1,4 @@
-package eu.profinit.opendata.institution.mfcr.rest;
+package eu.profinit.opendata.institution.rest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

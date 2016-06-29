@@ -43,6 +43,10 @@ public class CurrencySetter implements RecordPropertyConverter{
 
     @Override
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger) throws TransformException {
+        if(sourceValues.get("inputCurrencyCode") == null) {
+            record.setCurrency("CZK");
+            return;
+        }
         String sourceCurrencyString = sourceValues.get("inputCurrencyCode").getStringCellValue();
         if(iso4217Currencies.contains(sourceCurrencyString)) {
             record.setCurrency(sourceCurrencyString);

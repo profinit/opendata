@@ -1,6 +1,5 @@
 package eu.profinit.opendata.institution.mfcr;
 
-import eu.profinit.opendata.institution.mfcr.rest.JSONPackageListResource;
 import eu.profinit.opendata.model.DataSource;
 
 import javax.persistence.EntityManager;

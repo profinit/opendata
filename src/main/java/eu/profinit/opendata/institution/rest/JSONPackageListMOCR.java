@@ -1,15 +1,14 @@
-package eu.profinit.opendata.institution.mfcr.rest;
+package eu.profinit.opendata.institution.rest;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.List;
 
 /**
- * Created by dm on 11/28/15.
+ * Created by dm on 6/29/16.
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class JSONPackageList {
+public class JSONPackageListMOCR {
     private String help;
     private boolean success;
-    private JSONPackageListResult result;
+    private List<JSONPackageListResult> result;
 
     public String getHelp() {
         return help;
@@ -27,11 +26,11 @@ public class JSONPackageList {
         this.success = success;
     }
 
-    public JSONPackageListResult getResult() {
+    public List<JSONPackageListResult> getResult() {
         return result;
     }
 
-    public void setResult(JSONPackageListResult result) {
+    public void setResult(List<JSONPackageListResult> result) {
         this.result = result;
     }
 }

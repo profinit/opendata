@@ -52,6 +52,7 @@ public class PartnerSetter implements RecordPropertyConverter {
             dic = sourceValues.get("dic").getStringCellValue();
         }
         if(sourceValues.containsKey("name") && sourceValues.get("name") != null
+                && sourceValues.get("name").getCellType() == Cell.CELL_TYPE_STRING
                 && !isNullOrEmpty(sourceValues.get("name").getStringCellValue())) {
             name = sourceValues.get("name").getStringCellValue();
         }

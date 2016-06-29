@@ -5,9 +5,9 @@ import eu.profinit.opendata.control.DownloadService;
 import eu.profinit.opendata.control.GenericDataSourceHandler;
 import eu.profinit.opendata.institution.mfcr.MFCRHandler;
 import eu.profinit.opendata.institution.mfcr.PartnerListProcessor;
-import eu.profinit.opendata.institution.mfcr.rest.JSONClient;
-import eu.profinit.opendata.institution.mfcr.rest.JSONPackageList;
-import eu.profinit.opendata.institution.mfcr.rest.JSONPackageListResource;
+import eu.profinit.opendata.institution.rest.JSONClient;
+import eu.profinit.opendata.institution.rest.JSONPackageList;
+import eu.profinit.opendata.institution.rest.JSONPackageListResource;
 import eu.profinit.opendata.model.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +41,12 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
 
     @Autowired
     private DownloadService downloadService;
+
+    @Value("${mfcr.json.api.url}")
+    private String json_api_url;
+
+    @Value("${mfcr.json.packages.url}")
+    private String packages_path;
 
     @Value("${mfcr.json.orders.identifier}")
     private String orders_identifier;
@@ -92,7 +98,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
         log.info("Updating information about data instances containing orders");
 
         //Load list of resources from the JSON API
-        JSONPackageList packageList = jsonClient.getPackageList(identifier);
+        JSONPackageList packageList = jsonClient.getPackageList(json_api_url, packages_path, identifier);
         if(packageList == null) {
             log.warn("JSONClient returned null package list. Exiting.");
             return;
@@ -155,7 +161,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
     public void updateInvoicesDataInstance(DataSource ds) {
         log.info("Updating information about data instances containing invoices");
 
-        JSONPackageList packageList = jsonClient.getPackageList(invoices_identifier);
+        JSONPackageList packageList = jsonClient.getPackageList(json_api_url, packages_path, invoices_identifier);
         if(packageList == null) {
             log.warn("JSONClient returned null package list. Exiting.");
             return;
