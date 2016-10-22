@@ -65,17 +65,17 @@ WITH mzp AS (INSERT INTO entity(entity_type, name, ico, is_public) VALUES
 
 INSERT INTO data_instance(data_source_id, url, format, periodicity, description, mapping_file, incremental) VALUES
   (
-    (SELECT  data_source_id FROM orders_ds), 'http://www.mzp.cz/AIS/smlouvy-web.nsf/exportOrdersValidAsXLSX.xsp',
+    (SELECT  data_source_id FROM orders_ds), 'http://www.mzp.cz/www/smlouvy-web.nsf/exportOrdersValidAsXLSX.xsp',
     'xlsx', 'weekly', 'Průběžné objednávky MŽP', 'mappings/mzp/mapping-orders.xml', FALSE
   ),
 
   (
-    (SELECT  data_source_id FROM contracts_ds), 'http://www.mzp.cz/AIS/smlouvy-web.nsf/exportContractsValidAsXLSX.xsp',
+    (SELECT  data_source_id FROM contracts_ds), 'http://www.mzp.cz/www/smlouvy-web.nsf/exportContractsValidAsXLSX.xsp',
     'xlsx', 'weekly', 'Platné smlouvy MŽP', 'mappings/mzp/mapping-contracts.xml', FALSE
   ),
 
   (
-    (SELECT  data_source_id FROM invoices_ds), 'http://www.mzp.cz/AIS/smlouvy-web.nsf/exportInvoicesAsXLSX.xsp',
+    (SELECT  data_source_id FROM invoices_ds), 'http://www.mzp.cz/www/smlouvy-web.nsf/exportInvoicesAsXLSX.xsp',
     'xlsx', 'weekly', 'Průběžné faktury MŽP', 'mappings/mzp/mapping-invoices.xml', FALSE
   );
 
@@ -258,5 +258,5 @@ INSERT INTO data_source(entity_id, record_type, periodicity, handling_class, act
     (SELECT entity_id FROM mocr), 'invoice', 'daily', 'eu.profinit.opendata.institution.mocr.MOCRHandler', TRUE, 'Faktury MOČR'
   ),
   (
-  (SELECT entity_id FROM mocr), 'contract', 'daily', 'eu.profinit.opendata.institution.mfcr.MOCRHandler', TRUE, 'Smlouvy MOČR'
+  (SELECT entity_id FROM mocr), 'contract', 'daily', 'eu.profinit.opendata.institution.mocr.MOCRHandler', TRUE, 'Smlouvy MOČR'
   );
