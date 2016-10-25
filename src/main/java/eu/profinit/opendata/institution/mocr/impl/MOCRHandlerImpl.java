@@ -90,12 +90,12 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
         }
 
         List<DataInstance> currentInstances = new ArrayList<>(ds.getDataInstances());
-        List<JSONPackageListResource> resourceList = packageList.getResult().get(0).getResources();
+        List<JSONPackageListResource> resourceList = packageList.getResult().getResources();
 
         for (JSONPackageListResource resource : resourceList) {
 
-            //Check if we found an xls resource
-            if (resource.getFormat().equals("excel")) {
+            //Check if we found an xls resource - some of them are misspelled as "xlxs"
+            if (resource.getFormat().equals("xlsx") || resource.getFormat().equals("xlxs")) {
                 String name = resource.getName();
 
                 Pattern pattern = Pattern.compile("^Smlouvy uzavřené na TENDERMARKET (?<year>\\d{4})$");
@@ -158,7 +158,7 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
         }
 
         List<DataInstance> currentInstances = new ArrayList<>(ds.getDataInstances());
-        List<JSONPackageListResource> resourceList = packageList.getResult().get(0).getResources();
+        List<JSONPackageListResource> resourceList = packageList.getResult().getResources();
 
         for (JSONPackageListResource resource : resourceList) {
 
