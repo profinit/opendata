@@ -8,7 +8,7 @@ import java.util.List;
 public class JSONPackageListMOCR {
     private String help;
     private boolean success;
-    private List<JSONPackageListResult> result;
+    private JSONPackageListResult result;
 
     public String getHelp() {
         return help;
@@ -26,11 +26,11 @@ public class JSONPackageListMOCR {
         this.success = success;
     }
 
-    public List<JSONPackageListResult> getResult() {
+    public JSONPackageListResult getResult() {
         return result;
     }
 
-    public void setResult(List<JSONPackageListResult> result) {
+    public void setResult(JSONPackageListResult result) {
         this.result = result;
     }
 }
