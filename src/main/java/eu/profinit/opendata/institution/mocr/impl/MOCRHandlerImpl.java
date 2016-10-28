@@ -97,6 +97,7 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
             //Check if we found an xls resource - some of them are misspelled as "xlxs"
             if (resource.getFormat().equals("xlsx") || resource.getFormat().equals("xlxs")) {
                 String name = resource.getName();
+                String resourceId = resource.getUrl(); // No ID in the JSON response anymore
 
                 Pattern pattern = Pattern.compile("^Smlouvy uzavřené na TENDERMARKET (?<year>\\d{4})$");
                 Matcher matcher = pattern.matcher(name);
@@ -113,7 +114,7 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
                 // Check if we already have a data instance with the same given id - if yes, simply update the URL
                 // If not, create a new one
                 Optional<DataInstance> sameIds = currentInstances.stream()
-                        .filter(i -> i.getAuthorityId().equals(resource.getId())).findFirst();
+                        .filter(i -> i.getAuthorityId().equals(resourceId)).findFirst();
                 if (sameIds.isPresent()) {
                     dataInstance = sameIds.get();
                     dataInstance.setUrl(resource.getUrl());
@@ -122,7 +123,7 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
                     dataInstance.setMappingFile(contracts_mapping_file);
                     dataInstance.setDataSource(ds);
                     dataInstance.setUrl(resource.getUrl());
-                    dataInstance.setAuthorityId(resource.getId());
+                    dataInstance.setAuthorityId(resourceId);
                     dataInstance.setFormat("xlsx");
                     dataInstance.setDescription(resource.getName());
                     dataInstance.setPeriodicity(Periodicity.MONTHLY);
@@ -166,6 +167,7 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
             if (resource.getFormat().equals("excel")) {
                 // Check for "uhrazene faktury" and "za rok {YYYY}" and not "privatizace"
                 String name = resource.getName();
+                String resourceId = resource.getUrl(); // No ID in JSON response anymore
 
                 Pattern pattern = Pattern.compile("^Uhrazené faktury za rok (?<year>\\d{4})$");
                 Matcher matcher = pattern.matcher(name);
@@ -179,7 +181,7 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
                 // Check if we already have a data instance with the same given id - if yes, simply update the URL
                 // If not, create a new one
                 Optional<DataInstance> sameIds = currentInstances.stream()
-                        .filter(i -> i.getAuthorityId().equals(resource.getId())).findFirst();
+                        .filter(i -> i.getAuthorityId().equals(resourceId)).findFirst();
                 if (sameIds.isPresent()) {
                     dataInstance = sameIds.get();
                     dataInstance.setUrl(resource.getUrl());
@@ -189,7 +191,7 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
 
                     dataInstance.setDataSource(ds);
                     dataInstance.setUrl(resource.getUrl());
-                    dataInstance.setAuthorityId(resource.getId());
+                    dataInstance.setAuthorityId(resourceId);
                     dataInstance.setFormat("xlsx");
                     dataInstance.setDescription(resource.getName());
                     dataInstance.setPeriodicity(Periodicity.MONTHLY);
