@@ -41,7 +41,7 @@ public class PartnerSetter implements RecordPropertyConverter {
             icoCell.setCellType(Cell.CELL_TYPE_STRING);
 
             if(canBeValidICO(icoCell)) {
-                ico = icoCell.getStringCellValue();
+                ico = icoCell.getStringCellValue().replace(".", ",");
                 if (ico.length() < 8) {
                     ico = String.format("%08d", Integer.parseInt(ico));
                 }

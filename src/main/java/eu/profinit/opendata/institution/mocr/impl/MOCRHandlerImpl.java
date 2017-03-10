@@ -55,7 +55,6 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
     @Value("${mocr.json.packages.url}")
     private String packages_path;
 
-
     private final Logger log = LogManager.getLogger(MOCRHandler.class);
 
     @Override
@@ -114,8 +113,8 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
                 // Check if we already have a data instance with the same given id - if yes, simply update the URL
                 // If not, create a new one
                 Optional<DataInstance> sameIds = currentInstances.stream()
-                        .filter(i -> i.getAuthorityId().equals(resourceId)).findFirst();
-                if (sameIds.isPresent()) {
+                        .filter(i -> i.getUrl().equals(resourceId)).findFirst();
+                if (sameIds != null && sameIds.isPresent()) {
                     dataInstance = sameIds.get();
                     dataInstance.setUrl(resource.getUrl());
                 } else {
@@ -133,7 +132,6 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
                 }
 
                 //We are not expiring data instances from earlier years since they may still be revised in the future.
-
                 em.merge(dataInstance);
             }
         }

@@ -27,8 +27,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * Implementation of the MF handler. Uses the ministry's REST API to keep track of DataInstances. Nothing needs to be
- * done manually for this ministry, unless file formats change.
+ * Implementation of the MF handler. Uses the ministry's REST API to keep track
+ * of DataInstances. Nothing needs to be done manually for this ministry, unless
+ * file formats change.
  */
 @Component
 public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHandler {
@@ -73,11 +74,18 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
 
     @Override
     public void updateDataInstances(DataSource ds) {
-        switch(ds.getRecordType()) {
-            case ORDER: updateOrdersOrContractsDataInstance(ds, orders_identifier, order_mapping_file); break;
-            case INVOICE: updateInvoicesDataInstance(ds); break;
-            case CONTRACT: updateOrdersOrContractsDataInstance(ds, contracts_identifier, contracts_mapping_file); break;
-            default: break;
+        switch (ds.getRecordType()) {
+            case ORDER:
+                updateOrdersOrContractsDataInstance(ds, orders_identifier, order_mapping_file);
+                break;
+            case INVOICE:
+                updateInvoicesDataInstance(ds);
+                break;
+            case CONTRACT:
+                updateOrdersOrContractsDataInstance(ds, contracts_identifier, contracts_mapping_file);
+                break;
+            default:
+                break;
         }
     }
 
@@ -87,19 +95,23 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
     }
 
     /**
-     * Updates the data intances associated with the MF orders or contracts data source.
-     * Assumes that the JSON API only returns a single xls(x) resource. If the URL changes, a new DataInstance is
-     * created and old ones are expired.
+     * Updates the data intances associated with the MF orders or contracts data
+     * source. Assumes that the JSON API only returns a single xls(x) resource.
+     * If the URL changes, a new DataInstance is created and old ones are
+     * expired.
+     *
      * @param ds The MF orders or contracts DataSource
-     * @param identifier The JSON API package identifier (for orders or contracts)
-     * @param mappingFile The path to the mapping file that should be used for newly created DataInstances
+     * @param identifier The JSON API package identifier (for orders or
+     * contracts)
+     * @param mappingFile The path to the mapping file that should be used for
+     * newly created DataInstances
      */
     public void updateOrdersOrContractsDataInstance(DataSource ds, String identifier, String mappingFile) {
         log.info("Updating information about data instances containing orders");
 
         //Load list of resources from the JSON API
         JSONPackageList packageList = jsonClient.getPackageList(json_api_url, packages_path, identifier);
-        if(packageList == null) {
+        if (packageList == null) {
             log.warn("JSONClient returned null package list. Exiting.");
             return;
         }
@@ -107,20 +119,20 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
         List<DataInstance> currentInstances = new ArrayList<>(ds.getDataInstances());
         List<JSONPackageListResource> resourceList = packageList.getResult().getResources();
 
-        for(JSONPackageListResource resource : resourceList) {
+        for (JSONPackageListResource resource : resourceList) {
 
             //Check if we found an xls resource
-            if(resource.getFormat().equals("xls") || resource.getFormat().equals("xlsx")) {
+            if (resource.getFormat().equals("xls") || resource.getFormat().equals("xlsx")) {
 
                 //Ignore if there is a data instance with the same URL
                 String newUrl = resource.getUrl();
                 log.debug("Received metadata for xls(x) resource at " + newUrl);
 
-                if(currentInstances.stream()
+                if (currentInstances.stream()
                         .filter(i -> i.getUrl().toLowerCase().equals(newUrl.toLowerCase())).count() == 0) {
 
                     //All current data instances must be marked as expired
-                    for(DataInstance i : currentInstances) {
+                    for (DataInstance i : currentInstances) {
                         log.debug("Marking existing DataInstance " + i.getDataInstanceId() + " as expired.");
                         i.expire();
                         em.merge(i);
@@ -135,7 +147,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
                     di.setDescription(resource.getName());
                     di.setMappingFile(mappingFile);
 
-                    if(identifier.equals(contracts_identifier)) {
+                    if (identifier.equals(contracts_identifier)) {
                         di.setIncremental(false);
                     }
 
@@ -143,8 +155,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
                     log.trace("Persisting new DataInstance");
                     em.persist(di);
 
-                }
-                else {
+                } else {
                     log.debug("Resource with given URL already exists as a DataInstance, nothing to do.");
                 }
             }
@@ -152,17 +163,20 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
     }
 
     /**
-     * Updates the invoice DataInstances from the JSON API. There should be one for every year since 2010, with files
-     * from 2015 onwards having a different format (and a different mapping file). Also finds the partner list used
-     * to extract entities for the older format and initiates its processing. Old files that have been updated and
-     * processed after their year has ended are expired.
+     * Updates the invoice DataInstances from the JSON API. There should be one
+     * for every year since 2010, with files from 2015 onwards having a
+     * different format (and a different mapping file). Also finds the partner
+     * list used to extract entities for the older format and initiates its
+     * processing. Old files that have been updated and processed after their
+     * year has ended are expired.
+     *
      * @param ds The MF invoices DataSources
      */
     public void updateInvoicesDataInstance(DataSource ds) {
         log.info("Updating information about data instances containing invoices");
 
         JSONPackageList packageList = jsonClient.getPackageList(json_api_url, packages_path, invoices_identifier);
-        if(packageList == null) {
+        if (packageList == null) {
             log.warn("JSONClient returned null package list. Exiting.");
             return;
         }
@@ -170,37 +184,38 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
         List<DataInstance> currentInstances = new ArrayList<>(ds.getDataInstances());
         List<JSONPackageListResource> resourceList = packageList.getResult().getResources();
 
-        for(JSONPackageListResource resource : resourceList) {
+        for (JSONPackageListResource resource : resourceList) {
 
             // Check if we found an xls resource
             if (resource.getFormat().equals("xls") || resource.getFormat().equals("xlsx")) {
                 // Check for "uhrazene faktury" and "za rok {YYYY}" and not "privatizace"
                 String name = resource.getName();
 
-                if(name.contains("Seznam partnerů")) {
+                if (name.contains("Seznam partnerů")) {
                     processPartnerListDataInstance(ds, resource);
                 }
 
                 Pattern pattern = Pattern.compile("^Uhrazené faktury(?: MF)? za rok (?<year>\\d{4})(?: včetně položky rozpočtu)?$");
                 Matcher matcher = pattern.matcher(name);
-                if(!matcher.find()) continue;
+                if (!matcher.find()) {
+                    continue;
+                }
 
                 Integer year = Integer.parseInt(matcher.group("year"));
                 DataInstance dataInstance = new DataInstance();
 
                 // Check if we already have a data instance with the same given id - if yes, simply update the URL
                 // If not, create a new one
+                log.info("MFCR " + resource.getUrl());
                 Optional<DataInstance> sameIds = currentInstances.stream()
-                        .filter(i -> i.getAuthorityId().equals(resource.getId())).findFirst();
-                if(sameIds.isPresent()) {
+                        .filter(i -> i.getUrl().equals(resource.getId())).findFirst();
+                if (sameIds.isPresent()) {
                     dataInstance = sameIds.get();
                     dataInstance.setUrl(resource.getUrl());
-                }
-                else {
-                    if(year < 2015) {
+                } else {
+                    if (year < 2015) {
                         dataInstance.setMappingFile(old_invoices_mapping_file);
-                    }
-                    else {
+                    } else {
                         dataInstance.setMappingFile(invoices_mapping_file);
                     }
 
@@ -226,7 +241,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
                     Timestamp firstJanuary = new Timestamp(
                             new GregorianCalendar(currentYear, Calendar.JANUARY, 1).getTimeInMillis());
 
-                    if(currentYear > year && lpd != null && lpd.after(lmd) && lmd.after(firstJanuary)) {
+                    if (currentYear > year && lpd != null && lpd.after(lmd) && lmd.after(firstJanuary)) {
                         dataInstance.expire();
                     }
                 } catch (ParseException e) {
@@ -240,11 +255,14 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
     }
 
     /**
-     * Downloads the MF list of partners. A new DataInstance is created for it but is set to APERIODIC to make sure it's
-     * never processed by other parts of the application. Once downloaded, the file is passed to a PartnerListProcessor
-     * for Entity extraction.
+     * Downloads the MF list of partners. A new DataInstance is created for it
+     * but is set to APERIODIC to make sure it's never processed by other parts
+     * of the application. Once downloaded, the file is passed to a
+     * PartnerListProcessor for Entity extraction.
+     *
      * @param ds The MF invoices DataSource
-     * @param resource The JSON API resource pointing to the MF list of partners.
+     * @param resource The JSON API resource pointing to the MF list of
+     * partners.
      * @see PartnerListProcessor
      */
     public void processPartnerListDataInstance(DataSource ds, JSONPackageListResource resource) {
@@ -253,12 +271,11 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
                 .filter(i -> i.getDescription().contains("Seznam partnerů")).findFirst();
 
         DataInstance toProcess = new DataInstance();
-        if(oldPartnerInstance.isPresent()) {
+        if (oldPartnerInstance.isPresent()) {
             toProcess = oldPartnerInstance.get();
             toProcess.setUrl(resource.getUrl());
             em.merge(toProcess);
-        }
-        else {
+        } else {
             toProcess.setDataSource(ds);
             toProcess.setUrl(resource.getUrl());
             toProcess.setFormat("xlsx");
@@ -269,7 +286,7 @@ public class MFCRHandlerImpl extends GenericDataSourceHandler implements MFCRHan
         }
 
         Timestamp lpd = toProcess.getLastProcessedDate();
-        if(lpd == null || Util.hasEnoughTimeElapsed(lpd, Duration.ofDays(30))) {
+        if (lpd == null || Util.hasEnoughTimeElapsed(lpd, Duration.ofDays(30))) {
             try {
                 InputStream is = downloadService.downloadDataFile(toProcess.getUrl());
                 log.debug("Got partner list. Extracting entities");

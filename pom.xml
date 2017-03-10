@@ -102,8 +102,6 @@
             <artifactId>spring-tx</artifactId>
             <version>4.2.4.RELEASE</version>
         </dependency>
-
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -120,7 +118,7 @@
             </activation>
             <properties>
                 <database.connection.username>opendata_dev</database.connection.username>
-                <database.connection.password>overdose</database.connection.password>
+                <database.connection.password>oracle</database.connection.password>
 
                 <test.database.connection.username>opendata_test</test.database.connection.username>
                 <test.database.connection.password>overdose</test.database.connection.password>
