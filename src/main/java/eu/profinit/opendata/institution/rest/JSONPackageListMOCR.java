@@ -1,12 +1,11 @@
-package eu.profinit.opendata.institution.mfcr.rest;
+package eu.profinit.opendata.institution.rest;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.List;
 
 /**
- * Created by dm on 11/28/15.
+ * Created by dm on 6/29/16.
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class JSONPackageList {
+public class JSONPackageListMOCR {
     private String help;
     private boolean success;
     private JSONPackageListResult result;

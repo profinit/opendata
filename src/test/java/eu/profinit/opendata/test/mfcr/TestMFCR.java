@@ -1,16 +1,17 @@
 package eu.profinit.opendata.test.mfcr;
 
 import eu.profinit.opendata.institution.mfcr.*;
-import eu.profinit.opendata.institution.mfcr.rest.JSONClient;
-import eu.profinit.opendata.institution.mfcr.rest.JSONPackageList;
-import eu.profinit.opendata.institution.mfcr.rest.JSONPackageListResource;
-import eu.profinit.opendata.institution.mfcr.rest.JSONPackageListResult;
+import eu.profinit.opendata.institution.rest.JSONClient;
+import eu.profinit.opendata.institution.rest.JSONPackageList;
+import eu.profinit.opendata.institution.rest.JSONPackageListResource;
+import eu.profinit.opendata.institution.rest.JSONPackageListResult;
 import eu.profinit.opendata.model.DataInstance;
 import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.Periodicity;
 import eu.profinit.opendata.model.RecordType;
 import eu.profinit.opendata.test.ApplicationContextTestCase;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Value;
 
 
 import javax.persistence.EntityManager;
@@ -24,11 +25,18 @@ import static org.mockito.Mockito.*;
  */
 public class TestMFCR extends ApplicationContextTestCase {
 
+    @Value("${mfcr.json.api.url}")
+    private String json_api_url;
+
+    @Value("${mfcr.json.packages.url}")
+    private String packages_path;
+
     @Test
     public void testJSONClient() throws Exception {
 
         JSONClient client = (JSONClient) applicationContext.getBean(JSONClient.class);
-        JSONPackageList packageList = client.getPackageList("seznam-objednavek-minsterstva-financi");
+        JSONPackageList packageList = client.getPackageList(json_api_url, packages_path,
+                "seznam-objednavek-minsterstva-financi");
 
         assertNotNull(packageList);
         assertNotNull(packageList.getResult());

@@ -1,14 +1,9 @@
 package eu.profinit.opendata.institution.mfcr.impl;
 
 import eu.profinit.opendata.common.Util;
-import eu.profinit.opendata.control.DownloadService;
-import eu.profinit.opendata.institution.mfcr.MFCRHandler;
 import eu.profinit.opendata.institution.mfcr.PartnerListProcessor;
-import eu.profinit.opendata.institution.mfcr.rest.JSONPackageListResource;
-import eu.profinit.opendata.model.DataInstance;
 import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.Entity;
-import eu.profinit.opendata.model.Periodicity;
 import eu.profinit.opendata.query.PartnerQueryService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,10 +20,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Timestamp;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Optional;
 
 /**
  * Created by dm on 2/12/16.

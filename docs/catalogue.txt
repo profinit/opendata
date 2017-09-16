@@ -258,3 +258,34 @@ V jednom dokumentu jsou publikovány objednávky od 1. 1. 2015, dokument je aktu
 + partner* - včetně IČO, název se bere ze sloupce "Název/příjmení"
 + authorityIdentifier*, ze sloupce "Číslo objednávky"
 + masterId* - náhodně vygenerované UUID
+
+# Ministerstvo dopravy a Státní fond dopravní infrastruktury
+
+MD a SFDI jsou dva různé datové zdroje, ale jejich soubory mají stejný formát, takže používají stejná mapování. Aktualizace datových instancí je složitá, protože při každé aktualizaci je dokumentu vygenerováno nové URL. Musí se provádět ručně.
+
+## Smlouvy
+
++ recordType*, vždy CONTRACT,
++ authorityRole*, vždy CUSTOMER
++ subject, ze sloupce PREDMET
++ dateCreated*, ze sloupců PLATOD, DATUCIN, DATPOD. Může se stát, že všechny tři jsou prázdné. V takovém případě je dateCreated 1. leden roku, ke kterému se smlouva vztahuje (ze sloupce CISLO).
++ dateOfExpiry, ze sloupce PLATDO
++ currency*, vždy CZK
++ originalCurrencyAmount* a amountCzk*, ze sloupce CENA
++ partner - dokument obsahuje IČO, ale u některých smluv partner úplně chybí. Kombinace sloupců ICDOD a DODAVATEL
++ authorityIdentifier*, ze sloupce CISLO.
++ masterId* - náhodně vygenerované UUID
+
+## Faktury
+
++ recordType*, vždy INVOICE,
++ authorityRole*, vždy CUSTOMER
++ subject, ze sloupce UCELPLATBY
++ dateCreated*, ze sloupce DATVYST.
++ dueDate, ze sloupce DATSPLAT.
++ budgetCategory, ze sloupce POLOZKA.
++ currency*, vždy CZK
++ originalCurrencyAmount* a amountCzk*, ze sloupce CASTKA
++ partner - dokument obsahuje IČO, ale u některých smluv partner úplně chybí. Kombinace sloupců ICDOD a DODAVATEL
++ authorityIdentifier*, ze sloupce CISLOFA.
++ masterId* - náhodně vygenerované UUID

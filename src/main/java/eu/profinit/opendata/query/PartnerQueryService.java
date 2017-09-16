@@ -141,7 +141,7 @@ public class PartnerQueryService {
 
         // Pokud mame jenom jmeno nebo jsme jeste nenasli,
         // hledame podle jmena
-        if(candidates.isEmpty()) {
+        if(candidates.isEmpty() && name != null) {
             Entity fromName = findMatchingEntityByName(normalizeEntityName(name));
             if(fromName != null) {
                 candidates.add(fromName);
@@ -181,6 +181,10 @@ public class PartnerQueryService {
      * @return The normalized name, suitable for insertion into the database.
      */
     public String normalizeEntityName(String name) {
+
+        if(name == null) {
+            return null;
+        }
 
         name = name.toUpperCase();
         name = name.replaceAll("\\W+V LIKVIDACI\\W+", "");

@@ -41,7 +41,7 @@ public class PartnerSetter implements RecordPropertyConverter {
             icoCell.setCellType(Cell.CELL_TYPE_STRING);
 
             if(canBeValidICO(icoCell)) {
-                ico = icoCell.getStringCellValue();
+                ico = icoCell.getStringCellValue().replace(".", ",");
                 if (ico.length() < 8) {
                     ico = String.format("%08d", Integer.parseInt(ico));
                 }
@@ -52,6 +52,7 @@ public class PartnerSetter implements RecordPropertyConverter {
             dic = sourceValues.get("dic").getStringCellValue();
         }
         if(sourceValues.containsKey("name") && sourceValues.get("name") != null
+                && sourceValues.get("name").getCellType() == Cell.CELL_TYPE_STRING
                 && !isNullOrEmpty(sourceValues.get("name").getStringCellValue())) {
             name = sourceValues.get("name").getStringCellValue();
         }
@@ -85,7 +86,8 @@ public class PartnerSetter implements RecordPropertyConverter {
     }
 
     private boolean canBeValidICO(Cell cell) {
-        return !Util.isNullOrEmpty(cell.getStringCellValue()) && cell.getStringCellValue().length() > 1;
+        return !Util.isNullOrEmpty(cell.getStringCellValue()) && cell.getStringCellValue().length() > 3
+                && !"99999999".equals(cell.getStringCellValue());
     }
 
 

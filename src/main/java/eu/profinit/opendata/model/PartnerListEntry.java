@@ -1,6 +1,6 @@
 package eu.profinit.opendata.model;
 
-import eu.profinit.opendata.institution.mfcr.rest.JSONPackageListResource;
+import eu.profinit.opendata.institution.rest.JSONPackageListResource;
 
 import javax.persistence.*;
 

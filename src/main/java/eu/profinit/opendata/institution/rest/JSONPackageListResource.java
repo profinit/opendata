@@ -1,4 +1,4 @@
-package eu.profinit.opendata.institution.mfcr.rest;
+package eu.profinit.opendata.institution.rest;
 
 /**
  * Created by dm on 11/28/15.

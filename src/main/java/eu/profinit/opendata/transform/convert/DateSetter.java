@@ -14,7 +14,8 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * Sets a date field specified by the fieldName. Expects a date cell with argumentName "inputDate".
+ * Sets a date field specified by the fieldName. Expects a date cell with
+ * argumentName "inputDate".
  */
 @Component
 public class DateSetter implements RecordPropertyConverter {
@@ -23,8 +24,13 @@ public class DateSetter implements RecordPropertyConverter {
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger)
             throws TransformException {
 
-        try{
-            Date inputDate = sourceValues.get("inputDate").getDateCellValue();
+        try {
+            Date inputDate;
+            if (sourceValues.get("inputDate") == null) {
+                inputDate = new java.sql.Date(1900, 1, 1);
+            } else {
+                inputDate = sourceValues.get("inputDate").getDateCellValue();
+            }
             setField(record, inputDate, fieldName, logger);
         } catch (IllegalStateException ex) {
             throw new TransformException("Couldn't set date property - bad cell format", ex,
@@ -45,7 +51,7 @@ public class DateSetter implements RecordPropertyConverter {
             }
             field.setAccessible(true);
 
-            if(date == null) {
+            if (date == null) {
                 logger.trace("Couldn't set Date - input String is null");
                 return;
             }
