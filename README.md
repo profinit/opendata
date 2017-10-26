@@ -5,6 +5,10 @@ Dokumentace:
 - [Katalog dat](/docs/catalogue.md)
 - [DataSource](/docs/datasource.md)
 
+# Pro vývojáře
+- Prosím nainstalujte do svého IDE [Sonar lint](https://www.sonarlint.org/)
+- Proísm používejte [sémantické FEST asserce](https://github.com/alexruiz/fest-assert-2.x/wiki/Using-fest-assertions)
+
 # Cíle
 
 Cílem je vytvořit snadno konfigurovatelný modul, který dokáže stahovat zveřejňované informace o hospodaření, tato data převede do strukturované podoby a uloží do relační databáze.
