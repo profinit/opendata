@@ -6,6 +6,10 @@ import eu.profinit.opendata.test.ApplicationContextTestCase;
 import eu.profinit.opendata.test.DataGenerator;
 import eu.profinit.opendata.test.util.DatabaseUtils;
 import eu.profinit.opendata.transform.TransformDriver;
+
+import org.fest.assertions.Assertions;
+import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -17,9 +21,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.mockito.Mockito.mock;
+
 
 /**
  * Created by dm on 2/18/16.
@@ -79,7 +82,7 @@ public class JusticeTest extends ApplicationContextTestCase {
 
         justiceHandler.updateDataInstances(ds);
         Collection<DataInstance> dataInstanceList = ds.getDataInstances();
-        assertTrue(6 < dataInstanceList.size());
-
+        
+        Assertions.assertThat(dataInstanceList.size()).isGreaterThan(5);
     }
 }
