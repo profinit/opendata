@@ -10,6 +10,8 @@ import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.Periodicity;
 import eu.profinit.opendata.model.RecordType;
 import eu.profinit.opendata.test.ApplicationContextTestCase;
+
+import org.fest.assertions.Assertions;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import javax.persistence.EntityManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.mockito.Mockito.*;
 
@@ -41,11 +44,11 @@ public class TestMFCR extends ApplicationContextTestCase {
         assertNotNull(packageList);
         assertNotNull(packageList.getResult());
         JSONPackageListResult result = packageList.getResult();
-        assertTrue(result.getResources().size() >= 2);
+        Assertions.assertThat(result.getResources().size()).isGreaterThanOrEqualTo(2);
 
         JSONPackageListResource resource = result.getResources().get(0);
         assertNotNull(resource.getUrl());
-        assertTrue(resource.getFormat().equals("xls") || resource.getFormat().equals("csv"));
+        Assertions.assertThat(resource.getFormat()).isIn(Arrays.asList("xls", "csv"));
     }
 
     @Test

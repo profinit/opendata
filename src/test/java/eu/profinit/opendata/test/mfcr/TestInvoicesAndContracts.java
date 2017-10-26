@@ -8,6 +8,8 @@ import eu.profinit.opendata.test.ApplicationContextTestCase;
 import eu.profinit.opendata.test.DataGenerator;
 import eu.profinit.opendata.test.util.DatabaseUtils;
 import eu.profinit.opendata.transform.TransformDriver;
+
+import org.fest.assertions.Assertions;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +65,7 @@ public class TestInvoicesAndContracts extends ApplicationContextTestCase {
 
         mfcrHandler.updateDataInstances(ds);
         Collection<DataInstance> dataInstanceList = ds.getDataInstances();
-        assertTrue(1 <= dataInstanceList.size());
+        Assertions.assertThat(dataInstanceList.size()).isGreaterThanOrEqualTo(1);
 
         verify(mockPlp).processListOfPartners(Matchers.eq(ds), any(InputStream.class));
 

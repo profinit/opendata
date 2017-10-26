@@ -1,6 +1,8 @@
 package eu.profinit.opendata.test;
 
 import eu.profinit.opendata.model.*;
+
+import org.fest.assertions.Assertions;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,37 +69,36 @@ public class PersistenceTest extends ApplicationContextTestCase {
         assertEquals(ds.getEntity().getEntityId(), ministry.getEntityId());
         assertNotNull(ministry);
         assertNotNull(ministry.getDataSources());
-        assertTrue(ministry.getDataSources().contains(ds));
+        Assertions.assertThat(ministry.getDataSources()).contains(ds);
 
         //Data Source to Data Instance
         ds = em.find(DataSource.class, ds.getDataSourceId());
-        assertTrue(ds.getDataInstances().contains(di));
+        Assertions.assertThat(ds.getDataInstances()).contains(di);
 
         //Data Instance to Retrieval
         di = em.find(DataInstance.class, di.getDataInstanceId());
-        assertTrue(di.getRetrievals().contains(ret));
+        Assertions.assertThat(di.getRetrievals()).contains(ret);
+        
 
         //Retrieval to Record
         ret = em.find(Retrieval.class, ret.getRetrievalId());
         contract = em.find(Record.class, contract.getRecordId());
         inv = em.find(Record.class, inv.getRecordId());
-        assertTrue(ret.getRecords().contains(contract));
-        assertTrue(ret.getRecords().contains(inv));
+        Assertions.assertThat(ret.getRecords()).contains(contract);
+        Assertions.assertThat(ret.getRecords()).contains(inv);
 
         //Record to Authority
-        assertTrue(ministry.getRecordsAsAuthority().contains(contract));
-        assertTrue(ministry.getRecordsAsAuthority().contains(inv));
-        assertTrue(ministry.getRecordsAsPartner().isEmpty());
+        Assertions.assertThat(ministry.getRecordsAsAuthority()).contains(contract).contains(inv);
+        Assertions.assertThat(ministry.getRecordsAsPartner()).isEmpty();
 
         //Record to Partner
         company = em.find(Entity.class, company.getEntityId());
-        assertTrue(company.getRecordsAsPartner().contains(contract));
-        assertTrue(company.getRecordsAsPartner().contains(inv));
-        assertTrue(company.getRecordsAsAuthority().isEmpty());
+        Assertions.assertThat(company.getRecordsAsPartner()).contains(contract).contains(inv);
+        Assertions.assertThat(company.getRecordsAsAuthority()).isEmpty();
 
         //Record to Record
         contract = em.find(Record.class, contract.getRecordId());
-        assertTrue(contract.getChildRecords().contains(inv));
+        Assertions.assertThat(contract.getChildRecords()).contains(inv);
 
         em.remove(ministry);
         em.remove(company);

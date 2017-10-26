@@ -197,7 +197,7 @@ public class DataInstance {
         result = 31 * result + (url != null ? url.hashCode() : 0);
         result = 31 * result + dataInstanceId.intValue();
         result = 31 * result + periodicity.hashCode();
-        result = 31 * result + lastProcessedDate.hashCode();
+        result = 31 * result + ((lastProcessedDate != null) ? lastProcessedDate.hashCode() : 0);
         result = 31 * result + (incremental ? 1 : 0);
         return result;
     }
