@@ -10,7 +10,7 @@ public class JSONPackageListResource {
     private String name;
     private String size;
     private String created;
-    private String last_modified;
+    private String lastModified;
 
     public String getId() {
         return id;
@@ -60,12 +60,12 @@ public class JSONPackageListResource {
         this.created = created;
     }
 
-    public String getLast_modified() {
-        return last_modified;
+    public String getLastModified() {
+        return lastModified;
     }
 
-    public void setLast_modified(String last_modified) {
-        this.last_modified = last_modified;
+    public void setLastModified(String lastModified) {
+        this.lastModified = lastModified;
     }
 }
 

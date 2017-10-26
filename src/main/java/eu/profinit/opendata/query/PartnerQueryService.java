@@ -3,8 +3,6 @@ package eu.profinit.opendata.query;
 import eu.profinit.opendata.model.Entity;
 import eu.profinit.opendata.model.EntityType;
 import eu.profinit.opendata.model.PartnerListEntry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
@@ -22,8 +20,6 @@ public class PartnerQueryService {
 
     @PersistenceContext
     private EntityManager em;
-
-    private Logger logger = LogManager.getLogger(PartnerQueryService.class);
 
     /**
      * Creates a PartnerListEntry for a specified authority and partner under the specified code. If an identical
@@ -121,7 +117,6 @@ public class PartnerQueryService {
         // Pokud jsme jeste nic nenalezli, zkusime podle ico
         // Mame-li kandidata, vracime ho.
 
-        //logger.trace("Calling query");
         if(!isNullOrEmpty(ico) && !isNullOrEmpty(dic)) {
             candidates = em.createNamedQuery("findByICOAndDIC", Entity.class)
                     .setParameter("ico", ico)
@@ -180,48 +175,49 @@ public class PartnerQueryService {
      * @param name The name to be normalized.
      * @return The normalized name, suitable for insertion into the database.
      */
-    public String normalizeEntityName(String name) {
+    public String normalizeEntityName(final String name) {
 
         if(name == null) {
             return null;
         }
 
-        name = name.toUpperCase();
-        name = name.replaceAll("\\W+V LIKVIDACI\\W+", "");
+        String normalizedName = name;
+        
+        normalizedName = normalizedName.toUpperCase();
+        normalizedName = normalizedName.replaceAll("\\W+V LIKVIDACI\\W+", "");
         String[] abbreviations = {"SRO", "AS", "VOS", "SP", "VVI", "KS"};
         for(String abbr : abbreviations) {
-            name = normalizeAbbreviation(name, abbr);
+            normalizedName = normalizeAbbreviation(normalizedName, abbr);
         }
-        name = name.replaceAll("kom( )?\\.( )?spol( )?\\.", ", K. S.");
+        normalizedName = normalizedName.replaceAll("kom( )?\\.( )?spol( )?\\.", ", K. S.");
         //TODO: Akademicke tituly?
-        name = name.replaceAll("^\\d{2,}\\w", "");
-        name = name.replaceAll("\\s+", " ");
-        name = name.trim();
+        normalizedName = normalizedName.replaceAll("^\\d{2,}\\w", "");
+        normalizedName = normalizedName.replaceAll("\\s+", " ");
+        normalizedName = normalizedName.trim();
 
-        return name;
+        return normalizedName;
     }
 
     private String normalizeAbbreviation(String name, String abbr) {
         String regex = createRegexForAbbreviation(abbr);
-        String replaceBy = ", ";
+        StringBuilder replaceBy = new StringBuilder(", ");
         for(int i = 0; i < abbr.length(); i++) {
-            replaceBy += abbr.charAt(i) + ".";
+            replaceBy.append(abbr.charAt(i)).append(".");
             if(i < abbr.length() - 1) {
-                replaceBy += " ";
+                replaceBy.append(" ");
             }
         }
-        name = name.replaceAll(regex, replaceBy);
-        return name;
+        return name.replaceAll(regex, replaceBy.toString());
     }
 
     private String createRegexForAbbreviation(String abbreviation) {
-        String result = "(,)?( )?(SPOL\\.)?( )?";
+        StringBuilder result = new StringBuilder("(,)?( )?(SPOL\\.)?( )?");
         for(int i = 0; i < abbreviation.length(); i++) {
-            result += abbreviation.charAt(i);
-            result += "(\\. |\\.| | \\.)";
+            result.append(abbreviation.charAt(i));
+            result.append("(\\. |\\.| | \\.)");
         }
-        result += "?";
-        return result;
+        result.append("?");
+        return result.toString();
     }
 
 }

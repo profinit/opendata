@@ -77,7 +77,7 @@ public class Mapping {
      */
     public List<MappedSheet> getMappedSheet() {
         if (mappedSheet == null) {
-            mappedSheet = new ArrayList<MappedSheet>();
+            mappedSheet = new ArrayList<>();
         }
         return this.mappedSheet;
     }
@@ -106,7 +106,7 @@ public class Mapping {
      */
     public List<PropertySet> getPropertySet() {
         if (propertySet == null) {
-            propertySet = new ArrayList<PropertySet>();
+            propertySet = new ArrayList<>();
         }
         return this.propertySet;
     }

@@ -14,14 +14,11 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
-import static eu.profinit.opendata.common.Util.isNullOrEmpty;
 
 /**
  * Tries to find an existing Record with specified attribute values (contained in the sourceValues map). If one is
@@ -41,11 +38,11 @@ public class PropertyBasedRecordRetriever implements RecordRetriever {
     public Record retrieveRecord(Retrieval currentRetrieval, Map<String, Cell> sourceValues, Logger logger) throws TransformException {
         HashMap<String, String> filters = new HashMap<>();
 
-        for(String key : sourceValues.keySet()) {
-            sourceValues.get(key).setCellType(Cell.CELL_TYPE_STRING);
-            filters.put(key, sourceValues.get(key).getStringCellValue());
+        for(Entry<String, Cell> entry : sourceValues.entrySet()) {
+            entry.getValue().setCellType(Cell.CELL_TYPE_STRING);
+            filters.put(entry.getKey(), entry.getValue().getStringCellValue());
         }
-
+        
         return retrieveRecordByStrings(currentRetrieval, filters,
                                        currentRetrieval.getDataInstance().getDataSource().getRecordType());
     }

@@ -25,7 +25,7 @@ public class SplitIdentifierSetter implements RecordPropertyConverter{
     public String getIdentifierFromSourceValues(Map<String, Cell> sourceValues) {
         String categoryCode = sourceValues.get("categoryCode").getStringCellValue();
         Double serialNumber = sourceValues.get("serialNumber").getNumericCellValue();
-        String serialNumberString = serialNumber.intValue() + "";
+        String serialNumberString = Integer.toString(serialNumber.intValue());
         return categoryCode + "-" + serialNumberString;
     }
 }

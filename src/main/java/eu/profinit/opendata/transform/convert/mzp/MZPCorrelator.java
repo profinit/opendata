@@ -26,6 +26,8 @@ import java.util.Map;
 @Component
 public class MZPCorrelator implements RecordPropertyConverter {
 
+    private static final String RECORD_TYPE = "recordType";
+    private static final String CONTRACT_ID = "contractId";
     @PersistenceContext
     private EntityManager em;
 
@@ -34,20 +36,20 @@ public class MZPCorrelator implements RecordPropertyConverter {
             throws TransformException {
 
 
-        if(sourceValues.get("contractId") != null
-                && !Util.isNullOrEmpty(sourceValues.get("contractId").getStringCellValue())) {
+        if(sourceValues.get(CONTRACT_ID) != null
+                && !Util.isNullOrEmpty(sourceValues.get(CONTRACT_ID).getStringCellValue())) {
 
-            String contractId = sourceValues.get("contractId").getStringCellValue();
+            String contractId = sourceValues.get(CONTRACT_ID).getStringCellValue();
 
             //Make sure the relationship doesn't exist yet, resolved or not
             List<UnresolvedRelationship> ulist = em.createQuery("Select u from UnresolvedRelationship u " +
-                    "where u.boundAuthorityIdentifier = :contractId", UnresolvedRelationship.class)
-                    .setParameter("contractId", contractId)
+                    "where u.boundAuthorityIdentifier = :" + CONTRACT_ID, UnresolvedRelationship.class)
+                    .setParameter(CONTRACT_ID, contractId)
                     .getResultList();
 
             List<Record> rlist = em.createQuery("Select r from Record r " +
-                    "where r.authorityIdentifier = :contractId and r.recordType = :recordType", Record.class)
-                    .setParameter("contractId", contractId).setParameter("recordType", RecordType.CONTRACT)
+                    "where r.authorityIdentifier = :contractId and r.recordType = :"+RECORD_TYPE, Record.class)
+                    .setParameter(CONTRACT_ID, contractId).setParameter(RECORD_TYPE, RecordType.CONTRACT)
                     .getResultList();
 
             if(!ulist.isEmpty()) return;

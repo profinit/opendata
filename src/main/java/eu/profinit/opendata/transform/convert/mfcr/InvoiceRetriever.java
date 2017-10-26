@@ -23,6 +23,7 @@ import java.util.Map;
 @Component
 public class InvoiceRetriever implements RecordRetriever {
 
+    private static final String AUTHORITY_IDENTIFIER = "authorityIdentifier";
     @Autowired
     private PropertyBasedRecordRetriever propertyBasedRecordRetriever;
 
@@ -34,8 +35,8 @@ public class InvoiceRetriever implements RecordRetriever {
         RecordType recordType = type.equals("Přijaté faktury") ? RecordType.INVOICE : RecordType.PAYMENT;
 
         HashMap<String, String> filters = new HashMap<>();
-        sourceValues.get("authorityIdentifier").setCellType(Cell.CELL_TYPE_STRING);
-        filters.put("authorityIdentifier", sourceValues.get("authorityIdentifier").getStringCellValue());
+        sourceValues.get(AUTHORITY_IDENTIFIER).setCellType(Cell.CELL_TYPE_STRING);
+        filters.put(AUTHORITY_IDENTIFIER, sourceValues.get(AUTHORITY_IDENTIFIER).getStringCellValue());
 
         return propertyBasedRecordRetriever.retrieveRecordByStrings(currentRetrieval, filters, recordType);
     }

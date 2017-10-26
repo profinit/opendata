@@ -11,6 +11,6 @@ import org.springframework.stereotype.Component;
 public class BlankHandler extends GenericDataSourceHandler {
     @Override
     protected void updateDataInstances(DataSource ds) {
-
+        // this method is intentionally empty
     }
 }

@@ -1,13 +1,9 @@
 package eu.profinit.opendata.transform;
 
 import eu.profinit.opendata.model.DataInstance;
-import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.model.Retrieval;
 import eu.profinit.opendata.transform.jaxb.Mapping;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.EntityManager;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;

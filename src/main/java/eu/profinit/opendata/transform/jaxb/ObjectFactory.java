@@ -34,6 +34,7 @@ public class ObjectFactory {
      * 
      */
     public ObjectFactory() {
+        // this method is intentionally empty
     }
 
     /**

@@ -5,7 +5,6 @@ import eu.profinit.opendata.transform.RecordPropertyConverter;
 import eu.profinit.opendata.transform.TransformException;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -18,17 +17,19 @@ import java.util.Map;
 @Component
 public class AllAmountSetter implements RecordPropertyConverter {
 
+    private static final String INPUT_AMOUNT = "inputAmount";
+
     @Override
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger)
             throws TransformException {
 
         Double amount = null;
         //fix for excels without values
-        if (sourceValues.get("inputAmount") == null ||
-                sourceValues.get("inputAmount").getCellType() != Cell.CELL_TYPE_NUMERIC) {
+        if (sourceValues.get(INPUT_AMOUNT) == null ||
+                sourceValues.get(INPUT_AMOUNT).getCellType() != Cell.CELL_TYPE_NUMERIC) {
             amount = 0d;
         } else {
-            amount = sourceValues.get("inputAmount").getNumericCellValue();
+            amount = sourceValues.get(INPUT_AMOUNT).getNumericCellValue();
         }
         record.setOriginalCurrencyAmount(amount);
         if (record.getCurrency().equals("CZK")) {

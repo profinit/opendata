@@ -2,10 +2,7 @@ package eu.profinit.opendata.model;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
-
 import eu.profinit.opendata.model.util.EntityTypeConverter;
 
 /**

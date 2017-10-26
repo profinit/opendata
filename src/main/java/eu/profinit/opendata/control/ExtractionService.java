@@ -25,5 +25,5 @@ public interface ExtractionService extends PersistenceAware {
      * For mocking only
      * @param DataSourceHandlerFactory
      */
-    void setDataSourceHandlerFactory(DataSourceHandlerFactory DataSourceHandlerFactory);
+    void setDataSourceHandlerFactory(DataSourceHandlerFactory dataSourceHandlerFactory);
 }

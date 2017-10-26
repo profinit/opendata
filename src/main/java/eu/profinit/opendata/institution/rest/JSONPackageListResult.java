@@ -14,8 +14,8 @@ public class JSONPackageListResult {
     private String title;
     private String url;
     private String state;
-    private String metadata_created;
-    private String metadata_modified;
+    private String metadataCreated;
+    private String metadataModified;
     private List<JSONPackageListResource> resources;
 
     public String getId() {
@@ -58,20 +58,20 @@ public class JSONPackageListResult {
         this.state = state;
     }
 
-    public String getMetadata_created() {
-        return metadata_created;
+    public String getMetadataCreated() {
+        return metadataCreated;
     }
 
-    public void setMetadata_created(String metadata_created) {
-        this.metadata_created = metadata_created;
+    public void setMetadataCreated(String metadataCreated) {
+        this.metadataCreated = metadataCreated;
     }
 
-    public String getMetadata_modified() {
-        return metadata_modified;
+    public String getMetadataModified() {
+        return metadataModified;
     }
 
-    public void setMetadata_modified(String metadata_modified) {
-        this.metadata_modified = metadata_modified;
+    public void setMetadataModified(String metadataModified) {
+        this.metadataModified = metadataModified;
     }
 
     public List<JSONPackageListResource> getResources() {

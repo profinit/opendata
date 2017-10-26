@@ -5,8 +5,6 @@ import eu.profinit.opendata.institution.mfcr.PartnerListProcessor;
 import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.Entity;
 import eu.profinit.opendata.query.PartnerQueryService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -30,28 +28,26 @@ public class PartnerListProcessorImpl implements PartnerListProcessor {
     @PersistenceContext
     private EntityManager em;
 
-    private Logger log = LogManager.getLogger(PartnerListProcessor.class);
-
     @Autowired
     private PartnerQueryService partnerQueryService;
-
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW,
             rollbackFor = {IOException.class, RuntimeException.class})
     public void processListOfPartners(DataSource ds, InputStream inputStream) throws IOException {
-        Workbook workbook = new XSSFWorkbook(inputStream);
-        Sheet sheet = workbook.getSheetAt(0);
-        for(int i = 1; i <= sheet.getLastRowNum(); i++) {
-            Row row = sheet.getRow(i);
-            if(Util.isRowEmpty(row)) continue;
-
-            String partnerCode = row.getCell(0).getStringCellValue();
-            String ico = row.getCell(1).getStringCellValue();
-            String name = row.getCell(2).getStringCellValue();
-
-            Entity partner = partnerQueryService.findOrCreateEntity(name, ico, null);
-            partnerQueryService.findOrCreatePartnerListEntry(ds.getEntity(), partner, partnerCode);
+        try(Workbook workbook = new XSSFWorkbook(inputStream)) {
+            Sheet sheet = workbook.getSheetAt(0);
+            for(int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if(Util.isRowEmpty(row)) continue;
+    
+                String partnerCode = row.getCell(0).getStringCellValue();
+                String ico = row.getCell(1).getStringCellValue();
+                String name = row.getCell(2).getStringCellValue();
+    
+                Entity partner = partnerQueryService.findOrCreateEntity(name, ico, null);
+                partnerQueryService.findOrCreatePartnerListEntry(ds.getEntity(), partner, partnerCode);
+            }
         }
     }
 

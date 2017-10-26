@@ -6,14 +6,12 @@ import eu.profinit.opendata.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.sql.Timestamp;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -145,7 +143,7 @@ public abstract class GenericDataSourceHandler implements DataSourceHandler {
         try {
             em.persist(retrieval);
         } catch (Exception ex) {
-
+            log.error("Error while persisting", ex);
         }
 
         log.debug("(success, numRecordsInserted, numBadRecords, failureReason) = " +

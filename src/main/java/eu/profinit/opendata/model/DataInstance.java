@@ -108,8 +108,8 @@ public class DataInstance {
         return lastProcessedDate;
     }
 
-    public void setLastProcessedDate(Timestamp last_processed_date) {
-        this.lastProcessedDate = last_processed_date;
+    public void setLastProcessedDate(Timestamp lastProcessedDate) {
+        this.lastProcessedDate = lastProcessedDate;
     }
 
     @Basic

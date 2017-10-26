@@ -23,8 +23,6 @@ import java.lang.reflect.Field;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 /**
  * Created by dm on 1/16/16.
@@ -40,9 +38,6 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
 
     @Autowired
     private ComponentFactory converterFactory;
-
-    @Autowired
-    private eu.profinit.opendata.control.DownloadService DownloadService;
 
     DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss.SSS").withZone(ZoneId.systemDefault());
@@ -65,76 +60,46 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
 
         for(MappedSheet mappingSheet : mapping.getMappedSheet()) {
 
-            Sheet sheet = null;
-            if(mappingSheet.getName() != null) {
-                sheet = workbook.getSheet(mappingSheet.getName());
-                log.info("Processing sheet " + mappingSheet.getName());
-            }
-            else {
-                sheet = workbook.getSheetAt(mappingSheet.getNumber().intValue());
-                log.info("Processing sheet " + mappingSheet.getNumber());
-            }
+            Sheet sheet = getSheetFromWorkbook(workbook, mappingSheet);
 
-            int start_row_num = mappingSheet.getHeaderRow().intValue() + 1;
+            int startRowNum = mappingSheet.getHeaderRow().intValue() + 1;
             if (retrieval.getDataInstance().getLastProcessedRow() != null) {
-                start_row_num = retrieval.getDataInstance().getLastProcessedRow() + 1;
+                startRowNum = retrieval.getDataInstance().getLastProcessedRow() + 1;
             }
-            log.info("First data row will be " + start_row_num);
+            log.info("First data row will be " + startRowNum);
 
             // Create the column name mapping - if two or more columns share the same name, a numeric suffi
             // is appended going from left to right. First occurrence gets no suffix, second gets 01, etc.
             log.trace("Mapping column names to their indexes");
-            Map<String, Integer> columnNames = new HashMap<>();
+            
             Row headerRow = sheet.getRow(mappingSheet.getHeaderRow().intValue());
             for (int i = 1; Util.isRowEmpty(headerRow); i++) {
                 headerRow = sheet.getRow(mappingSheet.getHeaderRow().intValue() + i);
                 if (retrieval.getDataInstance().getLastProcessedRow() == null) {
-                    start_row_num++;
+                    startRowNum++;
                 }
             }
 
-            Iterator<Cell> cellIterator = headerRow.cellIterator();
-            while (cellIterator.hasNext()) {
-                Cell cell = cellIterator.next();
-                String columnName = cell.getStringCellValue().trim();
-                int i = 1;
-                while (columnNames.containsKey(columnName)) {
-                    columnName += String.format("%02d", i);
-                    i++;
-                }
-                columnNames.put(columnName, cell.getColumnIndex());
-                log.trace("Name: " + cell.getStringCellValue() + ", Index: " + cell.getColumnIndex());
-            }
-
-            for (int i = start_row_num; i <= sheet.getLastRowNum(); i++) {
+            Map<String, Integer> columnNames = getColumnNamesFromHeaderRow(headerRow);
+            for (int i = startRowNum; i <= sheet.getLastRowNum(); i++) {
                 log.debug("Processing row " + i);
                 try {
-                    if (Util.isRowEmpty(sheet.getRow(i))) {
+                    Optional<Record> optRow = processRow(
+                            sheet.getRow(i), mappingSheet, mapping.getPropertySet(), retrieval, columnNames);
+
+                    if (!optRow.isPresent()) {
                         log.warn("Encountered empty row at index " + i + ", skipping");
                         continue;
                     }
-
-                    Record record = processRow(
-                            sheet.getRow(i), mappingSheet, mapping.getPropertySet(), retrieval, columnNames);
-
-                    if (record == null) {
-                        continue;
-                    }
+                    
+                    Record record = optRow.get();
 
                     //A call to persist will throw a PersistenceException if all required attributes aren't filled
                     //Which means the whole transaction will blow up. We need to check manually
                     checkRecordIntegrity(record);
 
                     log.debug("Record finished, persisting");
-                    if (retrieval.equals(record.getRetrieval()) && !retrieval.getRecords().contains(record)) {
-                        retrieval.getRecords().add(record);
-                        retrieval.setNumRecordsInserted(retrieval.getNumRecordsInserted() + 1);
-                    } else if (record.getRecordId() != null) {
-                        em.merge(record);
-                    }
-                    if (retrieval.getDataInstance().isIncremental()) {
-                        retrieval.getDataInstance().setLastProcessedRow(i);
-                    }
+                    persistAndUpdateRetrieval(retrieval, i, record);
                 } catch (TransformException ex) {
                     if (ex.getSeverity().equals(TransformException.Severity.FATAL)) {
                         throw ex;
@@ -151,42 +116,69 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
         }
     }
 
-    private Record processRow(Row row, MappedSheet mapping, List<PropertySet> propertySets,
+    private void persistAndUpdateRetrieval(Retrieval retrieval, int i, Record record) {
+        if (retrieval.equals(record.getRetrieval()) && !retrieval.getRecords().contains(record)) {
+            retrieval.getRecords().add(record);
+            retrieval.setNumRecordsInserted(retrieval.getNumRecordsInserted() + 1);
+        } else if (record.getRecordId() != null) {
+            em.merge(record);
+        }
+        if (retrieval.getDataInstance().isIncremental()) {
+            retrieval.getDataInstance().setLastProcessedRow(i);
+        }
+    }
+
+    private Map<String, Integer> getColumnNamesFromHeaderRow(Row headerRow) {
+        Map<String, Integer> columnNames = new HashMap<>();
+        Iterator<Cell> cellIterator = headerRow.cellIterator();
+        while (cellIterator.hasNext()) {
+            Cell cell = cellIterator.next();
+            String columnName = cell.getStringCellValue().trim();
+            int i = 1;
+            while (columnNames.containsKey(columnName)) {
+                columnName += String.format("%02d", i);
+                i++;
+            }
+            columnNames.put(columnName, cell.getColumnIndex());
+            log.trace("Name: " + cell.getStringCellValue() + ", Index: " + cell.getColumnIndex());
+        }
+        return columnNames;
+    }
+
+    private Sheet getSheetFromWorkbook(Workbook workbook, MappedSheet mappingSheet) {
+        Sheet sheet = null;
+        if(mappingSheet.getName() != null) {
+            sheet = workbook.getSheet(mappingSheet.getName());
+            log.info("Processing sheet " + mappingSheet.getName());
+        }
+        else {
+            sheet = workbook.getSheetAt(mappingSheet.getNumber().intValue());
+            log.info("Processing sheet " + mappingSheet.getNumber());
+        }
+        return sheet;
+    }
+
+    private Optional<Record> processRow(Row row, MappedSheet mapping, List<PropertySet> propertySets,
                               Retrieval retrieval, Map<String, Integer> columnNames) throws TransformException {
 
-        Record record = null;
-        boolean newRecord;
-
-        // Apply a filter, if there is one in the mapping
-        if(mapping.getFilter() != null && !mapping.getFilter().isEmpty()) {
-            for(RowFilter rowFilter : mapping.getFilter()) {
-                log.trace("Mapping specifies a filter with class " + rowFilter.getClassName() + ", instantiating");
-                SourceRowFilter filter = (SourceRowFilter) instantiateComponent(rowFilter.getClassName());
-                if(!filter.proceedWithRow(retrieval, getCellMapForArguments(row, rowFilter.getSourceFileColumn(), columnNames))) {
-                    log.debug("Filter " + rowFilter.getClassName() + " has disqualified this row");
-                    return null;
-                }
-            }
+        if (Util.isRowEmpty(row)) {
+            return Optional.empty();
         }
-
-        // Invoke an old record retriever, if there is one in the mapping
-        if(mapping.getRetriever() != null) {
-            log.trace("Mapping specifies a retriever with class " + mapping.getRetriever().getClassName() + ", instantiating");
-            RecordRetriever retriever = (RecordRetriever) instantiateComponent(mapping.getRetriever().getClassName());
-            record = retriever.retrieveRecord(retrieval,
-                    getCellMapForArguments(row, mapping.getRetriever().getSourceFileColumn(), columnNames), log);
+        
+        if(!rowFilterPassed(row, mapping, retrieval, columnNames)) {
+            return Optional.empty();
         }
+        Optional<Record> record = invokeOldRecordRetriever(row, mapping, retrieval, columnNames);
 
         //Create the Record
-        if(record == null) {
+        boolean newRecord;
+        if(!record.isPresent()) {
             log.debug("Creating new record");
-            record = new Record();
-            record.setRetrieval(retrieval);
-            record.setAuthority(retrieval.getDataInstance().getDataSource().getEntity());
+            record = Optional.of(createRecord(retrieval));
             newRecord = true;
         }
         else {
-            log.debug("Retriever has returned an old record to update with id " + record.getRecordId());
+            log.debug("Retriever has returned an old record to update with id " + record.get().getRecordId());
             newRecord = false;
         }
 
@@ -218,24 +210,64 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
         return record;
     }
 
-    private void setRecordProperty(Record record, RecordProperty recordProperty, boolean newRecord,
+    private Record createRecord(Retrieval retrieval) {
+        Record recordInstance = new Record();
+        recordInstance.setRetrieval(retrieval);
+        recordInstance.setAuthority(retrieval.getDataInstance().getDataSource().getEntity());
+        return recordInstance;
+    }
+
+    /** 
+     * Invoke an old record retriever, if there is one in the mapping
+     * */
+    private Optional<Record> invokeOldRecordRetriever(Row row, MappedSheet mapping, Retrieval retrieval, Map<String, Integer> columnNames) throws TransformException {
+        if(mapping.getRetriever() != null) {
+            log.trace("Mapping specifies a retriever with class " + mapping.getRetriever().getClassName() + ", instantiating");
+            RecordRetriever retriever = (RecordRetriever) instantiateComponent(mapping.getRetriever().getClassName());
+            return Optional.ofNullable(retriever.retrieveRecord(retrieval,
+                    getCellMapForArguments(row, mapping.getRetriever().getSourceFileColumn(), columnNames), log));
+        }
+        return Optional.empty();
+    }
+
+    /** 
+     * Apply a filter, if there is one in the mapping
+     * */
+    private boolean rowFilterPassed(Row row, MappedSheet mapping, Retrieval retrieval, Map<String, Integer> columnNames)
+            throws TransformException {
+        if(mapping.getFilter() != null) {
+            for(RowFilter rowFilter : mapping.getFilter()) {
+                log.trace("Mapping specifies a filter with class " + rowFilter.getClassName() + ", instantiating");
+                SourceRowFilter filter = (SourceRowFilter) instantiateComponent(rowFilter.getClassName());
+                if(!filter.proceedWithRow(retrieval, getCellMapForArguments(row, rowFilter.getSourceFileColumn(), columnNames))) {
+                    log.debug("Filter " + rowFilter.getClassName() + " has disqualified this row");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private void setRecordProperty(Optional<Record> record, RecordProperty recordProperty, boolean newRecord,
                                    Row row, Map<String, Integer> columnNames) throws TransformException{
 
-        log.trace("Updating property " + recordProperty.getName());
-
-        //In case we're updating a record that's already been inserted
-        if(!newRecord && recordProperty.isOnlyNewRecords()) {
-            log.trace("Skipping property as it can only be applied to new records");
-            return;
-        }
-
-        //For each property, either set the corresponding fixed value by resolving a string
-        if(recordProperty.getValue() != null) {
-            setFixedValue(record, recordProperty);
-        }
-        else {
-            //Or instantiate and call the corresponding converter with a hashmap of arguments
-            setProcessedValue(recordProperty, record, row, columnNames);
+        if(record.isPresent()) {
+            log.trace("Updating property " + recordProperty.getName());
+    
+            //In case we're updating a record that's already been inserted
+            if(!newRecord && recordProperty.isOnlyNewRecords()) {
+                log.trace("Skipping property as it can only be applied to new records");
+                return;
+            }
+    
+            //For each property, either set the corresponding fixed value by resolving a string
+            if(recordProperty.getValue() != null) {
+                setFixedValue(record.get(), recordProperty);
+            }
+            else {
+                //Or instantiate and call the corresponding converter with a hashmap of arguments
+                setProcessedValue(recordProperty, record.get(), row, columnNames);
+            }
         }
     }
 
@@ -354,7 +386,7 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
      * @throws TransformException
      */
     private Map<String, Cell> getCellMapForArguments(Row row, List<SourceColumn> sourceColumns,
-                                                     Map<String, Integer> columnNames) throws TransformException {
+                                                     Map<String, Integer> columnNames) {
         Map<String, Cell> argumentMap = new HashMap<>();
         for(SourceColumn sourceColumn : sourceColumns) {
             Integer columnIndex = columnNames.get(sourceColumn.getOriginalName());
@@ -383,15 +415,15 @@ public class WorkbookProcessorImpl implements WorkbookProcessor {
     }
 
     //Utility
-    private static final Set<Class> SIMPLE_TYPES = new HashSet<>(Arrays.asList(
+    private static final Set<Class<?>> SIMPLE_TYPES = new HashSet<>(Arrays.asList(
             Boolean.class, Character.class, Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class,
             String.class, Boolean.TYPE, Character.TYPE, Byte.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE));
 
-    private static boolean isSimpleType(Class clazz) {
+    private static boolean isSimpleType(Class<?> clazz) {
         return SIMPLE_TYPES.contains(clazz);
     }
 
-    private static Object toObject( Class clazz, String value ) {
+    private static Object toObject( Class<?> clazz, String value ) {
         if( Boolean.class == clazz || Boolean.TYPE == clazz ) return Boolean.parseBoolean( value );
         if( Byte.class == clazz    || Byte.TYPE    == clazz ) return Byte.parseByte( value );
         if( Short.class == clazz   || Short.TYPE   == clazz ) return Short.parseShort( value );

@@ -4,7 +4,6 @@ import eu.profinit.opendata.control.DataSourceHandlerFactory;
 import eu.profinit.opendata.model.DataSourceHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -24,7 +23,7 @@ public class DataSourceHandlerFactoryImpl implements ApplicationContextAware, Da
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext) {
         log.trace("Application context set into DataSourceHandlerFactory");
         this.applicationContext = applicationContext;
     }

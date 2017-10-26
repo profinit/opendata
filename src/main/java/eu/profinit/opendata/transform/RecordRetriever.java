@@ -1,6 +1,5 @@
 package eu.profinit.opendata.transform;
 
-import eu.profinit.opendata.model.DataInstance;
 import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.model.Retrieval;
 import org.apache.logging.log4j.Logger;

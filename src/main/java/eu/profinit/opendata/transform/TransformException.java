@@ -36,7 +36,7 @@ public class TransformException extends Exception {
         FATAL;
     }
 
-    private Severity severity;
+    private final Severity severity;
 
     public TransformException(String message, Severity severity) {
         super(message);

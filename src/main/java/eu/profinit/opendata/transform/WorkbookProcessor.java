@@ -1,6 +1,5 @@
 package eu.profinit.opendata.transform;
 
-import eu.profinit.opendata.model.DataInstance;
 import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.model.Retrieval;
 import eu.profinit.opendata.transform.jaxb.Mapping;
@@ -8,9 +7,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import javax.persistence.EntityManager;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * The component responsible for the processing of a Workbook. Proceeds row-by-row, inserting and updating Records in

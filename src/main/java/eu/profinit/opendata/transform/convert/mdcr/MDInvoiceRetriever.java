@@ -4,7 +4,6 @@ import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.model.RecordType;
 import eu.profinit.opendata.model.Retrieval;
 import eu.profinit.opendata.query.PartnerQueryService;
-import eu.profinit.opendata.query.RecordQueryService;
 import eu.profinit.opendata.transform.RecordRetriever;
 import eu.profinit.opendata.transform.TransformException;
 import eu.profinit.opendata.transform.convert.PropertyBasedRecordRetriever;
@@ -15,11 +14,8 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by dm on 5/29/16.
@@ -47,7 +43,7 @@ public class MDInvoiceRetriever implements RecordRetriever {
 
             Map<String, String> filter = new HashMap<>();
             filter.put("authorityIdentifier", sourceValues.get("authorityIdentifier").getStringCellValue());
-            filter.put("budgetCategory", sourceValues.get("budgetCategory").getNumericCellValue() + "");
+            filter.put("budgetCategory", Double.toString(sourceValues.get("budgetCategory").getNumericCellValue()));
             filter.put("subject", sourceValues.get("subject").getStringCellValue());
 
             Record found = propertyBasedRecordRetriever.retrieveRecordByStrings(currentRetrieval, filter, RecordType.INVOICE);

@@ -1,7 +1,6 @@
 package eu.profinit.opendata;
 
 import eu.profinit.opendata.control.ExtractionService;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -9,9 +8,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class Main {
     public static void main(String[] args) {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"beans.xml"});
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
 
-        ExtractionService extractionService = (ExtractionService) context.getBean(ExtractionService.class);
+        ExtractionService extractionService = context.getBean(ExtractionService.class);
         extractionService.runExtraction();
         context.close();
     }

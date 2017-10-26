@@ -4,8 +4,6 @@ import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.DataSourceHandler;
 
 import javax.persistence.EntityManager;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Interface for the MF handler. See implementation class for behavior details.

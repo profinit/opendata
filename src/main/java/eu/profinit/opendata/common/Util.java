@@ -1,5 +1,7 @@
 package eu.profinit.opendata.common;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
@@ -12,6 +14,11 @@ import java.time.Duration;
  * Static utility methods.
  */
 public class Util {
+    
+    private static Logger log = LogManager.getLogger(Util.class);
+    
+    private Util() {}
+    
     /**
      * @param s A string
      * @return True if the parameter is null, an empty string or contains only whitespace characters
@@ -56,15 +63,27 @@ public class Util {
      */
     public static boolean isXLSFileAtURL(String url) {
         try {
+            URL parsedUrl = new URL(url);
             HttpURLConnection.setFollowRedirects(false);
             HttpURLConnection con =
-                    (HttpURLConnection) new URL(url).openConnection();
+                    (HttpURLConnection) parsedUrl.openConnection();
             con.setRequestMethod("HEAD");
-            return (con.getResponseCode() == HttpURLConnection.HTTP_OK
-                    && (con.getHeaderField("Content-Type").toLowerCase().contains("xls")
-                        || con.getHeaderField("Content-Type").toLowerCase().contains("excel")));
+            
+            int responseCode = con.getResponseCode();
+            String contentType = con.getHeaderField("Content-Type");
+            
+            String protocol = parsedUrl.getProtocol();
+            if(responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
+                String protocolWarning = protocol.equals("http") ? " You are using http protocol. Try to use https instead!" : "";
+                log.warn("Url {} moved to another location!{}", url, protocolWarning);
+            }
+            
+            return (responseCode == HttpURLConnection.HTTP_OK
+                    && (contentType.toLowerCase().contains("xls")
+                        || contentType.toLowerCase().contains("excel")));
         }
         catch (Exception e) {
+            log.error("Could not verify isXLSFileAtURL", e);
             return false;
         }
     }

@@ -5,10 +5,7 @@ import eu.profinit.opendata.transform.RecordPropertyConverter;
 import eu.profinit.opendata.transform.TransformException;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
-import org.springframework.stereotype.Component;
-
 import java.lang.reflect.Field;
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -22,8 +19,8 @@ public abstract class MoneySetter implements RecordPropertyConverter {
         try {
             Field field = Record.class.getDeclaredField(fieldName);
             Class<?> fieldType = field.getType();
-            if (!(fieldType.getName().equals(Double.class.getName())
-                    || fieldType.getName().equals(Double.TYPE.getName()))) {
+            if (!(fieldType.isAssignableFrom(Double.class)
+                    || fieldType.isAssignableFrom(Double.TYPE))) {
                 throw new TransformException("Field " + fieldName + " doesn't have type Double", TransformException.Severity.FATAL);
             }
             field.setAccessible(true);

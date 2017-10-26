@@ -49,7 +49,7 @@ public class ContractAllAmountSetter implements RecordPropertyConverter {
         String cleanAmount = matcher.group("amount");
         String currency = matcher.group("currency");
 
-        if(!Util.isNullOrEmpty(currency) && !currency.toUpperCase().equals("KČ")) {
+        if(!Util.isNullOrEmpty(currency) && !currency.equalsIgnoreCase("KČ")) {
             record.setCurrency(currency.toUpperCase());
         }
 

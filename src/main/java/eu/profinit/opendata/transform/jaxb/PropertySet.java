@@ -72,7 +72,7 @@ public class PropertySet {
      */
     public List<RecordProperty> getProperty() {
         if (property == null) {
-            property = new ArrayList<RecordProperty>();
+            property = new ArrayList<>();
         }
         return this.property;
     }

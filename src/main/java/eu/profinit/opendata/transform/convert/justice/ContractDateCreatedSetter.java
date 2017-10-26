@@ -4,7 +4,6 @@ import eu.profinit.opendata.model.Record;
 import eu.profinit.opendata.transform.RecordPropertyConverter;
 import eu.profinit.opendata.transform.TransformException;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.plugins.convert.TypeConverters;
 import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.stereotype.Component;
 

@@ -1,13 +1,10 @@
 package eu.profinit.opendata.test;
 
 import eu.profinit.opendata.model.*;
-import junit.framework.TestCase;
 import org.junit.Test;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import static eu.profinit.opendata.test.DataGenerator.*;

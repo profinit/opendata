@@ -10,9 +10,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,8 +39,8 @@ public class RecordQueryService {
         // Look in the retrieval first
         Collection<Record> finishedRecords = currentRetrieval.getRecords();
         Stream<Record> stream = finishedRecords.stream();
-        for(String key : filter.keySet()) {
-            stream = stream.filter(new RecordPropertyPredicate(key, filter.get(key)));
+        for(Entry<String, String> entry : filter.entrySet()) {
+            stream = stream.filter(new RecordPropertyPredicate(entry.getKey(), entry.getValue()));
         }
         List<Record> found = stream.collect(Collectors.toList());
 
@@ -64,8 +64,8 @@ public class RecordQueryService {
         Root<Record> root = qr.from(Record.class);
         qr.select(root);
 
-        for(String key : filter.keySet()) {
-            qr = qr.where(cb.equal(root.get(key), filter.get(key)));
+        for(Entry<String, String> entry : filter.entrySet()) {
+            qr = qr.where(cb.equal(root.get(entry.getKey()), entry.getValue()));
         }
 
         return em.createQuery(qr).getResultList();

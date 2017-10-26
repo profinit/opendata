@@ -1,7 +1,5 @@
 package eu.profinit.opendata.institution.rest;
 
-import java.util.List;
-
 /**
  * Created by dm on 6/29/16.
  */

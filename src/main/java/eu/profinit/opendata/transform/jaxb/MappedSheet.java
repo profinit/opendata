@@ -119,7 +119,7 @@ public class MappedSheet {
      */
     public List<RowFilter> getFilter() {
         if (filter == null) {
-            filter = new ArrayList<RowFilter>();
+            filter = new ArrayList<>();
         }
         return this.filter;
     }
@@ -173,7 +173,7 @@ public class MappedSheet {
      */
     public List<Object> getPropertyOrPropertySet() {
         if (propertyOrPropertySet == null) {
-            propertyOrPropertySet = new ArrayList<Object>();
+            propertyOrPropertySet = new ArrayList<>();
         }
         return this.propertyOrPropertySet;
     }

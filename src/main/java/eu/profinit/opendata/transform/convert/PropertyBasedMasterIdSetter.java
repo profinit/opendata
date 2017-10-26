@@ -1,20 +1,23 @@
 package eu.profinit.opendata.transform.convert;
 
-import eu.profinit.opendata.model.Record;
-import eu.profinit.opendata.model.Retrieval;
-import eu.profinit.opendata.query.RecordQueryService;
-import eu.profinit.opendata.transform.RecordPropertyConverter;
-import eu.profinit.opendata.transform.TransformException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import eu.profinit.opendata.model.Record;
+import eu.profinit.opendata.model.Retrieval;
+import eu.profinit.opendata.query.RecordQueryService;
+import eu.profinit.opendata.transform.RecordPropertyConverter;
+import eu.profinit.opendata.transform.TransformException;
 
 /**
  * Sets the masterId property of a Record. Tries to find an existing Record with specified attribute values (contained
@@ -39,9 +42,9 @@ public class PropertyBasedMasterIdSetter implements RecordPropertyConverter {
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger) throws TransformException {
         HashMap<String, String> filters = new HashMap<>();
 
-        for(String key : sourceValues.keySet()) {
-            sourceValues.get(key).setCellType(Cell.CELL_TYPE_STRING);
-            filters.put(key, sourceValues.get(key).getStringCellValue());
+        for(Entry<String, Cell> entry : sourceValues.entrySet()) {
+            entry.getValue().setCellType(Cell.CELL_TYPE_STRING);
+            filters.put(entry.getKey(), entry.getValue().getStringCellValue());
         }
 
         List<Record> found = recordQueryService.findRecordsByFilter(filters, record.getRetrieval());

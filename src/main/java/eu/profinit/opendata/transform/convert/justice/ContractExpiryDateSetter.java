@@ -34,7 +34,7 @@ public class ContractExpiryDateSetter implements RecordPropertyConverter {
             return;
         }
 
-        if(dateString.toLowerCase().equals("doba neurčitá")) {
+        if(dateString.equalsIgnoreCase("doba neurčitá")) {
             logger.trace("Not setting expiry date because the contract doesn't expire");
         }
 

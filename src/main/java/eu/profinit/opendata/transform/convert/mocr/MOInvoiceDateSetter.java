@@ -17,20 +17,22 @@ import java.util.Map;
  */
 @Component
 public class MOInvoiceDateSetter implements RecordPropertyConverter {
+    private static final String INPUT_DATE = "inputDate";
+
     @Override
     public void updateRecordProperty(Record record, Map<String, Cell> sourceValues, String fieldName, Logger logger)
             throws TransformException {
 
         try {
-            if (sourceValues.get("inputDate").getCellType() == Cell.CELL_TYPE_NUMERIC) {
-                Date inputDate = sourceValues.get("inputDate").getDateCellValue();
+            if (sourceValues.get(INPUT_DATE).getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                Date inputDate = sourceValues.get(INPUT_DATE).getDateCellValue();
                 Field field = Record.class.getDeclaredField(fieldName);
                 field.setAccessible(true);
                 java.sql.Date sqlDate = new java.sql.Date(inputDate.getTime());
                 field.set(record, sqlDate);
             } else {
-                sourceValues.get("inputDate").setCellType(Cell.CELL_TYPE_STRING);
-                String dateString = sourceValues.get("inputDate").getStringCellValue();
+                sourceValues.get(INPUT_DATE).setCellType(Cell.CELL_TYPE_STRING);
+                String dateString = sourceValues.get(INPUT_DATE).getStringCellValue();
                 String dateFormat = "d.M.yyyy";
                 SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
                 Date date = sdf.parse(dateString);

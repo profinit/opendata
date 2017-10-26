@@ -70,7 +70,7 @@ public class RowFilter {
      */
     public List<SourceColumn> getSourceFileColumn() {
         if (sourceFileColumn == null) {
-            sourceFileColumn = new ArrayList<SourceColumn>();
+            sourceFileColumn = new ArrayList<>();
         }
         return this.sourceFileColumn;
     }

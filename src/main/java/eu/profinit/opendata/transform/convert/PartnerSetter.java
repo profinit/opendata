@@ -36,26 +36,9 @@ public class PartnerSetter implements RecordPropertyConverter {
         String dic = null;
         String name = null;
 
-        if(sourceValues.containsKey("ico") && sourceValues.get("ico") != null) {
-            Cell icoCell = sourceValues.get("ico");
-            icoCell.setCellType(Cell.CELL_TYPE_STRING);
-
-            if(canBeValidICO(icoCell)) {
-                ico = icoCell.getStringCellValue().replace(".", ",");
-                if (ico.length() < 8) {
-                    ico = String.format("%08d", Integer.parseInt(ico));
-                }
-            }
-        }
-        if(sourceValues.containsKey("dic") && sourceValues.get("dic") != null
-                && !isNullOrEmpty(sourceValues.get("dic").getStringCellValue())) {
-            dic = sourceValues.get("dic").getStringCellValue();
-        }
-        if(sourceValues.containsKey("name") && sourceValues.get("name") != null
-                && sourceValues.get("name").getCellType() == Cell.CELL_TYPE_STRING
-                && !isNullOrEmpty(sourceValues.get("name").getStringCellValue())) {
-            name = sourceValues.get("name").getStringCellValue();
-        }
+        ico = updateIco(sourceValues, ico);
+        dic = updateDic(sourceValues, dic);
+        name = updateName(sourceValues, name);
 
         //Sanity check
         if(isNullOrEmpty(ico) && isNullOrEmpty(dic) && isNullOrEmpty(name)) {
@@ -71,7 +54,7 @@ public class PartnerSetter implements RecordPropertyConverter {
         try {
             field = Record.class.getDeclaredField(fieldName);
             Class<?> fieldType = field.getType();
-            if (!fieldType.getName().equals(Entity.class.getName())) {
+            if (!fieldType.isAssignableFrom(Entity.class)) {
                 throw new TransformException("Field " + fieldName + " doesn't have type Entity", TransformException.Severity.FATAL);
             }
             field.setAccessible(true);
@@ -83,6 +66,39 @@ public class PartnerSetter implements RecordPropertyConverter {
         } finally {
             logger.trace("PartnerSetter exiting");
         }
+    }
+
+    private String updateName(final Map<String, Cell> sourceValues, final String name) {
+        if(sourceValues.containsKey("name") && sourceValues.get("name") != null
+                && sourceValues.get("name").getCellType() == Cell.CELL_TYPE_STRING
+                && !isNullOrEmpty(sourceValues.get("name").getStringCellValue())) {
+            return sourceValues.get("name").getStringCellValue();
+        }
+        return name;
+    }
+
+    private String updateDic(final Map<String, Cell> sourceValues, final String dic) {
+        if(sourceValues.containsKey("dic") && sourceValues.get("dic") != null
+                && !isNullOrEmpty(sourceValues.get("dic").getStringCellValue())) {
+            return sourceValues.get("dic").getStringCellValue();
+        }
+        return dic;
+    }
+
+    private String updateIco(final Map<String, Cell> sourceValues, final String ico) {
+        if(sourceValues.containsKey("ico") && sourceValues.get("ico") != null) {
+            Cell icoCell = sourceValues.get("ico");
+            icoCell.setCellType(Cell.CELL_TYPE_STRING);
+
+            if(canBeValidICO(icoCell)) {
+                String parsedIco = icoCell.getStringCellValue().replace(".", ",");
+                if (parsedIco.length() < 8) {
+                    parsedIco = String.format("%08d", Integer.parseInt(parsedIco));
+                }
+                return parsedIco;
+            }
+        }
+        return ico;
     }
 
     private boolean canBeValidICO(Cell cell) {

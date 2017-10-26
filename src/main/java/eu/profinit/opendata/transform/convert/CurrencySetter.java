@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +50,8 @@ public class CurrencySetter implements RecordPropertyConverter{
         if(iso4217Currencies.contains(sourceCurrencyString)) {
             record.setCurrency(sourceCurrencyString);
         }
-        else if(Util.isNullOrEmpty(sourceCurrencyString) || sourceCurrencyString.toUpperCase().equals("KČ")
-                || sourceCurrencyString.toUpperCase().equals("KC")) {
+        else if(Util.isNullOrEmpty(sourceCurrencyString) || sourceCurrencyString.equalsIgnoreCase("KČ")
+                || sourceCurrencyString.equalsIgnoreCase("KC") || sourceCurrencyString.equalsIgnoreCase("CZK")) {
             record.setCurrency("CZK");
         }
         else {

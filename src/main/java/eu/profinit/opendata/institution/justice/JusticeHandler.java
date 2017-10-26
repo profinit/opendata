@@ -2,7 +2,6 @@ package eu.profinit.opendata.institution.justice;
 
 import eu.profinit.opendata.common.Util;
 import eu.profinit.opendata.control.GenericDataSourceHandler;
-import eu.profinit.opendata.institution.mfcr.MFCRHandler;
 import eu.profinit.opendata.model.DataInstance;
 import eu.profinit.opendata.model.DataSource;
 import eu.profinit.opendata.model.Periodicity;
@@ -10,12 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.test.annotation.Commit;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Optional;
 
 /**
@@ -26,10 +20,10 @@ import java.util.Optional;
 public class JusticeHandler extends GenericDataSourceHandler {
 
     @Value("${justice.invoices.url.scheme}")
-    private String url_scheme;
+    private String urlScheme;
 
     @Value("${justice.invoices.mapping.file}")
-    private String mapping_file;
+    private String mappingFile;
 
     private Logger log = LogManager.getLogger(JusticeHandler.class);
 
@@ -51,7 +45,7 @@ public class JusticeHandler extends GenericDataSourceHandler {
     private void updateInvoicesDataInstance(DataSource ds) {
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
         for(Integer i = currentYear; i >= 2009; i--) {
-            String url = url_scheme.replace("{year}", i.toString());
+            String url = urlScheme.replace("{year}", i.toString());
 
             Optional<DataInstance> oldDataInstance = ds.getDataInstances().stream().filter(d -> d.getUrl().equals(url))
                     .findAny();
@@ -73,7 +67,7 @@ public class JusticeHandler extends GenericDataSourceHandler {
                 di.setPeriodicity(Periodicity.QUARTERLY);
                 di.setUrl(url);
                 di.setDescription("Faktury MSp za rok " + i.toString());
-                di.setMappingFile(mapping_file);
+                di.setMappingFile(mappingFile);
                 di.setIncremental(false);
 
                 log.debug("Adding new data instance for MSp invoices in " + i.toString());

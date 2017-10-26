@@ -1,27 +1,25 @@
 package eu.profinit.opendata.institution.mocr.impl;
 
-import eu.profinit.opendata.control.DownloadService;
-import eu.profinit.opendata.control.GenericDataSourceHandler;
-import eu.profinit.opendata.institution.mocr.MOCRHandler;
-import eu.profinit.opendata.institution.rest.JSONClient;
-import eu.profinit.opendata.institution.rest.JSONPackageList;
-import eu.profinit.opendata.institution.rest.JSONPackageListMOCR;
-import eu.profinit.opendata.institution.rest.JSONPackageListResource;
-import eu.profinit.opendata.model.*;
-
-import java.sql.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import eu.profinit.opendata.control.GenericDataSourceHandler;
+import eu.profinit.opendata.institution.mocr.MOCRHandler;
+import eu.profinit.opendata.institution.rest.JSONClient;
+import eu.profinit.opendata.institution.rest.JSONPackageListMOCR;
+import eu.profinit.opendata.institution.rest.JSONPackageListResource;
+import eu.profinit.opendata.model.DataInstance;
+import eu.profinit.opendata.model.DataSource;
+import eu.profinit.opendata.model.Periodicity;
 
 /**
  * Implementation of the MO handler. Uses the ministry's REST API to keep track
@@ -34,26 +32,23 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
     @Autowired
     private JSONClient jsonClient;
 
-    @Autowired
-    private DownloadService downloadService;
-
     @Value("${mocr.json.invoices.identifier}")
-    private String invoices_identifier;
+    private String invoicesIdentifier;
 
     @Value("${mocr.json.contracts.identifier}")
-    private String contracts_identifier;
+    private String contractsIdentifier;
 
     @Value("${mocr.mapping.invoices}")
-    private String invoices_mapping_file;
+    private String invoicesMappingFile;
 
     @Value("${mocr.mapping.contracts}")
-    private String contracts_mapping_file;
+    private String contractsMappingFile;
 
     @Value("${mocr.json.api.url}")
-    private String json_api_url;
+    private String jsonApiUrl;
 
     @Value("${mocr.json.packages.url}")
-    private String packages_path;
+    private String packagesPath;
 
     private final Logger log = LogManager.getLogger(MOCRHandler.class);
 
@@ -82,7 +77,7 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
     public void updateContractsDataInstance(DataSource ds) {
 
         //Load list of resources from the JSON API
-        JSONPackageListMOCR packageList = jsonClient.getPackageListMOCR(json_api_url, packages_path, this.contracts_identifier);
+        JSONPackageListMOCR packageList = jsonClient.getPackageListMOCR(jsonApiUrl, packagesPath, this.contractsIdentifier);
         if (packageList == null) {
             log.warn("JSONClient returned null package list. Exiting.");
             return;
@@ -104,7 +99,6 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
                     continue;
                 }
 
-                Integer year = Integer.parseInt(matcher.group("year"));
                 DataInstance dataInstance = new DataInstance();
 
                 String newUrl = resource.getUrl();
@@ -114,12 +108,12 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
                 // If not, create a new one
                 Optional<DataInstance> sameIds = currentInstances.stream()
                         .filter(i -> i.getUrl().equals(resourceId)).findFirst();
-                if (sameIds != null && sameIds.isPresent()) {
+                if (sameIds.isPresent()) {
                     dataInstance = sameIds.get();
                     dataInstance.setUrl(resource.getUrl());
                 } else {
 
-                    dataInstance.setMappingFile(contracts_mapping_file);
+                    dataInstance.setMappingFile(contractsMappingFile);
                     dataInstance.setDataSource(ds);
                     dataInstance.setUrl(resource.getUrl());
                     dataInstance.setAuthorityId(resourceId);
@@ -150,7 +144,7 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
     public void updateInvoicesDataInstance(DataSource ds) {
         log.info("Updating information about data instances containing invoices");
 
-        JSONPackageListMOCR packageList = jsonClient.getPackageListMOCR(json_api_url, packages_path, invoices_identifier);
+        JSONPackageListMOCR packageList = jsonClient.getPackageListMOCR(jsonApiUrl, packagesPath, invoicesIdentifier);
         if (packageList == null) {
             log.warn("JSONClient returned null package list. Exiting.");
             return;
@@ -173,7 +167,6 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
                     continue;
                 }
 
-                Integer year = Integer.parseInt(matcher.group("year"));
                 DataInstance dataInstance = new DataInstance();
 
                 // Check if we already have a data instance with the same given id - if yes, simply update the URL
@@ -185,7 +178,7 @@ public class MOCRHandlerImpl extends GenericDataSourceHandler implements MOCRHan
                     dataInstance.setUrl(resource.getUrl());
                 } else {
 
-                    dataInstance.setMappingFile(invoices_mapping_file);
+                    dataInstance.setMappingFile(invoicesMappingFile);
 
                     dataInstance.setDataSource(ds);
                     dataInstance.setUrl(resource.getUrl());
